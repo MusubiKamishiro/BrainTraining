@@ -13,8 +13,7 @@ private:
 	Game(const Game&);				// ºËß°‹ÖŽ~
 	void operator=(const Game&);	// ‘ã“ü‹ÖŽ~
 
-	const Vector2 ScreenSize;
-	float time;
+	const Vector2 screenSize;
 	unsigned int fontSize;
 	
 public:

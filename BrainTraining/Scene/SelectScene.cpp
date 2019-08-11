@@ -33,7 +33,7 @@ void SelectScene::FadeoutUpdate(const Peripheral & p)
 
 void SelectScene::WaitUpdate(const Peripheral & p)
 {
-	if (p.IsTrigger(PAD_INPUT_8))
+	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
 		updater = &SelectScene::FadeoutUpdate;
 	}

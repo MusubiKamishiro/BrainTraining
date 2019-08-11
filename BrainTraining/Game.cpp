@@ -5,9 +5,8 @@
 #include "FrameFixity.h"
 
 
-Game::Game() : ScreenSize(1600, 900)
+Game::Game() : screenSize(1920, 1080)
 {
-	time = 0.0;
 	fontSize = 24;
 }
 
@@ -21,27 +20,16 @@ Game::~Game()
 
 void Game::Initialize()
 {
-#ifdef _DEBUG
-	DxLib::ChangeWindowMode(true);
-#else
-	int ans = MessageBox(DxLib::GetMainWindowHandle(), "フルスクリーンで表示しますか？", "画面の大きさどうしようか", MB_YESNO | MB_ICONQUESTION);
-
-	if (ans == IDYES)
-	{
-		DxLib::ChangeWindowMode(false);
-	}
-	else
-	{
-		DxLib::ChangeWindowMode(true);
-	}
-#endif // DEBUG
-
-	DxLib::SetGraphMode(ScreenSize.x, ScreenSize.y, 32);
+	//DxLib::ChangeWindowMode(true);	// フルスクリーンではない
+	
+	DxLib::SetGraphMode(screenSize.x, screenSize.y, 32);
 
 	if (DxLib::DxLib_Init() == -1)
 	{
 		return;
 	}
+
+	DxLib::SetMouseDispFlag(true);	// マウスカーソルを表示する
 
 	DxLib::SetMainWindowText("BrainTraining");	// タイトル
 	//DxLib::SetWindowIconID(IDI_ICON1);		// アイコン
@@ -61,15 +49,18 @@ void Game::Run()
 
 	while (DxLib::ProcessMessage() == 0)
 	{
-		if (ff.CheckReceiveMessage()) {
-			if (ff.GetReceiveMessage().message == WM_QUIT) {
+		if (ff.CheckReceiveMessage())
+		{
+			if (ff.GetReceiveMessage().message == WM_QUIT)
+			{
 				break;
 			}
 		}
-		else {
+		else
+		{
+			// メイン処理
 			ff.AdjustmentFrameLate();
 
-			++time;
 			DxLib::ClearDrawScreen();
 
 			// エスケープキーで終了
@@ -81,6 +72,10 @@ void Game::Run()
 			peripheral.Update();
 			scenes.Update(peripheral);
 			scenes.Draw();
+
+#ifdef _DEBUG
+			peripheral.DebugDraw();
+#endif // _DEBUG
 
 			DxLib::ScreenFlip();
 		}
@@ -96,5 +91,5 @@ void Game::Terminate()
 
 const Vector2& Game::GetScreenSize()const
 {
-	return ScreenSize;
+	return screenSize;
 }

@@ -11,7 +11,7 @@ private:
 	void WaitUpdate(const Peripheral& p);
 
 public:
-	ResultScene(const unsigned int& score, const unsigned int& cnum);
+	ResultScene();
 	~ResultScene();
 
 	void Update(const Peripheral& p);

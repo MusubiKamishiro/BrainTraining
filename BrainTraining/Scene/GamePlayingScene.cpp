@@ -1,12 +1,10 @@
 #include "GamePlayingScene.h"
 #include <DxLib.h>
-
-
 #include "../Peripheral.h"
 #include "../Game.h"
 #include "SceneManager.h"
 #include "ResultScene.h"
-#include "TitleScene.h"
+
 
 void GamePlayingScene::FadeinUpdate(const Peripheral & p)
 {
@@ -25,7 +23,7 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 {
 	if (pal <= 0)
 	{
-		SceneManager::Instance().ChangeScene(std::make_unique<TitleScene>());
+		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>());
 	}
 	else
 	{
@@ -35,6 +33,11 @@ void GamePlayingScene::FadeoutUpdate(const Peripheral & p)
 
 void GamePlayingScene::WaitUpdate(const Peripheral & p)
 {
+	if (p.IsTrigger(MOUSE_INPUT_LEFT))
+	{
+		pal = 255;
+		updater = &GamePlayingScene::FadeoutUpdate;
+	}
 }
 
 GamePlayingScene::GamePlayingScene()
@@ -54,4 +57,5 @@ void GamePlayingScene::Update(const Peripheral& p)
 
 void GamePlayingScene::Draw()
 {
+	DxLib::DrawBox(0, 0, 100, 100, 0x0000ff, true);
 }

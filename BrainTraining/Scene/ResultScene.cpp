@@ -34,14 +34,14 @@ void ResultScene::FadeoutUpdate(const Peripheral & p)
 
 void ResultScene::WaitUpdate(const Peripheral & p)
 {
-	if (p.IsTrigger(PAD_INPUT_8))
+	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
 		pal = 255;
 		updater = &ResultScene::FadeoutUpdate;
 	}
 }
 
-ResultScene::ResultScene(const unsigned int& score, const unsigned int& cnum)
+ResultScene::ResultScene()
 {
 	updater = &ResultScene::FadeinUpdate;
 }
@@ -58,5 +58,5 @@ void ResultScene::Update(const Peripheral& p)
 
 void ResultScene::Draw()
 {
-	
+	DxLib::DrawBox(0, 0, 100, 100, 0xff00ff, true);
 }

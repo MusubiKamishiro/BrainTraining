@@ -33,7 +33,7 @@ void TitleScene::FadeoutUpdate(const Peripheral & p)
 
 void TitleScene::WaitUpdate(const Peripheral & p)
 {
-	if (p.IsTrigger(PAD_INPUT_8))
+	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
 		pal = 255;
 		updater = &TitleScene::FadeoutUpdate;
