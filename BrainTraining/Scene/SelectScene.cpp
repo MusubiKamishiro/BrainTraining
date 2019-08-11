@@ -57,4 +57,5 @@ void SelectScene::Update(const Peripheral& p)
 void SelectScene::Draw()
 {
 	DxLib::DrawBox(0, 0, 100, 100, 0x00ff00, true);
+	DxLib::DrawString(450, 450, "セレクトシーンだよ", 0xffffff);
 }

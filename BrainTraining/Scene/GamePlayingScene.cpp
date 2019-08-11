@@ -4,6 +4,7 @@
 #include "../Game.h"
 #include "SceneManager.h"
 #include "ResultScene.h"
+#include "PauseScene.h"
 
 
 void GamePlayingScene::FadeinUpdate(const Peripheral & p)
@@ -52,10 +53,17 @@ GamePlayingScene::~GamePlayingScene()
 
 void GamePlayingScene::Update(const Peripheral& p)
 {
+	if (p.IsTrigger(MOUSE_INPUT_RIGHT))
+	{
+		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
+	}
+
+
 	(this->*updater)(p);
 }
 
 void GamePlayingScene::Draw()
 {
 	DxLib::DrawBox(0, 0, 100, 100, 0x0000ff, true);
+	DxLib::DrawString(450, 450, "ÉQÅ[ÉÄÉVÅ[ÉìÇæÇÊ", 0xffffff);
 }

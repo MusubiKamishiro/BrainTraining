@@ -59,4 +59,5 @@ void ResultScene::Update(const Peripheral& p)
 void ResultScene::Draw()
 {
 	DxLib::DrawBox(0, 0, 100, 100, 0xff00ff, true);
+	DxLib::DrawString(450, 450, "リザルトシーンだよ", 0xffffff);
 }

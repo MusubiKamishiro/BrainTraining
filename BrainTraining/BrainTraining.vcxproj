@@ -125,6 +125,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Peripheral.cpp" />
     <ClCompile Include="Scene\GamePlayingScene.cpp" />
+    <ClCompile Include="Scene\PauseScene.cpp" />
     <ClCompile Include="Scene\ResultScene.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
     <ClCompile Include="Scene\SceneManager.cpp" />
@@ -137,6 +138,7 @@
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="Peripheral.h" />
     <ClInclude Include="Scene\GamePlayingScene.h" />
+    <ClInclude Include="Scene\PauseScene.h" />
     <ClInclude Include="Scene\ResultScene.h" />
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="Scene\SceneManager.h" />
