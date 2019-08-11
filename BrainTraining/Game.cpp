@@ -5,7 +5,7 @@
 #include "FrameFixity.h"
 
 
-Game::Game() : ScreenSize(800, 500)
+Game::Game() : ScreenSize(1600, 900)
 {
 	time = 0.0;
 	fontSize = 24;
