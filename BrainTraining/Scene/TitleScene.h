@@ -15,6 +15,7 @@ private:
 	Vector2 ssize;
 
 	bool flag;
+	int img;
 
 public:
 	TitleScene();

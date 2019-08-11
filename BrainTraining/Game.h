@@ -4,6 +4,9 @@
 #include "Geometry.h"
 
 
+class FileSystem;
+
+
 // ｹﾞｰﾑ全体を制御するｸﾗｽ
 class Game
 {
@@ -12,6 +15,8 @@ private:
 	Game();							// 生成禁止
 	Game(const Game&);				// ｺﾋﾟｰ禁止
 	void operator=(const Game&);	// 代入禁止
+
+	std::shared_ptr<FileSystem> fileSystem;
 
 	const Vector2 screenSize;
 	unsigned int fontSize;
@@ -37,6 +42,9 @@ public:
 	// ﾗｲﾌﾞﾗﾘの後処理や
 	void Terminate();
 
+	// スクリーンサイズの取得
 	const Vector2& GetScreenSize()const;
+
+	const std::shared_ptr <FileSystem> GetFileSystem()const;
 };
 

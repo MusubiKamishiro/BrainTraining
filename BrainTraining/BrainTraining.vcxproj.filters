@@ -16,28 +16,25 @@
     <Filter Include="シーン ファイル">
       <UniqueIdentifier>{2eae2b4e-84ea-4f83-9111-7c482da5b9bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="シーン ファイル\ソース ファイル">
+      <UniqueIdentifier>{162cf5b4-3fb1-4b29-bc82-637f7dec8f78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="シーン ファイル\ヘッダー ファイル">
+      <UniqueIdentifier>{a39c5ba4-1db7-4cca-86c7-69db3e027bce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="システム ファイル">
+      <UniqueIdentifier>{be3171f6-18ff-44ba-a728-bd4a0c2f96cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="システム ファイル\ソース ファイル">
+      <UniqueIdentifier>{a1af4951-d2a7-4467-a38f-9fc1e2126d53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="システム ファイル\ヘッダー ファイル">
+      <UniqueIdentifier>{f0bb61bd-91d7-4508-aab4-ec51ea4a3b1c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\GamePlayingScene.cpp">
-      <Filter>シーン ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\ResultScene.cpp">
-      <Filter>シーン ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\Scene.cpp">
-      <Filter>シーン ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\SceneManager.cpp">
-      <Filter>シーン ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\SelectScene.cpp">
-      <Filter>シーン ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\TitleScene.cpp">
-      <Filter>シーン ファイル</Filter>
     </ClCompile>
     <ClCompile Include="FrameFixity.cpp">
       <Filter>ソース ファイル</Filter>
@@ -51,29 +48,41 @@
     <ClCompile Include="Peripheral.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Scene\GamePlayingScene.cpp">
+      <Filter>シーン ファイル\ソース ファイル</Filter>
+    </ClCompile>
     <ClCompile Include="Scene\PauseScene.cpp">
-      <Filter>シーン ファイル</Filter>
+      <Filter>シーン ファイル\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\ResultScene.cpp">
+      <Filter>シーン ファイル\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\Scene.cpp">
+      <Filter>シーン ファイル\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\SceneManager.cpp">
+      <Filter>シーン ファイル\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\SelectScene.cpp">
+      <Filter>シーン ファイル\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\TitleScene.cpp">
+      <Filter>シーン ファイル\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="System\FileSystem.cpp">
+      <Filter>システム ファイル\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="System\ImageLoader.cpp">
+      <Filter>システム ファイル\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="System\Loader.cpp">
+      <Filter>システム ファイル\ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="System\SoundLoader.cpp">
+      <Filter>システム ファイル\ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Scene\GamePlayingScene.h">
-      <Filter>シーン ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\ResultScene.h">
-      <Filter>シーン ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\Scene.h">
-      <Filter>シーン ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\SceneManager.h">
-      <Filter>シーン ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\SelectScene.h">
-      <Filter>シーン ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\TitleScene.h">
-      <Filter>シーン ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="FrameFixity.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -86,8 +95,38 @@
     <ClInclude Include="Peripheral.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Scene\GamePlayingScene.h">
+      <Filter>シーン ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="Scene\PauseScene.h">
-      <Filter>シーン ファイル</Filter>
+      <Filter>シーン ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\ResultScene.h">
+      <Filter>シーン ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\Scene.h">
+      <Filter>シーン ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\SceneManager.h">
+      <Filter>シーン ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\SelectScene.h">
+      <Filter>シーン ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\TitleScene.h">
+      <Filter>シーン ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="System\FileSystem.h">
+      <Filter>システム ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="System\ImageLoader.h">
+      <Filter>システム ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="System\Loader.h">
+      <Filter>システム ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="System\SoundLoader.h">
+      <Filter>システム ファイル\ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

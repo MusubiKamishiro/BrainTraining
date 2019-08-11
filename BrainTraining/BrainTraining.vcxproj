@@ -131,6 +131,10 @@
     <ClCompile Include="Scene\SceneManager.cpp" />
     <ClCompile Include="Scene\SelectScene.cpp" />
     <ClCompile Include="Scene\TitleScene.cpp" />
+    <ClCompile Include="System\FileSystem.cpp" />
+    <ClCompile Include="System\ImageLoader.cpp" />
+    <ClCompile Include="System\Loader.cpp" />
+    <ClCompile Include="System\SoundLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FrameFixity.h" />
@@ -144,6 +148,10 @@
     <ClInclude Include="Scene\SceneManager.h" />
     <ClInclude Include="Scene\SelectScene.h" />
     <ClInclude Include="Scene\TitleScene.h" />
+    <ClInclude Include="System\FileSystem.h" />
+    <ClInclude Include="System\ImageLoader.h" />
+    <ClInclude Include="System\Loader.h" />
+    <ClInclude Include="System\SoundLoader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

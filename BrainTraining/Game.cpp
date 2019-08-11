@@ -3,6 +3,7 @@
 #include "Peripheral.h"
 #include "Scene/SceneManager.h"
 #include "FrameFixity.h"
+#include "System/FileSystem.h"
 
 
 Game::Game() : screenSize(1920, 1080)
@@ -38,6 +39,8 @@ void Game::Initialize()
 	//AddFontResourceEx("Ronde-B_square.otf", FR_PRIVATE, nullptr);
 	//DxLib::ChangeFont("ロンド B スクエア", DX_CHARSET_DEFAULT);
 	DxLib::SetFontSize(fontSize);
+
+	fileSystem.reset(new FileSystem());
 }
 
 void Game::Run()
@@ -92,4 +95,9 @@ void Game::Terminate()
 const Vector2& Game::GetScreenSize()const
 {
 	return screenSize;
+}
+
+const std::shared_ptr<FileSystem> Game::GetFileSystem() const
+{
+	return fileSystem;
 }

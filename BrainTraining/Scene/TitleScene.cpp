@@ -5,6 +5,9 @@
 #include "SceneManager.h"
 #include "SelectScene.h"
 
+#include "../System/FileSystem.h"
+#include "../System/ImageLoader.h"
+
 
 void TitleScene::FadeinUpdate(const Peripheral & p)
 {
@@ -45,6 +48,10 @@ TitleScene::TitleScene()
 	updater = &TitleScene::FadeinUpdate;
 
 	ssize = Game::Instance().GetScreenSize();
+
+	ImageData data;
+	Game::Instance().GetFileSystem()->Load("img/img.png", data);
+	img = data.GetHandle();
 }
 
 
@@ -61,4 +68,6 @@ void TitleScene::Draw()
 {
 	DxLib::DrawBox(0, 0, 100, 100, 0xff0000, true);
 	DxLib::DrawString(450, 450, "タイトルシーンだよ", 0xffffff);
+
+	DxLib::DrawGraph(600, 0, img, true);
 }
