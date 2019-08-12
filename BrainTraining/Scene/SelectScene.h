@@ -11,6 +11,9 @@ private:
 	void FadeoutUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
 
+	int _onButton;	// ポインタの乗っているボタン番号
+	int _selectButton;	// ゲーム番号
+
 public:
 	SelectScene();
 	~SelectScene();

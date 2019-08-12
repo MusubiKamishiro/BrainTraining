@@ -31,6 +31,9 @@
     <Filter Include="システム ファイル\ヘッダー ファイル">
       <UniqueIdentifier>{f0bb61bd-91d7-4508-aab4-ec51ea4a3b1c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="各種ゲームシーン">
+      <UniqueIdentifier>{9a402169-22b9-4000-9123-af427acd294d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -81,6 +84,24 @@
     <ClCompile Include="System\SoundLoader.cpp">
       <Filter>システム ファイル\ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Game4.cpp">
+      <Filter>各種ゲームシーン</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Game5.cpp">
+      <Filter>各種ゲームシーン</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Game6.cpp">
+      <Filter>各種ゲームシーン</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Game1.cpp">
+      <Filter>各種ゲームシーン</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Game2.cpp">
+      <Filter>各種ゲームシーン</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Game3.cpp">
+      <Filter>各種ゲームシーン</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FrameFixity.h">
@@ -127,6 +148,24 @@
     </ClInclude>
     <ClInclude Include="System\SoundLoader.h">
       <Filter>システム ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Game3.h">
+      <Filter>各種ゲームシーン</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Game4.h">
+      <Filter>各種ゲームシーン</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Game5.h">
+      <Filter>各種ゲームシーン</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Game6.h">
+      <Filter>各種ゲームシーン</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Game1.h">
+      <Filter>各種ゲームシーン</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Game2.h">
+      <Filter>各種ゲームシーン</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

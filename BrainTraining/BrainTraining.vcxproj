@@ -77,6 +77,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(DXLIB_DIR)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(DXLIB_DIR)</AdditionalLibraryDirectories>
@@ -98,6 +99,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -121,6 +123,12 @@
   <ItemGroup>
     <ClCompile Include="FrameFixity.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Game\Game1.cpp" />
+    <ClCompile Include="Game\Game2.cpp" />
+    <ClCompile Include="Game\Game3.cpp" />
+    <ClCompile Include="Game\Game4.cpp" />
+    <ClCompile Include="Game\Game5.cpp" />
+    <ClCompile Include="Game\Game6.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Peripheral.cpp" />
@@ -139,6 +147,12 @@
   <ItemGroup>
     <ClInclude Include="FrameFixity.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Game\Game1.h" />
+    <ClInclude Include="Game\Game2.h" />
+    <ClInclude Include="Game\Game3.h" />
+    <ClInclude Include="Game\Game4.h" />
+    <ClInclude Include="Game\Game5.h" />
+    <ClInclude Include="Game\Game6.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="Peripheral.h" />
     <ClInclude Include="Scene\GamePlayingScene.h" />
