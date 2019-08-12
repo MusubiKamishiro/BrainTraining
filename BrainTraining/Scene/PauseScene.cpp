@@ -7,7 +7,6 @@
 
 void PauseScene::FadeinUpdate(const Peripheral & p)
 {
-	pal = 255;
 	updater = &PauseScene::WaitUpdate;
 }
 
@@ -26,6 +25,7 @@ void PauseScene::WaitUpdate(const Peripheral & p)
 
 PauseScene::PauseScene()
 {
+	pal = 255;
 	updater = &PauseScene::FadeinUpdate;
 }
 
