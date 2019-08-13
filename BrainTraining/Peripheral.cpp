@@ -38,5 +38,6 @@ void Peripheral::DebugDraw()
 {
 	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
 
+	SetFontSize(24);
 	DxLib::DrawFormatString(0, 0, 0xffffff, "マウスの座標(%d, %d)", mousePos.x, mousePos.y);
 }
