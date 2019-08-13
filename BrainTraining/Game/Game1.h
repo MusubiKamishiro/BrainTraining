@@ -1,5 +1,9 @@
 #pragma once
 #include "../Scene/Scene.h"
+#include <memory>
+#include <vector>
+
+class Button;
 
 ///後出しじゃんけん
 ///LaterRPS
@@ -14,6 +18,11 @@ private:
 	void WaitUpdate(const Peripheral& p);
 
 	int rock, paper, scissors;	// グーちょきぱーの画像ハンドル
+
+	int count = 0;
+	int n = 0;
+
+	std::vector<std::shared_ptr<Button>> buttons;
 
 public:
 	Game1();
