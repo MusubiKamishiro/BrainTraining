@@ -27,6 +27,7 @@ bool Button::Update(const Peripheral& p)
 		flag = false;
 	}
 
+	// ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚é‚Ætrue‚ð•Ô‚·
 	if (flag)
 	{
 		if (p.IsTrigger(MOUSE_INPUT_LEFT))
