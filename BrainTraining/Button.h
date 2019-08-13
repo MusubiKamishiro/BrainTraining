@@ -20,5 +20,8 @@ public:
 
 	// ボタンの描画
 	void Draw();
+
+	// ボタンの矩形を返す
+	Rect GetButtonRect()const;
 };
 

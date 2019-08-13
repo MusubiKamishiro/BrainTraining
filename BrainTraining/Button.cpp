@@ -43,3 +43,8 @@ void Button::Draw()
 {
 	DxLib::DrawBox(rect.Left(), rect.Top(), rect.Right(), rect.Bottom(), 0x0000ff, flag);
 }
+
+Rect Button::GetButtonRect() const
+{
+	return rect;
+}
