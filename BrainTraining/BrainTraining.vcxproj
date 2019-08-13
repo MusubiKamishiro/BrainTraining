@@ -121,6 +121,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="FrameFixity.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Game\Game1.cpp" />
@@ -145,6 +146,7 @@
     <ClCompile Include="System\SoundLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Button.h" />
     <ClInclude Include="FrameFixity.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Game\Game1.h" />

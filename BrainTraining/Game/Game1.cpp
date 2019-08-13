@@ -3,10 +3,14 @@
 #include <DxLib.h>
 
 #include "../Peripheral.h"
+#include "../Game.h"
 
 #include "../Scene/SceneManager.h"
 #include "../Scene/ResultScene.h"
 #include "../Scene/PauseScene.h"
+
+#include "../System/FileSystem.h"
+#include "../System/ImageLoader.h"
 
 
 
@@ -51,6 +55,14 @@ void Game1::WaitUpdate(const Peripheral & p)
 Game1::Game1()
 {
 	updater = &Game1::FadeinUpdate;
+
+	ImageData data;
+	Game::Instance().GetFileSystem()->Load("img/rock.png", data);
+	rock = data.GetHandle();
+	Game::Instance().GetFileSystem()->Load("img/paper.png", data);
+	paper = data.GetHandle();
+	Game::Instance().GetFileSystem()->Load("img/scissors.png", data);
+	scissors = data.GetHandle();
 }
 
 
@@ -65,6 +77,9 @@ void Game1::Update(const Peripheral & p)
 
 void Game1::Draw()
 {
-	DxLib::DrawBox(0, 0, 100, 100, 0x0000ff, true);
-	DxLib::DrawString(450, 450, "ゲームシーン[1]だよ", 0xffffff);
+	DxLib::DrawString(50, 50, "後出しじゃんけんだよ", 0xffffff);
+
+	DxLib::DrawExtendGraph(310, 700, 610, 1000, rock, true);
+	DxLib::DrawExtendGraph(810, 700, 1110, 1000, scissors, true);
+	DxLib::DrawExtendGraph(1310, 700, 1610, 1000, paper, true);
 }
