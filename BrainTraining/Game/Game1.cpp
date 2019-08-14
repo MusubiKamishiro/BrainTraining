@@ -14,8 +14,6 @@
 #include "../System/FileSystem.h"
 #include "../System/ImageLoader.h"
 
-
-
 void Game1::FadeinUpdate(const Peripheral & p)
 {
 	if (pal > 255)
@@ -72,14 +70,12 @@ Game1::Game1()
 	buttons.emplace_back(new Button(Rect(1455, 850, 300, 300)));
 }
 
-
 Game1::~Game1()
 {
 }
 
 void Game1::Update(const Peripheral & p)
 {
-	
 	for (int i = 0; i < buttons.size(); ++i)
 	{
 		if (buttons[i]->Update(p))
@@ -88,19 +84,16 @@ void Game1::Update(const Peripheral & p)
 			n = i;
 		}
 	}
-
 	(this->*updater)(p);
 }
 
 void Game1::Draw()
 {
 	DxLib::DrawString(50, 50, "å„èoÇµÇ∂Ç·ÇÒÇØÇÒÇæÇÊ", 0xffffff);
-
 	for (int i = 0; i < buttons.size(); ++i)
 	{
 		buttons[i]->Draw();
 	}
-
 	DxLib::DrawExtendGraph(310, 700, 610, 1000, rock, true);
 	DxLib::DrawExtendGraph(810, 700, 1110, 1000, scissors, true);
 	DxLib::DrawExtendGraph(1310, 700, 1610, 1000, paper, true);
