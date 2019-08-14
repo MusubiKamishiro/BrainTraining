@@ -1,6 +1,7 @@
 #include "Game1.h"
 
 #include <DxLib.h>
+#include <random>
 
 #include "../Peripheral.h"
 #include "../Game.h"
@@ -63,13 +64,37 @@ void Game1::DescriptionUpdate(const Peripheral & p)
 {
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
-		updater = &Game1::GameUpdate;
+		updater = &Game1::QuestionDisplayUpdate;
 		drawer = &Game1::GameDraw;
 	}
 }
 
-void Game1::GameUpdate(const Peripheral & p)
+void Game1::QuestionDisplayUpdate(const Peripheral & p)
 {
+	for (int i = 0; i < buttons.size(); ++i)
+	{
+		if (buttons[i]->Update(p))
+		{
+			std::random_device seed_gen;
+			std::mt19937 engine(seed_gen());
+
+			qNum = engine() % questionStatements.size();
+			handNum = engine() % questionHands.size();
+
+			displayCount = 60;
+			updater = &Game1::AnswerDisplayUpdate;
+		}
+	}
+
+}
+
+void Game1::AnswerDisplayUpdate(const Peripheral & p)
+{
+	if (displayCount <= 0)
+	{
+		updater = &Game1::QuestionDisplayUpdate;
+	}
+	--displayCount;
 }
 
 void Game1::TitleDraw()
@@ -89,15 +114,18 @@ void Game1::GameDraw()
 	{
 		buttons[i]->Draw();
 	}
-	DxLib::DrawExtendGraph(310, 700, 610, 1000, rock, true);
-	DxLib::DrawExtendGraph(810, 700, 1110, 1000, scissors, true);
-	DxLib::DrawExtendGraph(1310, 700, 1610, 1000, paper, true);
 
 	// ñ‚ëËï∂èÕÇÃï`âÊ
-	DxLib::DrawString(700, 100, "èüÇ¡ÇƒÇ≠ÇæÇ≥Ç¢", 0xffffff);
+	std::string s = questionStatements[qNum];
+	DxLib::DrawFormatString(700, 100, 0xffffff, "%s", s.c_str());
 
 	// ñ‚ëËÇÃéË
-	DxLib::DrawExtendGraph(810, 150, 1110, 450, rock, true);
+	DxLib::DrawExtendGraph(810, 150, 1110, 450, questionHands[handNum], true);
+
+	if (updater == &Game1::AnswerDisplayUpdate)
+	{
+		DxLib::DrawCircle(600, 600, 100, 0x00ff00);
+	}
 }
 
 Game1::Game1()
@@ -113,9 +141,22 @@ Game1::Game1()
 	Game::Instance().GetFileSystem()->Load("img/paper.png", data);
 	paper = data.GetHandle();
 	
-	buttons.emplace_back(new Button(Rect(455, 850, 300, 300)));
-	buttons.emplace_back(new Button(Rect(955, 850, 300, 300)));
-	buttons.emplace_back(new Button(Rect(1455, 850, 300, 300)));
+	buttons.emplace_back(new Button(Rect(455, 850, 300, 300), rock));
+	buttons.emplace_back(new Button(Rect(955, 850, 300, 300), scissors));
+	buttons.emplace_back(new Button(Rect(1455, 850, 300, 300), paper));
+
+	questionHands[0] = rock;
+	questionHands[1] = scissors;
+	questionHands[2] = paper;
+	handNum = 0;
+
+	questionStatements[0] = "èüÇ¡ÇƒÇ≠ÇæÇ≥Ç¢";
+	questionStatements[1] = "ïâÇØÇƒÇ≠ÇæÇ≥Ç¢";
+	questionStatements[2] = "èüÇΩÇ»Ç¢Ç≈Ç≠ÇæÇ≥Ç¢";
+	questionStatements[3] = "ïâÇØÇ»Ç¢Ç≈Ç≠ÇæÇ≥Ç¢";
+	qNum = 0;
+
+	displayCount = 60;
 }
 
 
@@ -125,27 +166,12 @@ Game1::~Game1()
 
 void Game1::Update(const Peripheral & p)
 {
-	for (int i = 0; i < buttons.size(); ++i)
-	{
-		if (buttons[i]->Update(p))
-		{
-			count = 60;
-			n = i;
-		}
-	}
-
 	(this->*updater)(p);
 }
 
 void Game1::Draw()
 {
 	DxLib::DrawString(50, 50, "å„èoÇµÇ∂Ç·ÇÒÇØÇÒÇæÇÊ", 0xffffff);
-
-	if (count)
-	{
-		DxLib::DrawFormatString(100, 100, 0xff0000, "É{É^Éì[%d]ÇâüÇµÇΩÇÊ", n);
-		--count;
-	}
 
 	(this->*drawer)();
 }

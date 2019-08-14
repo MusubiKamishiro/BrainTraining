@@ -2,6 +2,8 @@
 #include "../Scene/Scene.h"
 #include <memory>
 #include <vector>
+#include <map>
+#include <array>
 
 class Button;
 
@@ -17,8 +19,9 @@ private:
 	void FadeoutUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
 
-	void DescriptionUpdate(const Peripheral& p);	// ルール説明
-	void GameUpdate(const Peripheral& p);			// ゲームメイン
+	void DescriptionUpdate(const Peripheral& p);		// ルール説明
+	void QuestionDisplayUpdate(const Peripheral& p);	// 問題表示
+	void AnswerDisplayUpdate(const Peripheral& p);		// 回答表示
 
 	void (Game1::*drawer)();	// ドローの関数ポインタ
 
@@ -28,8 +31,12 @@ private:
 
 	int rock, paper, scissors;	// グーちょきぱーの画像ハンドル
 
-	int count = 0;
-	int n = 0;
+	std::map<int, std::string> questionStatements;	// 問題文
+	std::array<int, 3> questionHands;	// 問題の手
+
+	int qNum;
+	int handNum;
+	int displayCount;
 
 	std::vector<std::shared_ptr<Button>> buttons;
 

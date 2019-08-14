@@ -3,10 +3,11 @@
 #include "Peripheral.h"
 
 
-Button::Button(Rect rect)
+Button::Button(Rect rect, int imgH)
 {
 	this->rect = rect;
 	flag = false;
+	img = imgH;
 }
 
 
@@ -42,6 +43,10 @@ bool Button::Update(const Peripheral& p)
 void Button::Draw()
 {
 	DxLib::DrawBox(rect.Left(), rect.Top(), rect.Right(), rect.Bottom(), 0x0000ff, flag);
+	if (img != -1)
+	{
+		DxLib::DrawExtendGraph(rect.Left(), rect.Top(), rect.Right(), rect.Bottom(), img, true);
+	}
 }
 
 Rect Button::GetButtonRect() const
