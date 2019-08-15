@@ -243,7 +243,7 @@ void Game3::ChangeFlag(const BUTTON & btn)
 
 Game3::Game3() : _timeCnt(180)
 {
-	/// ここも何か追加する予定
+	/// 指示用のテキストを追加している
 	_texts.emplace_back("赤あげて！");
 	_texts.emplace_back("白あげて！");
 	_texts.emplace_back("赤さげて！");
@@ -302,21 +302,21 @@ void Game3::Draw()
 
 	if (_plFlag.first && !_plFlag.second)
 	{
-		DrawGraph(500, 100, _flagImg, true);
+		DrawGraph(500, 0, _flagImg, true);
 	}
 	else if (!_plFlag.first && _plFlag.second)
 	{
-		DrawGraph(500, 100, _flag2Img, true);
+		DrawGraph(500, 0, _flag2Img, true);
 	}
 	else if (_plFlag.first && _plFlag.second)
 	{
-		DrawGraph(500, 100, _flag3Img, true);
+		DrawGraph(500, 0, _flag3Img, true);
 	}
 	else
 	{
-		DrawGraph(500, 100, _flag4Img, true);
+		DrawGraph(500, 0, _flag4Img, true);
 	}
-	DrawExtendString(800, 0, 3.0, 3.0, _texts[_lastNum].c_str(), 0x000000);
+	DrawExtendString(750, 640, 4.0, 4.0, _texts[_lastNum].c_str(), 0x000000);
 
 	for (auto btn : _buttons)
 	{
@@ -326,23 +326,23 @@ void Game3::Draw()
 	/// 赤い旗のボタン
 	if (!_plFlag.first)
 	{
-		DxLib::DrawExtendGraph(310, 700, 610, 1000, _upImg, true);
+		DxLib::DrawExtendGraph(310, 775, 610, 925, _upImg, true);
 	}
 	else
 	{
-		DxLib::DrawExtendGraph(310, 700, 610, 1000, _downImg, true);
+		DxLib::DrawExtendGraph(310, 775, 610, 925, _downImg, true);
 	}
 	DxLib::DrawExtendString(1380, 600, 3.0, 3.0, "白", 0xffffff);
 	/// 白い旗のボタン
 	if (!_plFlag.second)
 	{
-		DxLib::DrawExtendGraph(1310, 700, 1610, 1000, _upImg, true);
+		DxLib::DrawExtendGraph(1310, 775, 1610, 925, _upImg, true);
 	}
 	else
 	{
-		DxLib::DrawExtendGraph(1310, 700, 1610, 1000, _downImg, true);
+		DxLib::DrawExtendGraph(1310, 775, 1610, 925, _downImg, true);
 	}
 
 	/// そのままボタン
-	DxLib::DrawExtendGraph(810, 700, 1110, 1000, _stayImg, true);
+	DxLib::DrawExtendGraph(810, 775, 1110, 925, _stayImg, true);
 }
