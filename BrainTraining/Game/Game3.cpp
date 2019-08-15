@@ -263,10 +263,18 @@ Game3::Game3() : _timeCnt(180)
 	_downImg = data.GetHandle();
 	Game::Instance().GetFileSystem()->Load("img/stay.png", data);
 	_stayImg = data.GetHandle();
+	Game::Instance().GetFileSystem()->Load("img/flag.png", data);
+	_flagImg = data.GetHandle();
+	Game::Instance().GetFileSystem()->Load("img/flag2.png", data);
+	_flag2Img = data.GetHandle();
+	Game::Instance().GetFileSystem()->Load("img/flag3.png", data);
+	_flag3Img = data.GetHandle();
+	Game::Instance().GetFileSystem()->Load("img/flag4.png", data);
+	_flag4Img = data.GetHandle();
 
-	_buttons.emplace_back(new Button(Rect(455, 850, 300, 300)));
-	_buttons.emplace_back(new Button(Rect(955, 850, 300, 300)));
-	_buttons.emplace_back(new Button(Rect(1455, 850, 300, 300)));
+	_buttons.emplace_back(new Button(Rect(455, 850, 300, 150)));
+	_buttons.emplace_back(new Button(Rect(955, 850, 300, 150)));
+	_buttons.emplace_back(new Button(Rect(1455, 850, 300, 150)));
 
 	_correctSE = LoadSoundMem("SE/correct1.mp3");
 	_missSE	   = LoadSoundMem("SE/incorrect1.mp3");
@@ -289,31 +297,27 @@ void Game3::Update(const Peripheral & p)
 
 void Game3::Draw()
 {
-	DxLib::DrawBox(0, 0, 1920, 1080, 0x555555, true);
+	DxLib::DrawBox(0, 0, 1920, 1080, 0xdddddd, true);
 	DxLib::DrawBox(0, 0, 100, 100, 0x0000ff, true);
 
-	/// debug—p‚Ì•`‰æ
-	if (_plFlag.first)
+	if (_plFlag.first && !_plFlag.second)
 	{
-		DrawCircle(800, 150, 70, 0xff0000, true);
+		DrawGraph(500, 100, _flagImg, true);
+	}
+	else if (!_plFlag.first && _plFlag.second)
+	{
+		DrawGraph(500, 100, _flag2Img, true);
+	}
+	else if (_plFlag.first && _plFlag.second)
+	{
+		DrawGraph(500, 100, _flag3Img, true);
 	}
 	else
 	{
-		DrawCircle(800, 230, 70, 0xff0000, true);
+		DrawGraph(500, 100, _flag4Img, true);
 	}
+	DrawExtendString(800, 0, 3.0, 3.0, _texts[_lastNum].c_str(), 0x000000);
 
-	if (_plFlag.second)
-	{
-		DrawCircle(1100, 150, 70, 0xffffff, true);
-	}
-	else
-	{
-		DrawCircle(1100, 230, 70, 0xffffff, true);
-	}
-	DrawExtendString(600, 500, 3.0, 3.0, _texts[_lastNum].c_str(), 0xffffff);
-
-
-	
 	for (auto btn : _buttons)
 	{
 		btn->Draw();
@@ -339,8 +343,6 @@ void Game3::Draw()
 		DxLib::DrawExtendGraph(1310, 700, 1610, 1000, _downImg, true);
 	}
 
-
-	
 	/// ‚»‚Ì‚Ü‚Üƒ{ƒ^ƒ“
 	DxLib::DrawExtendGraph(810, 700, 1110, 1000, _stayImg, true);
 }

@@ -47,7 +47,7 @@ private:
 	int _startCnt;
 
 	// Šø—g‚°¹Þ°Ñ‚Ì‰æ‘œÊÝÄÞÙ
-	int _upImg, _downImg, _stayImg;
+	int _upImg, _downImg, _stayImg, _flagImg, _flag2Img, _flag3Img, _flag4Img;
 	int _correctSE, _missSE;
 
 
