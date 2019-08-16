@@ -24,6 +24,7 @@ void Game::Initialize()
 	//DxLib::ChangeWindowMode(true);	// フルスクリーンではない
 	
 	DxLib::SetGraphMode(screenSize.x, screenSize.y, 32);
+	DxLib::ChangeWindowMode(true);
 
 	if (DxLib::DxLib_Init() == -1)
 	{
