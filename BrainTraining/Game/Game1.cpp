@@ -293,7 +293,6 @@ Game1::Game1()
 	result = false;
 }
 
-
 Game1::~Game1()
 {
 }
@@ -306,6 +305,5 @@ void Game1::Update(const Peripheral & p)
 void Game1::Draw()
 {
 	DxLib::DrawString(50, 50, "Œão‚µ‚¶‚á‚ñ‚¯‚ñ‚¾‚æ", 0xffffff);
-
 	(this->*drawer)();
 }
