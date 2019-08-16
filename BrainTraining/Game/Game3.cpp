@@ -297,32 +297,34 @@ void Game3::Update(const Peripheral & p)
 
 void Game3::Draw()
 {
-	DxLib::DrawBox(0, 0, 1920, 1080, 0xdddddd, true);
+	auto size = Game::Instance().GetScreenSize();
+
+	DxLib::DrawBox(0, 0, size.x, size.y, 0xdddddd, true);
 	DxLib::DrawBox(0, 0, 100, 100, 0x0000ff, true);
 
 	if (_plFlag.first && !_plFlag.second)
 	{
-		DrawGraph(500, 0, _flagImg, true);
+		DrawGraph(size.x / 4, 0, _flagImg, true);
 	}
 	else if (!_plFlag.first && _plFlag.second)
 	{
-		DrawGraph(500, 0, _flag2Img, true);
+		DrawGraph(size.x / 4, 0, _flag2Img, true);
 	}
 	else if (_plFlag.first && _plFlag.second)
 	{
-		DrawGraph(500, 0, _flag3Img, true);
+		DrawGraph(size.x / 4, 0, _flag3Img, true);
 	}
 	else
 	{
-		DrawGraph(500, 0, _flag4Img, true);
+		DrawGraph(size.x / 4, 0, _flag4Img, true);
 	}
-	DrawExtendString(750, 640, 4.0, 4.0, _texts[_lastNum].c_str(), 0x000000);
+	DrawExtendString(size.x / 3, size.y / 5 * 3, 4.0, 4.0, _texts[_lastNum].c_str(), 0x000000);
 
 	for (auto btn : _buttons)
 	{
 		btn->Draw();
 	}
-	DxLib::DrawExtendString(380, 600, 3.0, 3.0, "赤", 0xff0000);
+	DxLib::DrawExtendString(size.x / 6, size.y / 5 * 3, 3.0, 3.0, "赤", 0xff0000);
 	/// 赤い旗のボタン
 	if (!_plFlag.first)
 	{
@@ -332,7 +334,7 @@ void Game3::Draw()
 	{
 		DxLib::DrawExtendGraph(310, 775, 610, 925, _downImg, true);
 	}
-	DxLib::DrawExtendString(1380, 600, 3.0, 3.0, "白", 0xffffff);
+	DxLib::DrawExtendString(size.x / 7 * 5, size.y / 5 * 3, 3.0, 3.0, "白", 0xffffff);
 	/// 白い旗のボタン
 	if (!_plFlag.second)
 	{
