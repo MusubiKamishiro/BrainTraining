@@ -25,13 +25,13 @@ class Game3 :
 	public Scene
 {
 private:
-	void (Game3::*updater)(const Peripheral& p);
+	void (Game3::*_updater)(const Peripheral& p);
 
 	void FadeinUpdate(const Peripheral& p);
 	void FadeoutUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
 	void StartUpdate(const Peripheral& p);
-	void JudgeUpdate(const Peripheral& p);
+	void GameUpdate(const Peripheral& p);
 
 	bool ChangeJudgeFlag(const int& num);
 	void ChangeFlag(const BUTTON& btn);
@@ -42,13 +42,16 @@ private:
 	// first : Ô, second : ”’
 	std::pair<bool, bool> _plFlag;
 
-	bool _isJudge;
-	int _lastNum;
+	bool _isJudge;			/// true : ”»’èI—¹, false : ”»’è’†
+	int _lastNum;			/// ÅŒã‚É‹‚ß‚½—”‚Ì’l
+	int _startCnt;
+
 	// Šø—g‚°¹Ş°Ñ‚Ì‰æ‘œÊİÄŞÙ
-	int _upImg, _downImg, _stayImg;
+	int _upImg, _downImg, _stayImg, _flagImg, _flag2Img, _flag3Img, _flag4Img;
+	int _correctSE, _missSE;
+
 
 	/// debug—p
-	int cnt = 0;
 	int debug = 0;
 	int n = 0;
 

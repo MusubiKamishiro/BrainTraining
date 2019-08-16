@@ -100,7 +100,7 @@ void Game3::StartUpdate(const Peripheral & p)
 		{
 			ChangeFlag((BUTTON)cnt);
 			_isJudge = false;
-			
+
 			if (_judgeFlag != _plFlag)
 			{
 				PlaySoundMem(_missSE, DX_PLAYTYPE_BACK);
@@ -180,7 +180,7 @@ bool Game3::ChangeJudgeFlag(const int & num)
 			_judgeFlag.second = true;
 			return true;
 		}
-		else{}
+		else {}
 	}
 	else if (num / 2 == static_cast<int>(JFLAG::DOWN))
 	{
@@ -194,7 +194,7 @@ bool Game3::ChangeJudgeFlag(const int & num)
 			_judgeFlag.second = false;
 			return true;
 		}
-		else{}
+		else {}
 	}
 	else if (num / 2 == static_cast<int>(JFLAG::STAYUP))
 	{
@@ -206,7 +206,7 @@ bool Game3::ChangeJudgeFlag(const int & num)
 		{
 			_judgeFlag.second = true;
 		}
-		else{}
+		else {}
 		return true;
 	}
 	else if (num / 2 == static_cast<int>(JFLAG::STAYDOWN))
@@ -223,7 +223,7 @@ bool Game3::ChangeJudgeFlag(const int & num)
 		else {}
 		return true;
 	}
-	else{}
+	else {}
 	return false;
 }
 
@@ -252,7 +252,7 @@ Game3::Game3() : _timeCnt(180)
 	_texts.emplace_back("白さげないて！");
 	_texts.emplace_back("赤あげないて！");
 	_texts.emplace_back("白あげないて！");
-	
+
 	_judgeFlag = _plFlag = { false, false };
 
 	/// ﾎﾞﾀﾝの設定
@@ -277,7 +277,7 @@ Game3::Game3() : _timeCnt(180)
 	_buttons.emplace_back(new Button(Rect(1455, 850, 300, 150)));
 
 	_correctSE = LoadSoundMem("SE/correct1.mp3");
-	_missSE	   = LoadSoundMem("SE/incorrect1.mp3");
+	_missSE = LoadSoundMem("SE/incorrect1.mp3");
 
 	_isJudge = false;
 	_startCnt = 2;
@@ -291,40 +291,38 @@ Game3::~Game3()
 
 void Game3::Update(const Peripheral & p)
 {
-	
+
 	(this->*_updater)(p);
 }
 
 void Game3::Draw()
 {
-	auto size = Game::Instance().GetScreenSize();
-
-	DxLib::DrawBox(0, 0, size.x, size.y, 0xdddddd, true);
+	DxLib::DrawBox(0, 0, 1920, 1080, 0xdddddd, true);
 	DxLib::DrawBox(0, 0, 100, 100, 0x0000ff, true);
 
 	if (_plFlag.first && !_plFlag.second)
 	{
-		DrawGraph(size.x / 4, 0, _flagImg, true);
+		DrawGraph(500, 0, _flagImg, true);
 	}
 	else if (!_plFlag.first && _plFlag.second)
 	{
-		DrawGraph(size.x / 4, 0, _flag2Img, true);
+		DrawGraph(500, 0, _flag2Img, true);
 	}
 	else if (_plFlag.first && _plFlag.second)
 	{
-		DrawGraph(size.x / 4, 0, _flag3Img, true);
+		DrawGraph(500, 0, _flag3Img, true);
 	}
 	else
 	{
-		DrawGraph(size.x / 4, 0, _flag4Img, true);
+		DrawGraph(500, 0, _flag4Img, true);
 	}
-	DrawExtendString(size.x / 3, size.y / 5 * 3, 4.0, 4.0, _texts[_lastNum].c_str(), 0x000000);
+	DrawExtendString(750, 640, 4.0, 4.0, _texts[_lastNum].c_str(), 0x000000);
 
 	for (auto btn : _buttons)
 	{
 		btn->Draw();
 	}
-	DxLib::DrawExtendString(size.x / 6, size.y / 5 * 3, 3.0, 3.0, "赤", 0xff0000);
+	DxLib::DrawExtendString(380, 600, 3.0, 3.0, "赤", 0xff0000);
 	/// 赤い旗のボタン
 	if (!_plFlag.first)
 	{
@@ -334,7 +332,7 @@ void Game3::Draw()
 	{
 		DxLib::DrawExtendGraph(310, 775, 610, 925, _downImg, true);
 	}
-	DxLib::DrawExtendString(size.x / 7 * 5, size.y / 5 * 3, 3.0, 3.0, "白", 0xffffff);
+	DxLib::DrawExtendString(1380, 600, 3.0, 3.0, "白", 0xffffff);
 	/// 白い旗のボタン
 	if (!_plFlag.second)
 	{
