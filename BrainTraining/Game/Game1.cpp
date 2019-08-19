@@ -39,7 +39,7 @@ void Game1::FadeoutUpdate(const Peripheral & p)
 {
 	if (pal <= 0)
 	{
-		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>());
+		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>(qMax, trueNum));
 	}
 	else
 	{
@@ -193,6 +193,11 @@ void Game1::AnswerCheckUpdate(const Peripheral & p)
 		}
 	}
 
+	if (result)
+	{
+		++trueNum;
+	}
+
 	updater = &Game1::AnswerDisplayUpdate;
 }
 
@@ -291,6 +296,7 @@ Game1::Game1()
 	nowQNum = 1;
 
 	result = false;
+	trueNum = 0;
 }
 
 Game1::~Game1()

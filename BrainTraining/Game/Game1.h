@@ -60,6 +60,7 @@ private:
 
 	int displayCount;	// •\¦ŠÔ
 	bool result;		// Œ‹‰Ê
+	int trueNum;		// ³‰ğ”
 
 	std::vector<std::shared_ptr<Button>> buttons;
 
