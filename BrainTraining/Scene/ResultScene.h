@@ -10,8 +10,11 @@ private:
 	void FadeoutUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
 
+	int _questions;
+	int _correct;
+
 public:
-	ResultScene();
+	ResultScene(int questions = 0, int correct = 0);
 	~ResultScene();
 
 	void Update(const Peripheral& p);

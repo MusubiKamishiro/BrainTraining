@@ -30,7 +30,7 @@ void Game2::FadeoutUpdate(const Peripheral & p)
 {
 	if (pal <= 0)
 	{
-		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>());
+		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>(MAX_QUESTIONS, _correctNum));
 	}
 	else
 	{
@@ -64,6 +64,7 @@ void Game2::WaitUpdate(const Peripheral & p)
 			{
 				ChangeVolumeSoundMem(200, _SE_correct);
 				PlaySoundMem(_SE_correct, DX_PLAYTYPE_BACK);
+				++_correctNum;
 			}
 			else
 			{
@@ -78,6 +79,7 @@ void Game2::WaitUpdate(const Peripheral & p)
 			{
 				ChangeVolumeSoundMem(200, _SE_correct);
 				PlaySoundMem(_SE_correct, DX_PLAYTYPE_BACK);
+				++_correctNum;
 			}
 			else
 			{
@@ -191,6 +193,7 @@ Game2::Game2()
 	_right = 0;
 	_left = 0;
 	_questions = 1;
+	_correctNum = 0;
 
 	_SE_question = LoadSoundMem("SE/question1.mp3");
 	_SE_correct = LoadSoundMem("SE/correct1.mp3");

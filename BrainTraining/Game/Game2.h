@@ -8,7 +8,8 @@ private:
 	int _right;	// 右の値
 	int _left;	// 左の値
 
-	int _questions;	// 問題番号
+	int _questions;		// 問題番号
+	int _correctNum;	// 正解数
 
 	int _SE_question;	// 出題SE
 	int _SE_correct;	// 正解SE

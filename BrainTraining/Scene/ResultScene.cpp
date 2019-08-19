@@ -41,8 +41,11 @@ void ResultScene::WaitUpdate(const Peripheral & p)
 	}
 }
 
-ResultScene::ResultScene()
+ResultScene::ResultScene(int questions, int correct)
 {
+	_questions = questions;
+	_correct = correct;
+
 	updater = &ResultScene::FadeinUpdate;
 }
 
@@ -60,4 +63,6 @@ void ResultScene::Draw()
 {
 	DxLib::DrawBox(0, 0, 100, 100, 0xff00ff, true);
 	DxLib::DrawString(450, 450, "リザルトシーンだよ", 0xffffff);
+
+	DrawFormatString(450, 500, 0xffffff, "%d / %d", _correct, _questions);
 }
