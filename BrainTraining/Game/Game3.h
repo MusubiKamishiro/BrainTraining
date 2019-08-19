@@ -44,16 +44,13 @@ private:
 
 	bool _isJudge;			/// true : 判定終了, false : 判定中
 	int _lastNum;			/// 最後に求めた乱数の値
-	int _startCnt;
+	int _btnNum;			/// ﾎﾞﾀﾝの位置
+	int _questions;
+
 
 	// 旗揚げｹﾞｰﾑの画像ﾊﾝﾄﾞﾙ
 	int _upImg, _downImg, _stayImg, _flagImg, _flag2Img, _flag3Img, _flag4Img;
 	int _correctSE, _missSE;
-
-
-	/// debug用
-	int debug = 0;
-	int n = 0;
 
 	const int _timeCnt;
 

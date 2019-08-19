@@ -41,28 +41,34 @@ void Game3::FadeoutUpdate(const Peripheral & p)
 
 void Game3::WaitUpdate(const Peripheral & p)
 {
-	if (_judgeFlag == _plFlag)
+	if (!CheckSoundMem(_correctSE) || !CheckSoundMem(_missSE))
 	{
-		if (!CheckSoundMem(_correctSE))
+		if (_judgeFlag == _plFlag)
 		{
-			if (_startCnt <= 0)
-			{
-				_updater = &Game3::GameUpdate;
-			}
-			else
-			{
-				--_startCnt;
-				_updater = &Game3::StartUpdate;
-			}
+			/// ³‰ð
 		}
-	}
-	else
-	{
-		if (!CheckSoundMem(_missSE))
+		else
+		{
+			ChangeFlag((BUTTON)_btnNum);
+		}
+
+		if (_questions >= 2)
+		{
+			++_questions;
+			_updater = &Game3::GameUpdate;
+		}
+		else
+		{
+			++_questions;
+			_updater = &Game3::StartUpdate;
+		}
+
+		if (_questions >= 20)
 		{
 			_updater = &Game3::FadeoutUpdate;
 		}
 	}
+
 }
 
 void Game3::StartUpdate(const Peripheral & p)
@@ -98,6 +104,7 @@ void Game3::StartUpdate(const Peripheral & p)
 		auto cnt = btn - _buttons.begin();
 		if ((*btn)->Update(p))
 		{
+			_btnNum = cnt;
 			ChangeFlag((BUTTON)cnt);
 			_isJudge = false;
 
@@ -110,6 +117,7 @@ void Game3::StartUpdate(const Peripheral & p)
 				PlaySoundMem(_correctSE, DX_PLAYTYPE_BACK);
 			}
 			_updater = &Game3::WaitUpdate;
+			break;
 		}
 	}
 }
@@ -211,7 +219,6 @@ bool Game3::ChangeJudgeFlag(const int & num)
 	}
 	else if (num / 2 == static_cast<int>(JFLAG::STAYDOWN))
 	{
-
 		if (num % 2 == 0 && _judgeFlag.first)
 		{
 			_judgeFlag.first = false;
@@ -280,7 +287,7 @@ Game3::Game3() : _timeCnt(180)
 	_missSE = LoadSoundMem("SE/incorrect1.mp3");
 
 	_isJudge = false;
-	_startCnt = 2;
+	_questions = 0;
 
 	_updater = &Game3::FadeinUpdate;
 }
@@ -291,7 +298,6 @@ Game3::~Game3()
 
 void Game3::Update(const Peripheral & p)
 {
-
 	(this->*_updater)(p);
 }
 
