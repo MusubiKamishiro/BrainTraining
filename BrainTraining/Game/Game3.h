@@ -46,6 +46,7 @@ private:
 	int _lastNum;			/// ÅŒã‚É‹‚ß‚½—”‚Ì’l
 	int _btnNum;			/// ÎŞÀİ‚ÌˆÊ’u
 	int _questions;
+	int _corrects;			/// ³‰ğ”
 
 
 	// Šø—g‚°¹Ş°Ñ‚Ì‰æ‘œÊİÄŞÙ

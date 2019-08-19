@@ -31,7 +31,7 @@ void Game3::FadeoutUpdate(const Peripheral & p)
 {
 	if (pal <= 0)
 	{
-		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>());
+		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>(_questions, _corrects));
 	}
 	else
 	{
@@ -46,6 +46,7 @@ void Game3::WaitUpdate(const Peripheral & p)
 		if (_judgeFlag == _plFlag)
 		{
 			/// 正解
+			++_corrects;
 		}
 		else
 		{
@@ -279,15 +280,16 @@ Game3::Game3() : _timeCnt(180)
 	Game::Instance().GetFileSystem()->Load("img/flag4.png", data);
 	_flag4Img = data.GetHandle();
 
-	_buttons.emplace_back(new Button(Rect(455, 850, 300, 150)));
-	_buttons.emplace_back(new Button(Rect(955, 850, 300, 150)));
-	_buttons.emplace_back(new Button(Rect(1455, 850, 300, 150)));
+	auto size = Game::Instance().GetScreenSize();
+	_buttons.emplace_back(new Button(Rect(size.x / 7 + 150, size.y / 4 * 3 + 75, 300, 150)));
+	_buttons.emplace_back(new Button(Rect(size.x / 5 * 2 + 150, size.y / 4 * 3 + 75, 300, 150)));
+	_buttons.emplace_back(new Button(Rect(size.x / 3 * 2 + 150, size.y / 4 * 3 + 75, 300, 150)));
 
 	_correctSE = LoadSoundMem("SE/correct1.mp3");
 	_missSE = LoadSoundMem("SE/incorrect1.mp3");
 
 	_isJudge = false;
-	_questions = 0;
+	_questions = _corrects = 0;
 
 	_updater = &Game3::FadeinUpdate;
 }
@@ -303,52 +305,52 @@ void Game3::Update(const Peripheral & p)
 
 void Game3::Draw()
 {
-	DxLib::DrawBox(0, 0, 1920, 1080, 0xdddddd, true);
-	DxLib::DrawBox(0, 0, 100, 100, 0x0000ff, true);
+	auto size = Game::Instance().GetScreenSize();
+
+	DxLib::DrawBox(0, 0, size.x, size.y, 0xdddddd, true);
 
 	if (_plFlag.first && !_plFlag.second)
 	{
-		DrawGraph(500, 0, _flagImg, true);
+		DrawGraph(size.x / 4, 0, _flagImg, true);
 	}
 	else if (!_plFlag.first && _plFlag.second)
 	{
-		DrawGraph(500, 0, _flag2Img, true);
+		DrawGraph(size.x / 4, 0, _flag2Img, true);
 	}
 	else if (_plFlag.first && _plFlag.second)
 	{
-		DrawGraph(500, 0, _flag3Img, true);
+		DrawGraph(size.x / 4, 0, _flag3Img, true);
 	}
 	else
 	{
-		DrawGraph(500, 0, _flag4Img, true);
+		DrawGraph(size.x / 4, 0, _flag4Img, true);
 	}
-	DrawExtendString(750, 640, 4.0, 4.0, _texts[_lastNum].c_str(), 0x000000);
+	DrawExtendString(size.x / 5 * 2, size.y / 5 * 3, 4.0, 4.0, _texts[_lastNum].c_str(), 0x000000);
 
 	for (auto btn : _buttons)
 	{
 		btn->Draw();
 	}
-	DxLib::DrawExtendString(380, 600, 3.0, 3.0, "赤", 0xff0000);
+	DxLib::DrawExtendString(size.x / 6, size.y / 3 * 2, 3.0, 3.0, "赤", 0xff0000);
 	/// 赤い旗のボタン
 	if (!_plFlag.first)
 	{
-		DxLib::DrawExtendGraph(310, 775, 610, 925, _upImg, true);
+		DxLib::DrawExtendGraph(size.x / 7, size.y / 4 * 3, size.x / 7 + 300, size.y / 4 * 3 + 150, _upImg, true);
 	}
 	else
 	{
-		DxLib::DrawExtendGraph(310, 775, 610, 925, _downImg, true);
+		DxLib::DrawExtendGraph(size.x / 7, size.y / 4 * 3, size.x / 7 + 300, size.y / 4 * 3 + 150, _upImg, true);
 	}
-	DxLib::DrawExtendString(1380, 600, 3.0, 3.0, "白", 0xffffff);
+	DxLib::DrawExtendString(size.x / 4 * 3, size.y / 3 * 2, 3.0, 3.0, "白", 0xffffff);
 	/// 白い旗のボタン
 	if (!_plFlag.second)
 	{
-		DxLib::DrawExtendGraph(1310, 775, 1610, 925, _upImg, true);
+		DxLib::DrawExtendGraph((size.x / 3 * 2), (size.y / 4 * 3), (size.x / 3 * 2 + 300), (size.y / 4 * 3 + 150), _upImg, true);
 	}
 	else
 	{
-		DxLib::DrawExtendGraph(1310, 775, 1610, 925, _downImg, true);
+		DxLib::DrawExtendGraph((size.x / 3 * 2), (size.y / 4 * 3), (size.x / 3 * 2 + 300), (size.y / 4 * 3 + 150), _downImg, true);
 	}
-
 	/// そのままボタン
-	DxLib::DrawExtendGraph(810, 775, 1110, 925, _stayImg, true);
+	DxLib::DrawExtendGraph((size.x / 5 * 2), (size.y / 4 * 3), (size.x / 5 * 2 + 300), (size.y / 4 * 3 + 150), _stayImg, true);
 }
