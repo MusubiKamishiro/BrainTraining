@@ -62,7 +62,7 @@ void Game3::WaitUpdate(const Peripheral & p)
 		else
 		{
 			++_questions;
-			_updater = &Game3::StartUpdate;
+			_updater = &Game3::FirstUpdate;
 		}
 
 		if (_questions >= 20)
@@ -74,6 +74,15 @@ void Game3::WaitUpdate(const Peripheral & p)
 }
 
 void Game3::StartUpdate(const Peripheral & p)
+{
+	if (p.IsTrigger(MOUSE_INPUT_LEFT))
+	{
+		_updater = &Game3::FirstUpdate;
+		_drawer = &Game3::GameDraw;
+	}
+}
+
+void Game3::FirstUpdate(const Peripheral & p)
 {
 	if (p.IsTrigger(MOUSE_INPUT_RIGHT))
 	{
@@ -150,6 +159,7 @@ void Game3::GameUpdate(const Peripheral & p)
 		auto flag = ChangeJudgeFlag(_lastNum);
 		while (!flag)
 		{
+			/// 前と同じ乱数の結果が出たとき、もう一度乱数を求めている
 			_lastNum = GetRandom(0, _texts.size() - 1, _lastNum);
 			flag = ChangeJudgeFlag(_lastNum);
 		}
@@ -163,6 +173,7 @@ void Game3::GameUpdate(const Peripheral & p)
 		{
 			ChangeFlag((BUTTON)cnt);
 			_isJudge = false;
+			/// 旗の判定
 			if (_judgeFlag != _plFlag)
 			{
 				PlaySoundMem(_missSE, DX_PLAYTYPE_BACK);
@@ -293,6 +304,7 @@ Game3::Game3() : _timeCnt(180)
 	_questions = _corrects = 0;
 
 	_updater = &Game3::FadeinUpdate;
+	_drawer = &Game3::StartDraw;
 }
 
 Game3::~Game3()
@@ -306,43 +318,69 @@ void Game3::Update(const Peripheral & p)
 
 void Game3::Draw()
 {
+	(this->*_drawer)();
+}
+
+void Game3::StartDraw()
+{
+	auto size = Game::Instance().GetScreenSize();
+
+	DxLib::DrawBox(0, 0, size.x, size.y, 0xffffff, true);
+
+	int strWidth, strHeight;
+	strWidth = strHeight = 0;
+
+	SetFontSize(250);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, "旗揚げゲーム", strlen("旗揚げゲーム"));
+	DrawString(size.x / 2 - strWidth / 2, size.y / 2 - strHeight / 2, "旗揚げゲーム", 0x000000);
+
+}
+
+void Game3::GameDraw()
+{
 	auto size = Game::Instance().GetScreenSize();
 
 	DxLib::DrawBox(0, 0, size.x, size.y, 0xdddddd, true);
 
+	int strWidth, strHeight;
+	strWidth = strHeight = 0;
+
+	SetFontSize(120);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, _texts[_lastNum].c_str(), strlen(_texts[_lastNum].c_str()));
+	DrawString((size.x / 2 - strWidth / 2), (size.y / 13 * 9 - strHeight / 2), _texts[_lastNum].c_str(), 0x000000);
+
 	if (_plFlag.first && !_plFlag.second)
 	{
-		DrawGraph(size.x / 4, 0, _flagImg, true);
+		DrawGraph((size.x / 4), 0, _flagImg, true);
 	}
 	else if (!_plFlag.first && _plFlag.second)
 	{
-		DrawGraph(size.x / 4, 0, _flag2Img, true);
+		DrawGraph((size.x / 4), 0, _flag2Img, true);
 	}
 	else if (_plFlag.first && _plFlag.second)
 	{
-		DrawGraph(size.x / 4, 0, _flag3Img, true);
+		DrawGraph((size.x / 4), 0, _flag3Img, true);
 	}
 	else
 	{
-		DrawGraph(size.x / 4, 0, _flag4Img, true);
+		DrawGraph((size.x / 4), 0, _flag4Img, true);
 	}
-	DrawExtendString(size.x / 5 * 2, size.y / 5 * 3, 4.0, 4.0, _texts[_lastNum].c_str(), 0x000000);
 
 	for (auto btn : _buttons)
 	{
 		btn->Draw();
 	}
-	DxLib::DrawExtendString(size.x / 6, size.y / 3 * 2, 3.0, 3.0, "赤", 0xff0000);
+	DxLib::DrawString((size.x / 6), (size.y / 13 * 9 - strHeight / 2), "赤", 0xff0000);
 	/// 赤い旗のボタン
 	if (!_plFlag.first)
 	{
-		DxLib::DrawExtendGraph(size.x / 7, size.y / 4 * 3, size.x / 7 + 300, size.y / 4 * 3 + 150, _upImg, true);
+		DxLib::DrawExtendGraph((size.x / 7), (size.y / 4 * 3), (size.x / 7 + 300), (size.y / 4 * 3 + 150), _upImg, true);
 	}
 	else
 	{
-		DxLib::DrawExtendGraph(size.x / 7, size.y / 4 * 3, size.x / 7 + 300, size.y / 4 * 3 + 150, _downImg, true);
+		DxLib::DrawExtendGraph((size.x / 7), (size.y / 4 * 3), (size.x / 7 + 300), (size.y / 4 * 3 + 150), _downImg, true);
 	}
-	DxLib::DrawExtendString(size.x / 4 * 3, size.y / 3 * 2, 3.0, 3.0, "白", 0xffffff);
+	DxLib::DrawString(size.x / 4 * 3, size.y / 13 * 9 - strHeight / 2, "白", 0xffffff);
 	/// 白い旗のボタン
 	if (!_plFlag.second)
 	{

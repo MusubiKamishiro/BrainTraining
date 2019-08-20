@@ -26,12 +26,17 @@ class Game3 :
 {
 private:
 	void (Game3::*_updater)(const Peripheral& p);
+	void (Game3::*_drawer)();
 
 	void FadeinUpdate(const Peripheral& p);
 	void FadeoutUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
 	void StartUpdate(const Peripheral& p);
+	void FirstUpdate(const Peripheral& p);
 	void GameUpdate(const Peripheral& p);
+
+	void StartDraw();
+	void GameDraw();
 
 	bool ChangeJudgeFlag(const int& num);
 	void ChangeFlag(const BUTTON& btn);
@@ -62,5 +67,6 @@ public:
 
 	void Update(const Peripheral& p);
 	void Draw();
+
 };
 
