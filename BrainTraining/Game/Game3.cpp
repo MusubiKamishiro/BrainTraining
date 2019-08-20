@@ -50,7 +50,8 @@ void Game3::WaitUpdate(const Peripheral & p)
 		}
 		else
 		{
-			ChangeFlag((BUTTON)_btnNum);
+			_plFlag = _judgeFlag;
+			
 		}
 
 		if (_questions >= 2)
@@ -105,7 +106,6 @@ void Game3::StartUpdate(const Peripheral & p)
 		auto cnt = btn - _buttons.begin();
 		if ((*btn)->Update(p))
 		{
-			_btnNum = cnt;
 			ChangeFlag((BUTTON)cnt);
 			_isJudge = false;
 
@@ -130,6 +130,7 @@ void Game3::GameUpdate(const Peripheral & p)
 		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
 	}
 
+	// —”‚ğo‚·‚½‚ß‚Ì×ÑÀŞ®
 	auto GetRandom = [](const int& min, const int& max, const int& lastNum)
 	{
 		int num = min + (int)(rand() * (max - min + 1.0) / (1.0 + RAND_MAX));
@@ -286,7 +287,7 @@ Game3::Game3() : _timeCnt(180)
 	_buttons.emplace_back(new Button(Rect(size.x / 3 * 2 + 150, size.y / 4 * 3 + 75, 300, 150)));
 
 	_correctSE = LoadSoundMem("SE/correct1.mp3");
-	_missSE = LoadSoundMem("SE/incorrect1.mp3");
+	_missSE	= LoadSoundMem("SE/incorrect1.mp3");
 
 	_isJudge = false;
 	_questions = _corrects = 0;
@@ -339,7 +340,7 @@ void Game3::Draw()
 	}
 	else
 	{
-		DxLib::DrawExtendGraph(size.x / 7, size.y / 4 * 3, size.x / 7 + 300, size.y / 4 * 3 + 150, _upImg, true);
+		DxLib::DrawExtendGraph(size.x / 7, size.y / 4 * 3, size.x / 7 + 300, size.y / 4 * 3 + 150, _downImg, true);
 	}
 	DxLib::DrawExtendString(size.x / 4 * 3, size.y / 3 * 2, 3.0, 3.0, "”’", 0xffffff);
 	/// ”’‚¢Šø‚Ìƒ{ƒ^ƒ“

@@ -44,7 +44,6 @@ private:
 
 	bool _isJudge;			/// true : ”»’èI—¹, false : ”»’è’†
 	int _lastNum;			/// ÅŒã‚É‹‚ß‚½—”‚Ì’l
-	int _btnNum;			/// ÎŞÀİ‚ÌˆÊ’u
 	int _questions;
 	int _corrects;			/// ³‰ğ”
 
