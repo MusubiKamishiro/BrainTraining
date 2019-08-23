@@ -7,6 +7,7 @@
 
 class Button;
 
+// 手の形
 enum class Hand
 {
 	ROCK,		// グー
@@ -15,12 +16,22 @@ enum class Hand
 	MAX
 };
 
+// 問題
 enum class Question
 {
 	WIN,		// 勝ってください
 	LOSE,		// 負けてください
 	DONOTWIN,	// 勝たないでください
 	DONOTLOSE,	// 負けないでください
+	MAX
+};
+
+// じゃんけんの結果
+enum class Result
+{
+	WIN,
+	DRAW,
+	LOSE,
 	MAX
 };
 
@@ -47,7 +58,10 @@ private:
 	void DescriptionDraw();		// ルール説明描画
 	void GameDraw();			// ゲームメイン描画
 
+	Result JudgeResult(int& qNum, Hand& myHand);	// じゃんけん結果の確認
+
 	int rock, paper, scissors;	// グーちょきぱーの画像ハンドル
+	int trueSE, falseSE;		// 正解,不正解の時の効果音
 
 	std::map<int, std::string> questionStatements;	// 問題文
 	std::array<int, static_cast<int>(Hand::MAX)> questionHands;	// 問題の手

@@ -14,6 +14,7 @@
 
 #include "../System/FileSystem.h"
 #include "../System/ImageLoader.h"
+#include "../System/SoundLoader.h"
 
 constexpr int qMax = 10;	// ñ‚ëËÇÃç≈ëÂêî
 
@@ -84,118 +85,54 @@ void Game1::QuestionDisplayUpdate(const Peripheral & p)
 
 void Game1::AnswerCheckUpdate(const Peripheral & p)
 {
-	if (qHandNum == static_cast<int>(Hand::ROCK))
+	Result r = JudgeResult(qHandNum, answerMyHand);
+
+	if (r == Result::WIN)
 	{
-		if (answerMyHand == Hand::ROCK)
+		if ((qStatementNum == static_cast<int>(Question::WIN)) || (qStatementNum == static_cast<int>(Question::DONOTLOSE)))
 		{
-			if ((qStatementNum == static_cast<int>(Question::DONOTWIN)) || (qStatementNum == static_cast<int>(Question::DONOTLOSE)))
-			{
-				result = true;
-			}
-			else
-			{
-				result = false;
-			}
+			result = true;
 		}
-		else if (answerMyHand == Hand::SCISSORS)
+		else
 		{
-			if ((qStatementNum == static_cast<int>(Question::LOSE)) || (qStatementNum == static_cast<int>(Question::DONOTWIN)))
-			{
-				result = true;
-			}
-			else
-			{
-				result = false;
-			}
-		}
-		else if (answerMyHand == Hand::PAPER)
-		{
-			if ((qStatementNum == static_cast<int>(Question::WIN)) || (qStatementNum == static_cast<int>(Question::DONOTLOSE)))
-			{
-				result = true;
-			}
-			else
-			{
-				result = false;
-			}
+			result = false;
 		}
 	}
-	else if (qHandNum == static_cast<int>(Hand::SCISSORS))
+	else if (r == Result::DRAW)
 	{
-		if (answerMyHand == Hand::ROCK)
+		if ((qStatementNum == static_cast<int>(Question::DONOTWIN)) || (qStatementNum == static_cast<int>(Question::DONOTLOSE)))
 		{
-			if ((qStatementNum == static_cast<int>(Question::WIN)) || (qStatementNum == static_cast<int>(Question::DONOTLOSE)))
-			{
-				result = true;
-			}
-			else
-			{
-				result = false;
-			}
+			result = true;
 		}
-		else if (answerMyHand == Hand::SCISSORS)
+		else
 		{
-			if ((qStatementNum == static_cast<int>(Question::DONOTWIN)) || (qStatementNum == static_cast<int>(Question::DONOTLOSE)))
-			{
-				result = true;
-			}
-			else
-			{
-				result = false;
-			}
-		}
-		else if (answerMyHand == Hand::PAPER)
-		{
-			if ((qStatementNum == static_cast<int>(Question::LOSE)) || (qStatementNum == static_cast<int>(Question::DONOTWIN)))
-			{
-				result = true;
-			}
-			else
-			{
-				result = false;
-			}
+			result = false;
 		}
 	}
-	else if (qHandNum == static_cast<int>(Hand::PAPER))
+	else if(r == Result::LOSE)
 	{
-		if (answerMyHand == Hand::ROCK)
+		if ((qStatementNum == static_cast<int>(Question::LOSE)) || (qStatementNum == static_cast<int>(Question::DONOTWIN)))
 		{
-			if ((qStatementNum == static_cast<int>(Question::LOSE)) || (qStatementNum == static_cast<int>(Question::DONOTWIN)))
-			{
-				result = true;
-			}
-			else
-			{
-				result = false;
-			}
+			result = true;
 		}
-		else if (answerMyHand == Hand::SCISSORS)
+		else
 		{
-			if ((qStatementNum == static_cast<int>(Question::WIN)) || (qStatementNum == static_cast<int>(Question::DONOTLOSE)))
-			{
-				result = true;
-			}
-			else
-			{
-				result = false;
-			}
+			result = false;
 		}
-		else if (answerMyHand == Hand::PAPER)
-		{
-			if ((qStatementNum == static_cast<int>(Question::DONOTWIN)) || (qStatementNum == static_cast<int>(Question::DONOTLOSE)))
-			{
-				result = true;
-			}
-			else
-			{
-				result = false;
-			}
-		}
+	}
+	else
+	{
+		result = false;
 	}
 
 	if (result)
 	{
 		++trueNum;
+		DxLib::PlaySoundMem(trueSE, DX_PLAYTYPE_BACK, true);
+	}
+	else
+	{
+		DxLib::PlaySoundMem(falseSE, DX_PLAYTYPE_BACK, true);
 	}
 
 	updater = &Game1::AnswerDisplayUpdate;
@@ -264,6 +201,58 @@ void Game1::GameDraw()
 	}
 }
 
+Result Game1::JudgeResult(int & qNum, Hand & myHand)
+{
+	Result r;
+
+	if (qNum == static_cast<int>(Hand::ROCK))
+	{
+		if (myHand == Hand::ROCK)
+		{
+			r = Result::DRAW;
+		}
+		else if (myHand == Hand::SCISSORS)
+		{
+			r = Result::LOSE;
+		}
+		else if (myHand == Hand::PAPER)
+		{
+			r = Result::WIN;
+		}
+	}
+	else if (qNum == static_cast<int>(Hand::SCISSORS))
+	{
+		if (myHand == Hand::ROCK)
+		{
+			r = Result::WIN;
+		}
+		else if (myHand == Hand::SCISSORS)
+		{
+			r = Result::DRAW;
+		}
+		else if (myHand == Hand::PAPER)
+		{
+			r = Result::LOSE;
+		}
+	}
+	else if (qNum == static_cast<int>(Hand::PAPER))
+	{
+		if (myHand == Hand::ROCK)
+		{
+			r = Result::LOSE;
+		}
+		else if (myHand == Hand::SCISSORS)
+		{
+			r = Result::WIN;
+		}
+		else if (myHand == Hand::PAPER)
+		{
+			r = Result::DRAW;
+		}
+	}
+	return r;
+}
+
 Game1::Game1()
 {
 	updater = &Game1::FadeinUpdate;
@@ -276,6 +265,12 @@ Game1::Game1()
 	scissors = data.GetHandle();
 	Game::Instance().GetFileSystem()->Load("img/paper.png", data);
 	paper = data.GetHandle();
+
+	SoundData sData;
+	Game::Instance().GetFileSystem()->Load("SE/correct1.mp3", sData);
+	trueSE = sData.GetHandle();
+	Game::Instance().GetFileSystem()->Load("SE/incorrect1.mp3", sData);
+	falseSE = sData.GetHandle();
 	
 	buttons.emplace_back(new Button(Rect(455, 850, 300, 300), rock));
 	buttons.emplace_back(new Button(Rect(955, 850, 300, 300), scissors));
