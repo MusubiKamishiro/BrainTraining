@@ -26,12 +26,17 @@ class Game3 :
 {
 private:
 	void (Game3::*_updater)(const Peripheral& p);
+	void (Game3::*_drawer)();
 
 	void FadeinUpdate(const Peripheral& p);
 	void FadeoutUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
 	void StartUpdate(const Peripheral& p);
+	void FirstUpdate(const Peripheral& p);
 	void GameUpdate(const Peripheral& p);
+
+	void StartDraw();
+	void GameDraw();
 
 	bool ChangeJudgeFlag(const int& num);
 	void ChangeFlag(const BUTTON& btn);
@@ -44,8 +49,8 @@ private:
 
 	bool _isJudge;			/// true : ”»’èI—¹, false : ”»’è’†
 	int _lastNum;			/// ÅŒã‚É‹‚ß‚½—”‚Ì’l
-	int _btnNum;			/// ÎŞÀİ‚ÌˆÊ’u
 	int _questions;
+	int _corrects;			/// ³‰ğ”
 
 
 	// Šø—g‚°¹Ş°Ñ‚Ì‰æ‘œÊİÄŞÙ
@@ -62,5 +67,6 @@ public:
 
 	void Update(const Peripheral& p);
 	void Draw();
+
 };
 
