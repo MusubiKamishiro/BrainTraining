@@ -261,7 +261,7 @@ void Game3::ChangeFlag(const BUTTON & btn)
 
 }
 
-Game3::Game3() : _timeCnt(180)
+Game3::Game3()
 {
 	/// 指示用のテキストを追加している
 	_texts.emplace_back("赤あげて！");

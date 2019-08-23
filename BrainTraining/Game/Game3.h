@@ -57,8 +57,6 @@ private:
 	int _upImg, _downImg, _stayImg, _flagImg, _flag2Img, _flag3Img, _flag4Img;
 	int _correctSE, _missSE;
 
-	const int _timeCnt;
-
 	std::vector<std::shared_ptr<Button>> _buttons;
 
 public:
