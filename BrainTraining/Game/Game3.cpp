@@ -113,12 +113,14 @@ void Game3::FirstUpdate(const Peripheral & p)
 			{
 				/// ê≥â
 				++_corrects;
+				++_questions;
 				PlaySoundMem(_correctSE, DX_PLAYTYPE_BACK);
 			}
 			else
 			{
 				/// ïsê≥â
 				_plFlag = _judgeFlag;
+				++_questions;
 				PlaySoundMem(_missSE, DX_PLAYTYPE_BACK);
 			}
 			_updater = &Game3::WaitUpdate;
@@ -172,11 +174,13 @@ void Game3::GameUpdate(const Peripheral & p)
 			if (_judgeFlag == _plFlag)
 			{
 				++_corrects;
+				++_questions;
 				PlaySoundMem(_correctSE, DX_PLAYTYPE_BACK);
 			}
 			else
 			{
 				_plFlag = _judgeFlag;
+				++_questions;
 				PlaySoundMem(_missSE, DX_PLAYTYPE_BACK);
 			}
 			_updater = &Game3::WaitUpdate;

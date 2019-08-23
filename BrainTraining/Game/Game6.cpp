@@ -49,7 +49,6 @@ void Game6::WaitUpdate(const Peripheral & p)
 		}
 		else
 		{
-			++_questions;
 			_updater = &Game6::GameUpdate;
 		}
 	}
@@ -104,11 +103,13 @@ void Game6::GameUpdate(const Peripheral & p)
 			{
 				/// ê≥â
 				++_corrects;
+				++_questions;
 				PlaySoundMem(_correctSE, DX_PLAYTYPE_BACK);
 			}
 			else
 			{
 				/// ïsê≥â
+				++_questions;
 				PlaySoundMem(_missSE, DX_PLAYTYPE_BACK);
 			}
 			_updater = &Game6::WaitUpdate;
@@ -132,10 +133,10 @@ Game6::Game6()
 	_colors.emplace_back(0x37ff37);		/// óŒ
 
 	auto size = Game::Instance().GetScreenSize();
-	_buttons.emplace_back(new Button(Rect(size.x / 7 + 150, size.y / 4 * 3 + 75, 300, 150)));
-	_buttons.emplace_back(new Button(Rect(size.x / 5 * 2 + 150, size.y / 4 * 3 + 75, 300, 150)));
-	_buttons.emplace_back(new Button(Rect(size.x / 3 * 2 + 150, size.y / 4 * 3 + 75, 300, 150)));
-
+	_buttons.emplace_back(new Button(Rect(size.x / 6, size.y / 4 * 3 + 75, 300, 300)));
+	_buttons.emplace_back(new Button(Rect(size.x / 8 * 3, size.y / 4 * 3 + 75, 300, 300)));
+	_buttons.emplace_back(new Button(Rect(size.x / 7 * 4, size.y / 4 * 3 + 75, 300, 300)));
+	_buttons.emplace_back(new Button(Rect(size.x / 9 * 7, size.y / 4 * 3 + 75, 300, 300)));
 
 	_correctSE = LoadSoundMem("SE/correct1.mp3");
 	_missSE = LoadSoundMem("SE/incorrect1.mp3");
@@ -195,6 +196,18 @@ void Game6::GameDraw()
 	{
 		btn->Draw();
 	}
+
+	/*_buttons.emplace_back(new Button(Rect(size.x / 6, size.y / 4 * 3 + 75, 300, 150)));
+	_buttons.emplace_back(new Button(Rect(size.x / 8 * 3, size.y / 4 * 3 + 75, 300, 150)));
+	_buttons.emplace_back(new Button(Rect(size.x / 7 * 4, size.y / 4 * 3 + 75, 300, 150)));
+	_buttons.emplace_back(new Button(Rect(size.x / 9 * 7, size.y / 4 * 3 + 75, 300, 150)));*/
+
+	DrawBox(size.x / 6 + 150, size.y / 4 * 3 - 75, size.x / 6 - 150, size.y / 4 * 3 + 225, _colors[0], true);
+	DrawBox(size.x / 8 * 3 + 150, size.y / 4 * 3 - 75, size.x / 8 * 3 - 150, size.y / 4 * 3 + 225, _colors[1], true);
+	DrawBox(size.x / 7 * 4 + 150, size.y / 4 * 3 - 75, size.x / 7 * 4 - 150, size.y / 4 * 3 + 225, _colors[2], true);
+	DrawBox(size.x / 9 * 7 + 150, size.y / 4 * 3 - 75, size.x / 9 * 7 - 150, size.y / 4 * 3 + 225, _colors[3], true);
+
+
 	/*/// ç∂í[
 	if (!_plFlag.first)
 	{
