@@ -118,7 +118,7 @@ void Game6::GameUpdate(const Peripheral & p)
 
 }
 
-Game6::Game6()
+Game6::Game6() : _btnSize(Size(300,300))
 {
 	/// ﾃｷｽﾄの追加
 	_texts.emplace_back("あか");
@@ -133,10 +133,14 @@ Game6::Game6()
 	_colors.emplace_back(0x37ff37);		/// 緑
 
 	auto size = Game::Instance().GetScreenSize();
-	_buttons.emplace_back(new Button(Rect(size.x / 6, size.y / 4 * 3 + 75, 300, 300)));
-	_buttons.emplace_back(new Button(Rect(size.x / 8 * 3, size.y / 4 * 3 + 75, 300, 300)));
-	_buttons.emplace_back(new Button(Rect(size.x / 7 * 4, size.y / 4 * 3 + 75, 300, 300)));
-	_buttons.emplace_back(new Button(Rect(size.x / 9 * 7, size.y / 4 * 3 + 75, 300, 300)));
+	_buttons.emplace_back(new Button(Rect(size.x / 6, size.y / 4 * 3, 
+										  _btnSize.width, _btnSize.height)));
+	_buttons.emplace_back(new Button(Rect(size.x / 8 * 3, size.y / 4 * 3, 
+										  _btnSize.width, _btnSize.height)));
+	_buttons.emplace_back(new Button(Rect(size.x / 7 * 4, size.y / 4 * 3, 
+										  _btnSize.width, _btnSize.height)));
+	_buttons.emplace_back(new Button(Rect(size.x / 9 * 7, size.y / 4 * 3, 
+										  _btnSize.width, _btnSize.height)));
 
 	_correctSE = LoadSoundMem("SE/correct1.mp3");
 	_missSE = LoadSoundMem("SE/incorrect1.mp3");
@@ -196,37 +200,16 @@ void Game6::GameDraw()
 	{
 		btn->Draw();
 	}
-
-	/*_buttons.emplace_back(new Button(Rect(size.x / 6, size.y / 4 * 3 + 75, 300, 150)));
-	_buttons.emplace_back(new Button(Rect(size.x / 8 * 3, size.y / 4 * 3 + 75, 300, 150)));
-	_buttons.emplace_back(new Button(Rect(size.x / 7 * 4, size.y / 4 * 3 + 75, 300, 150)));
-	_buttons.emplace_back(new Button(Rect(size.x / 9 * 7, size.y / 4 * 3 + 75, 300, 150)));*/
-
-	DrawBox(size.x / 6 + 150, size.y / 4 * 3 - 75, size.x / 6 - 150, size.y / 4 * 3 + 225, _colors[0], true);
-	DrawBox(size.x / 8 * 3 + 150, size.y / 4 * 3 - 75, size.x / 8 * 3 - 150, size.y / 4 * 3 + 225, _colors[1], true);
-	DrawBox(size.x / 7 * 4 + 150, size.y / 4 * 3 - 75, size.x / 7 * 4 - 150, size.y / 4 * 3 + 225, _colors[2], true);
-	DrawBox(size.x / 9 * 7 + 150, size.y / 4 * 3 - 75, size.x / 9 * 7 - 150, size.y / 4 * 3 + 225, _colors[3], true);
-
-
-	/*/// 左端
-	if (!_plFlag.first)
-	{
-		DxLib::DrawExtendGraph((size.x / 7), (size.y / 4 * 3), (size.x / 7 + 300), (size.y / 4 * 3 + 150), _upImg, true);
-	}
-	else
-	{
-		DxLib::DrawExtendGraph((size.x / 7), (size.y / 4 * 3), (size.x / 7 + 300), (size.y / 4 * 3 + 150), _downImg, true);
-	}
-	DxLib::DrawString(size.x / 4 * 3, size.y / 13 * 9 - strHeight / 2, "白", 0xffffff);
-	/// 右端
-	if (!_plFlag.second)
-	{
-		DxLib::DrawExtendGraph((size.x / 3 * 2), (size.y / 4 * 3), (size.x / 3 * 2 + 300), (size.y / 4 * 3 + 150), _upImg, true);
-	}
-	else
-	{
-		DxLib::DrawExtendGraph((size.x / 3 * 2), (size.y / 4 * 3), (size.x / 3 * 2 + 300), (size.y / 4 * 3 + 150), _downImg, true);
-	}
-	/// 真ん中
-	DxLib::DrawExtendGraph((size.x / 5 * 2), (size.y / 4 * 3), (size.x / 5 * 2 + 300), (size.y / 4 * 3 + 150), _stayImg, true);*/
+	/// 赤
+	DrawBox((size.x / 6) + (_btnSize.width / 2), (size.y / 4 * 3) - (_btnSize.height / 2),
+			(size.x / 6) - (_btnSize.width / 2), (size.y / 4 * 3) + (_btnSize.height / 2), _colors[0], true);
+	/// 青
+	DrawBox((size.x / 8 * 3) + (_btnSize.width / 2), (size.y / 4 * 3) - (_btnSize.height / 2), 
+			(size.x / 8 * 3) - (_btnSize.width / 2), (size.y / 4 * 3) + (_btnSize.height / 2), _colors[1], true);
+	/// 黄
+	DrawBox((size.x / 7 * 4) + (_btnSize.width / 2), (size.y / 4 * 3) - (_btnSize.height / 2), 
+			(size.x / 7 * 4) - (_btnSize.width / 2), (size.y / 4 * 3) + (_btnSize.height / 2), _colors[2], true);
+	/// 緑
+	DrawBox((size.x / 9 * 7) + (_btnSize.width / 2), (size.y / 4 * 3) - (_btnSize.height / 2), 
+			(size.x / 9 * 7) - (_btnSize.width / 2), (size.y / 4 * 3) + (_btnSize.height / 2), _colors[3], true);
 }

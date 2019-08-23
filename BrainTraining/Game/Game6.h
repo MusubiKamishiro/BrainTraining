@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "../Geometry.h"
 #include "../Scene/Scene.h"
 
 class Button;
@@ -30,6 +31,8 @@ private:
 	int _correctSE, _missSE;
 
 	bool _isColor;
+
+	const Size _btnSize;
 
 	std::vector<std::shared_ptr<Button>> _buttons;
 

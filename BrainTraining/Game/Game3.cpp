@@ -262,7 +262,7 @@ void Game3::ChangeFlag(const BUTTON & btn)
 
 }
 
-Game3::Game3()
+Game3::Game3() : _btnSize(Size(300, 150))
 {
 	/// 指示用のテキストを追加している
 	_texts.emplace_back("赤あげて！");
@@ -294,9 +294,12 @@ Game3::Game3()
 	_flag4Img = data.GetHandle();
 
 	auto size = Game::Instance().GetScreenSize();
-	_buttons.emplace_back(new Button(Rect(size.x / 7 + 150, size.y / 4 * 3 + 75, 300, 150)));
-	_buttons.emplace_back(new Button(Rect(size.x / 5 * 2 + 150, size.y / 4 * 3 + 75, 300, 150)));
-	_buttons.emplace_back(new Button(Rect(size.x / 3 * 2 + 150, size.y / 4 * 3 + 75, 300, 150)));
+	_buttons.emplace_back(new Button(Rect(size.x / 7 + _btnSize.width / 2, size.y / 4 * 3 + _btnSize.height / 2,
+										  _btnSize.width, _btnSize.height)));
+	_buttons.emplace_back(new Button(Rect(size.x / 5 * 2 + _btnSize.width / 2, size.y / 4 * 3 + _btnSize.height / 2, 
+										  _btnSize.width, _btnSize.height)));
+	_buttons.emplace_back(new Button(Rect(size.x / 3 * 2 + _btnSize.width / 2, size.y / 4 * 3 + _btnSize.height / 2,
+										  _btnSize.width, _btnSize.height)));
 
 	_correctSE = LoadSoundMem("SE/correct1.mp3");
 	_missSE	= LoadSoundMem("SE/incorrect1.mp3");
@@ -375,22 +378,22 @@ void Game3::GameDraw()
 	/// 赤い旗のボタン
 	if (!_plFlag.first)
 	{
-		DxLib::DrawExtendGraph((size.x / 7), (size.y / 4 * 3), (size.x / 7 + 300), (size.y / 4 * 3 + 150), _upImg, true);
+		DxLib::DrawExtendGraph((size.x / 7), (size.y / 4 * 3), (size.x / 7 + _btnSize.width), (size.y / 4 * 3 + _btnSize.height), _upImg, true);
 	}
 	else
 	{
-		DxLib::DrawExtendGraph((size.x / 7), (size.y / 4 * 3), (size.x / 7 + 300), (size.y / 4 * 3 + 150), _downImg, true);
+		DxLib::DrawExtendGraph((size.x / 7), (size.y / 4 * 3), (size.x / 7 + _btnSize.width), (size.y / 4 * 3 + _btnSize.height), _downImg, true);
 	}
 	DxLib::DrawString(size.x / 4 * 3, size.y / 13 * 9 - strHeight / 2, "白", 0xffffff);
 	/// 白い旗のボタン
 	if (!_plFlag.second)
 	{
-		DxLib::DrawExtendGraph((size.x / 3 * 2), (size.y / 4 * 3), (size.x / 3 * 2 + 300), (size.y / 4 * 3 + 150), _upImg, true);
+		DxLib::DrawExtendGraph((size.x / 3 * 2), (size.y / 4 * 3), (size.x / 3 * 2 + _btnSize.width), (size.y / 4 * 3 + _btnSize.height), _upImg, true);
 	}
 	else
 	{
-		DxLib::DrawExtendGraph((size.x / 3 * 2), (size.y / 4 * 3), (size.x / 3 * 2 + 300), (size.y / 4 * 3 + 150), _downImg, true);
+		DxLib::DrawExtendGraph((size.x / 3 * 2), (size.y / 4 * 3), (size.x / 3 * 2 + _btnSize.width), (size.y / 4 * 3 + _btnSize.height), _downImg, true);
 	}
 	/// そのままボタン
-	DxLib::DrawExtendGraph((size.x / 5 * 2), (size.y / 4 * 3), (size.x / 5 * 2 + 300), (size.y / 4 * 3 + 150), _stayImg, true);
+	DxLib::DrawExtendGraph((size.x / 5 * 2), (size.y / 4 * 3), (size.x / 5 * 2 + _btnSize.width), (size.y / 4 * 3 + _btnSize.height), _stayImg, true);
 }
