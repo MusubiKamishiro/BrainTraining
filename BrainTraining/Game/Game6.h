@@ -2,15 +2,6 @@
 #include <vector>
 #include "../Scene/Scene.h"
 
-enum class COLOR
-{
-	RED,
-	BLUE,
-	YELLOW,
-	GREEN,
-	MAX
-};
-
 class Button;
 
 class Game6 :
@@ -32,10 +23,13 @@ private:
 	void StartDraw();
 	void GameDraw();
 
+	int _textNum, _colorNum;
 	int _questions;
 	int _corrects;			/// ê≥âêî
 
 	int _correctSE, _missSE;
+
+	bool _isColor;
 
 	std::vector<std::shared_ptr<Button>> _buttons;
 

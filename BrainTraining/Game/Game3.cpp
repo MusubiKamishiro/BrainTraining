@@ -1,7 +1,6 @@
 #include "Game3.h"
 
 #include <DxLib.h>
-#include <time.h>
 
 #include "../Game.h"
 #include "../Peripheral.h"
@@ -43,31 +42,22 @@ void Game3::WaitUpdate(const Peripheral & p)
 {
 	if (!CheckSoundMem(_correctSE) || !CheckSoundMem(_missSE))
 	{
-		if (_judgeFlag == _plFlag)
-		{
-			/// ê≥â
-			++_corrects;
-		}
-		else
-		{
-			_plFlag = _judgeFlag;
-			
-		}
-
-		if (_questions >= 2)
-		{
-			++_questions;
-			_updater = &Game3::GameUpdate;
-		}
-		else
-		{
-			++_questions;
-			_updater = &Game3::FirstUpdate;
-		}
-
 		if (_questions >= 20)
 		{
 			_updater = &Game3::FadeoutUpdate;
+		}
+		else
+		{
+			if (_questions >= 2)
+			{
+				++_questions;
+				_updater = &Game3::GameUpdate;
+			}
+			else
+			{
+				++_questions;
+				_updater = &Game3::FirstUpdate;
+			}
 		}
 	}
 
@@ -118,13 +108,18 @@ void Game3::FirstUpdate(const Peripheral & p)
 			ChangeFlag((BUTTON)cnt);
 			_isJudge = false;
 
-			if (_judgeFlag != _plFlag)
+			/// ä¯ÇÃîªíË
+			if (_judgeFlag == _plFlag)
 			{
-				PlaySoundMem(_missSE, DX_PLAYTYPE_BACK);
+				/// ê≥â
+				++_corrects;
+				PlaySoundMem(_correctSE, DX_PLAYTYPE_BACK);
 			}
 			else
 			{
-				PlaySoundMem(_correctSE, DX_PLAYTYPE_BACK);
+				/// ïsê≥â
+				_plFlag = _judgeFlag;
+				PlaySoundMem(_missSE, DX_PLAYTYPE_BACK);
 			}
 			_updater = &Game3::WaitUpdate;
 			break;
@@ -174,13 +169,15 @@ void Game3::GameUpdate(const Peripheral & p)
 			ChangeFlag((BUTTON)cnt);
 			_isJudge = false;
 			/// ä¯ÇÃîªíË
-			if (_judgeFlag != _plFlag)
+			if (_judgeFlag == _plFlag)
 			{
-				PlaySoundMem(_missSE, DX_PLAYTYPE_BACK);
+				++_corrects;
+				PlaySoundMem(_correctSE, DX_PLAYTYPE_BACK);
 			}
 			else
 			{
-				PlaySoundMem(_correctSE, DX_PLAYTYPE_BACK);
+				_plFlag = _judgeFlag;
+				PlaySoundMem(_missSE, DX_PLAYTYPE_BACK);
 			}
 			_updater = &Game3::WaitUpdate;
 		}

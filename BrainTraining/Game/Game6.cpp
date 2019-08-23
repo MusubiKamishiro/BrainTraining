@@ -43,10 +43,14 @@ void Game6::WaitUpdate(const Peripheral & p)
 {
 	if (!CheckSoundMem(_correctSE) || !CheckSoundMem(_missSE))
 	{
-
 		if (_questions >= 20)
 		{
 			_updater = &Game6::FadeoutUpdate;
+		}
+		else
+		{
+			++_questions;
+			_updater = &Game6::GameUpdate;
 		}
 	}
 
@@ -58,6 +62,7 @@ void Game6::StartUpdate(const Peripheral & p)
 	{
 		_updater = &Game6::GameUpdate;
 		_drawer = &Game6::GameDraw;
+
 	}
 }
 
@@ -67,6 +72,49 @@ void Game6::GameUpdate(const Peripheral & p)
 	{
 		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
 	}
+
+	// óêêîÇèoÇ∑ÇΩÇﬂÇÃ◊—¿ﬁéÆ
+	auto GetRandom = [](const int& min, const int& max)
+	{
+		int num = min + (int)(rand() * (max - min + 1.0) / (1.0 + RAND_MAX));
+		return num;
+	};
+
+	if (!_isColor)
+	{
+		_textNum = GetRandom(0, _texts.size() - 1);
+		_colorNum = GetRandom(0, _colors.size() - 1);
+
+		while (_textNum == _colorNum)
+		{
+			_colorNum = GetRandom(0, _colors.size() - 1);
+		}
+		_isColor = true;
+	}
+
+	auto btn = _buttons.begin();
+	for (; btn != _buttons.end(); ++btn)
+	{
+		auto cnt = btn - _buttons.begin();
+		if ((*btn)->Update(p))
+		{
+			_isColor = false;
+			/// êFÇÃîªíË
+			if (_colorNum == cnt)
+			{
+				/// ê≥â
+				++_corrects;
+				PlaySoundMem(_correctSE, DX_PLAYTYPE_BACK);
+			}
+			else
+			{
+				/// ïsê≥â
+				PlaySoundMem(_missSE, DX_PLAYTYPE_BACK);
+			}
+			_updater = &Game6::WaitUpdate;
+		}
+	}
+
 }
 
 Game6::Game6()
@@ -88,8 +136,12 @@ Game6::Game6()
 	_buttons.emplace_back(new Button(Rect(size.x / 5 * 2 + 150, size.y / 4 * 3 + 75, 300, 150)));
 	_buttons.emplace_back(new Button(Rect(size.x / 3 * 2 + 150, size.y / 4 * 3 + 75, 300, 150)));
 
+
 	_correctSE = LoadSoundMem("SE/correct1.mp3");
 	_missSE = LoadSoundMem("SE/incorrect1.mp3");
+
+	_textNum = _colorNum = 0;
+	_isColor = false;
 
 	_questions = _corrects = 0;
 
@@ -134,9 +186,8 @@ void Game6::GameDraw()
 	int strWidth, strHeight;
 	strWidth = strHeight = 0;
 	SetFontSize(300);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, _texts[0].c_str(), strlen(_texts[0].c_str()));
-	DrawString((size.x / 2 - strWidth / 2), (size.y / 3 - strHeight / 2), _texts[0].c_str(), _colors[3]);
-
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, _texts[_textNum].c_str(), strlen(_texts[_textNum].c_str()));
+	DrawString((size.x / 2 - strWidth / 2), (size.y / 3 - strHeight / 2), _texts[_textNum].c_str(), _colors[_colorNum]);
 
 	SetFontSize(120);
 
