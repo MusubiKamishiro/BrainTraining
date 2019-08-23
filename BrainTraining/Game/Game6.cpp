@@ -71,7 +71,17 @@ void Game6::GameUpdate(const Peripheral & p)
 
 Game6::Game6()
 {
-	/// 指示用のテキストを追加している
+	/// ﾃｷｽﾄの追加
+	_texts.emplace_back("あか");
+	_texts.emplace_back("あお");
+	_texts.emplace_back("きいろ");
+	_texts.emplace_back("みどり");
+
+	/// 色の追加
+	_colors.emplace_back(0xff4d4d);		/// 赤
+	_colors.emplace_back(0x305bff);		/// 青
+	_colors.emplace_back(0xffda1f);		/// 黄
+	_colors.emplace_back(0x37ff37);		/// 緑
 
 	auto size = Game::Instance().GetScreenSize();
 	_buttons.emplace_back(new Button(Rect(size.x / 7 + 150, size.y / 4 * 3 + 75, 300, 150)));
@@ -80,7 +90,7 @@ Game6::Game6()
 
 	_correctSE = LoadSoundMem("SE/correct1.mp3");
 	_missSE = LoadSoundMem("SE/incorrect1.mp3");
-;
+
 	_questions = _corrects = 0;
 
 	_updater = &Game6::FadeinUpdate;
@@ -119,10 +129,14 @@ void Game6::GameDraw()
 {
 	auto size = Game::Instance().GetScreenSize();
 
-	DxLib::DrawBox(0, 0, size.x, size.y, 0xdddddd, true);
+	DxLib::DrawBox(0, 0, size.x, size.y, 0xeeeeee, true);
 
 	int strWidth, strHeight;
 	strWidth = strHeight = 0;
+	SetFontSize(300);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, _texts[0].c_str(), strlen(_texts[0].c_str()));
+	DrawString((size.x / 2 - strWidth / 2), (size.y / 3 - strHeight / 2), _texts[0].c_str(), _colors[3]);
+
 
 	SetFontSize(120);
 
@@ -130,7 +144,7 @@ void Game6::GameDraw()
 	{
 		btn->Draw();
 	}
-	/*/// 赤い旗のボタン
+	/*/// 左端
 	if (!_plFlag.first)
 	{
 		DxLib::DrawExtendGraph((size.x / 7), (size.y / 4 * 3), (size.x / 7 + 300), (size.y / 4 * 3 + 150), _upImg, true);
@@ -140,7 +154,7 @@ void Game6::GameDraw()
 		DxLib::DrawExtendGraph((size.x / 7), (size.y / 4 * 3), (size.x / 7 + 300), (size.y / 4 * 3 + 150), _downImg, true);
 	}
 	DxLib::DrawString(size.x / 4 * 3, size.y / 13 * 9 - strHeight / 2, "白", 0xffffff);
-	/// 白い旗のボタン
+	/// 右端
 	if (!_plFlag.second)
 	{
 		DxLib::DrawExtendGraph((size.x / 3 * 2), (size.y / 4 * 3), (size.x / 3 * 2 + 300), (size.y / 4 * 3 + 150), _upImg, true);
@@ -149,6 +163,6 @@ void Game6::GameDraw()
 	{
 		DxLib::DrawExtendGraph((size.x / 3 * 2), (size.y / 4 * 3), (size.x / 3 * 2 + 300), (size.y / 4 * 3 + 150), _downImg, true);
 	}
-	/// そのままボタン
+	/// 真ん中
 	DxLib::DrawExtendGraph((size.x / 5 * 2), (size.y / 4 * 3), (size.x / 5 * 2 + 300), (size.y / 4 * 3 + 150), _stayImg, true);*/
 }

@@ -2,6 +2,15 @@
 #include <vector>
 #include "../Scene/Scene.h"
 
+enum class COLOR
+{
+	RED,
+	BLUE,
+	YELLOW,
+	GREEN,
+	MAX
+};
+
 class Button;
 
 class Game6 :
@@ -16,6 +25,9 @@ private:
 	void WaitUpdate(const Peripheral& p);
 	void StartUpdate(const Peripheral& p);
 	void GameUpdate(const Peripheral& p);
+
+	std::vector<std::string> _texts;
+	std::vector<int> _colors;
 
 	void StartDraw();
 	void GameDraw();
