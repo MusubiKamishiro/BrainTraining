@@ -42,6 +42,8 @@ private:
 	bool ChangeJudgeFlag(const int& num);
 	void ChangeFlag(const BUTTON& btn);
 
+	void ButtonUpdater(const Peripheral& p);
+
 	std::vector<std::string> _texts;
 	// first : ê‘, second : îí
 	std::pair<bool, bool> _judgeFlag;

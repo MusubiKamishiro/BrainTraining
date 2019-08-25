@@ -18,11 +18,14 @@ private:
 	void StartUpdate(const Peripheral& p);
 	void GameUpdate(const Peripheral& p);
 
-	std::vector<std::string> _texts;
-	std::vector<int> _colors;
-
+	void ChangeColor();							// êFÇÃïœçX
+	void ButtonUpdater(const Peripheral& p);
+	
 	void StartDraw();
 	void GameDraw();
+
+	std::vector<std::string> _texts;
+	std::vector<int> _colors;
 
 	int _textNum, _colorNum;
 	int _questions;

@@ -52,7 +52,6 @@ void Game6::WaitUpdate(const Peripheral & p)
 			_updater = &Game6::GameUpdate;
 		}
 	}
-
 }
 
 void Game6::StartUpdate(const Peripheral & p)
@@ -72,6 +71,18 @@ void Game6::GameUpdate(const Peripheral & p)
 		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
 	}
 
+	if (!_isColor)
+	{
+		ChangeColor();
+	}
+	else
+	{
+		ButtonUpdater(p);
+	}
+}
+
+void Game6::ChangeColor()
+{
 	// óêêîÇèoÇ∑ÇΩÇﬂÇÃ◊—¿ﬁéÆ
 	auto GetRandom = [](const int& min, const int& max)
 	{
@@ -79,18 +90,17 @@ void Game6::GameUpdate(const Peripheral & p)
 		return num;
 	};
 
-	if (!_isColor)
+	_textNum = GetRandom(0, _texts.size() - 1);
+	_colorNum = GetRandom(0, _colors.size() - 1);
+	while (_textNum == _colorNum)
 	{
-		_textNum = GetRandom(0, _texts.size() - 1);
 		_colorNum = GetRandom(0, _colors.size() - 1);
-
-		while (_textNum == _colorNum)
-		{
-			_colorNum = GetRandom(0, _colors.size() - 1);
-		}
-		_isColor = true;
 	}
+	_isColor = true;
+}
 
+void Game6::ButtonUpdater(const Peripheral& p)
+{
 	auto btn = _buttons.begin();
 	for (; btn != _buttons.end(); ++btn)
 	{
@@ -115,7 +125,6 @@ void Game6::GameUpdate(const Peripheral & p)
 			_updater = &Game6::WaitUpdate;
 		}
 	}
-
 }
 
 Game6::Game6() : _btnSize(Size(300,300))
@@ -143,12 +152,11 @@ Game6::Game6() : _btnSize(Size(300,300))
 										  _btnSize.width, _btnSize.height)));
 
 	_correctSE = LoadSoundMem("SE/correct1.mp3");
-	_missSE = LoadSoundMem("SE/incorrect1.mp3");
+	_missSE	= LoadSoundMem("SE/incorrect1.mp3");
 
-	_textNum = _colorNum = 0;
-	_isColor = false;
+	_textNum = _colorNum = _questions = _corrects = 0;
 
-	_questions = _corrects = 0;
+	ChangeColor();
 
 	_updater = &Game6::FadeinUpdate;
 	_drawer = &Game6::StartDraw;

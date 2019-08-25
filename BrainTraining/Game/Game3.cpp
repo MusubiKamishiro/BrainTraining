@@ -50,17 +50,14 @@ void Game3::WaitUpdate(const Peripheral & p)
 		{
 			if (_questions >= 2)
 			{
-				++_questions;
 				_updater = &Game3::GameUpdate;
 			}
 			else
 			{
-				++_questions;
 				_updater = &Game3::FirstUpdate;
 			}
 		}
 	}
-
 }
 
 void Game3::StartUpdate(const Peripheral & p)
@@ -98,34 +95,9 @@ void Game3::FirstUpdate(const Peripheral & p)
 			_judgeFlag.second = true;
 		}
 	}
-
-	auto btn = _buttons.begin();
-	for (; btn != _buttons.end(); ++btn)
+	else
 	{
-		auto cnt = btn - _buttons.begin();
-		if ((*btn)->Update(p))
-		{
-			ChangeFlag((BUTTON)cnt);
-			_isJudge = false;
-
-			/// Šø‚Ì”»’è
-			if (_judgeFlag == _plFlag)
-			{
-				/// ³‰ð
-				++_corrects;
-				++_questions;
-				PlaySoundMem(_correctSE, DX_PLAYTYPE_BACK);
-			}
-			else
-			{
-				/// •s³‰ð
-				_plFlag = _judgeFlag;
-				++_questions;
-				PlaySoundMem(_missSE, DX_PLAYTYPE_BACK);
-			}
-			_updater = &Game3::WaitUpdate;
-			break;
-		}
+		ButtonUpdater(p);
 	}
 }
 
@@ -161,30 +133,9 @@ void Game3::GameUpdate(const Peripheral & p)
 			flag = ChangeJudgeFlag(_lastNum);
 		}
 	}
-
-	auto btn = _buttons.begin();
-	for (; btn != _buttons.end(); ++btn)
+	else
 	{
-		auto cnt = btn - _buttons.begin();
-		if ((*btn)->Update(p))
-		{
-			ChangeFlag((BUTTON)cnt);
-			_isJudge = false;
-			/// Šø‚Ì”»’è
-			if (_judgeFlag == _plFlag)
-			{
-				++_corrects;
-				++_questions;
-				PlaySoundMem(_correctSE, DX_PLAYTYPE_BACK);
-			}
-			else
-			{
-				_plFlag = _judgeFlag;
-				++_questions;
-				PlaySoundMem(_missSE, DX_PLAYTYPE_BACK);
-			}
-			_updater = &Game3::WaitUpdate;
-		}
+		ButtonUpdater(p);
 	}
 }
 
@@ -260,6 +211,34 @@ void Game3::ChangeFlag(const BUTTON & btn)
 	}
 	else {}
 
+}
+
+void Game3::ButtonUpdater(const Peripheral& p)
+{
+	auto btn = _buttons.begin();
+	for (; btn != _buttons.end(); ++btn)
+	{
+		auto cnt = btn - _buttons.begin();
+		if ((*btn)->Update(p))
+		{
+			ChangeFlag((BUTTON)cnt);
+			_isJudge = false;
+			/// Šø‚Ì”»’è
+			if (_judgeFlag == _plFlag)
+			{
+				++_corrects;
+				++_questions;
+				PlaySoundMem(_correctSE, DX_PLAYTYPE_BACK);
+			}
+			else
+			{
+				_plFlag = _judgeFlag;
+				++_questions;
+				PlaySoundMem(_missSE, DX_PLAYTYPE_BACK);
+			}
+			_updater = &Game3::WaitUpdate;
+		}
+	}
 }
 
 Game3::Game3() : _btnSize(Size(300, 150))
