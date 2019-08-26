@@ -57,39 +57,41 @@ void Game2::WaitUpdate(const Peripheral & p)
 		auto size = Game::Instance().GetScreenSize();
 		auto pos = p.GetMousePos();
 
-		// 左をクリック
-		if (pos.x < size.x / 2)
+		if (pos.y > size.y / 4)
 		{
-			if (_left > _right)
+			// 左をクリック
+			if (pos.x < size.x / 2)
 			{
-				ChangeVolumeSoundMem(200, _SE_correct);
-				PlaySoundMem(_SE_correct, DX_PLAYTYPE_BACK);
-				++_correctNum;
+				if (_left.num > _right.num)
+				{
+					ChangeVolumeSoundMem(200, _SE_correct);
+					PlaySoundMem(_SE_correct, DX_PLAYTYPE_BACK);
+					++_correctNum;
+				}
+				else
+				{
+					ChangeVolumeSoundMem(200, _SE_miss);
+					PlaySoundMem(_SE_miss, DX_PLAYTYPE_BACK);
+				}
 			}
+			// 右をクリック
 			else
 			{
-				ChangeVolumeSoundMem(200, _SE_miss);
-				PlaySoundMem(_SE_miss, DX_PLAYTYPE_BACK);
+				if (_right.num > _left.num)
+				{
+					ChangeVolumeSoundMem(200, _SE_correct);
+					PlaySoundMem(_SE_correct, DX_PLAYTYPE_BACK);
+					++_correctNum;
+				}
+				else
+				{
+					ChangeVolumeSoundMem(200, _SE_miss);
+					PlaySoundMem(_SE_miss, DX_PLAYTYPE_BACK);
+				}
 			}
+			_updater = &Game2::AnswerUpdate;
+			_drawer = &Game2::AnswerDraw;
 		}
-		// 右をクリック
-		else
-		{
-			if (_right > _left)
-			{
-				ChangeVolumeSoundMem(200, _SE_correct);
-				PlaySoundMem(_SE_correct, DX_PLAYTYPE_BACK);
-				++_correctNum;
-			}
-			else
-			{
-				ChangeVolumeSoundMem(200, _SE_miss);
-				PlaySoundMem(_SE_miss, DX_PLAYTYPE_BACK);
-			}
-		}
-
-		_updater = &Game2::AnswerUpdate;
-		_drawer = &Game2::AnswerDraw;
 	}
 
 	if (p.IsTrigger(MOUSE_INPUT_RIGHT))
@@ -104,10 +106,52 @@ void Game2::QuestionsUpdate(const Peripheral & p)
 	{
 		do
 		{
-			_right = GetRand(100);
-			_left = GetRand(100);
+			switch (_questions)
+			{
+			case 1:
+			case 6:
+				_right.num = GetRand(9);
+				_right.type = DrawType::Number;
+				_left.num = GetRand(9);
+				_left.type = DrawType::Number;
+				break;
+			case 2:
+			case 7:
+				_right.num = GetRand(999);
+				_right.type = DrawType::Money;
+				_left.num = GetRand(999);
+				_left.type = DrawType::Money;
+				break;
+			case 3:
+			case 8:
+				_right.num = GetRand(999);
+				_right.type = DrawType::Number;
+				_left.num = GetRand(999);
+				_left.type = DrawType::Money;
+				break;
+			case 4:
+			case 9:
+				_right.num = GetRand(50) + 500;
+				_right.type = DrawType::Money;
+				_left.num = GetRand(50) + 500;
+				_left.type = DrawType::Number;
+				break;
+			case 5:
+			case 10:
+				_right.num = GetRand(100) + 3000;
+				_right.type = DrawType::Money;
+				_left.num = GetRand(100) + 3000;
+				_left.type = DrawType::Money;
+				break;
+			default:
+				_right.num = GetRand(10);
+				_right.type = DrawType::Number;
+				_left.num = GetRand(10);
+				_left.type = DrawType::Number;
+				break;
+			}
 		} 
-		while (_right == _left);
+		while (_right.num == _left.num);
 
 		_updater = &Game2::WaitUpdate;
 		_drawer = &Game2::WaitDraw;
@@ -145,7 +189,11 @@ void Game2::StartDraw()
 
 	SetFontSize(250);
 	GetDrawStringSize(&strwidth, &strheight, nullptr, "数字比べ", strlen("数字比べ"));
-	DrawString(size.x / 2 - strwidth / 2, size.y / 2 - strheight / 2, "数字比べ", 0x000000);
+	DrawString(size.x / 2 - strwidth / 2, size.y / 3 - strheight / 2, "数字比べ", 0x000000);
+
+	SetFontSize(100);
+	GetDrawFormatStringSize(&strwidth, &strheight, nullptr, "全%d問", MAX_QUESTIONS);
+	DrawFormatString(size.x / 2 - strwidth / 2, size.y / 3 * 2 - strheight / 2, 0x000000, "全%d問", MAX_QUESTIONS);
 }
 
 void Game2::WaitDraw()
@@ -177,27 +225,66 @@ void Game2::AnswerDraw()
 
 	GetDrawStringSize(&strwidth, &strheight, nullptr, "×", strlen("×"));
 	DrawString(
-		_left < _right ? size.x / 4 - strwidth / 2 : size.x / 4 * 3 - strwidth / 2,
+		_left.num < _right.num ? size.x / 4 - strwidth / 2 : size.x / 4 * 3 - strwidth / 2,
 		size.y / 3 * 2 - strheight / 2,
-		"×", 0x000000);
+		"×", 0x0000ff, 0xffffff);
 
 	GetDrawStringSize(&strwidth, &strheight, nullptr, "〇", strlen("〇"));
 	DrawString(
-		_left > _right ? size.x / 4 - strwidth / 2 : size.x / 4 * 3 - strwidth / 2,
+		_left.num > _right.num ? size.x / 4 - strwidth / 2 : size.x / 4 * 3 - strwidth / 2,
 		size.y / 3 * 2 - strheight / 2,
-		"〇", 0x000000);
+		"〇", 0xff0000, 0xffffff);
+}
+
+void Game2::DrawMoney(int num, int offset)
+{
+	auto size = Game::Instance().GetScreenSize();
+
+	auto sen	= num / 1000;
+	auto hyaku	= num % 1000 / 100;
+	auto juu	= num % 100 / 10;
+	auto iti	= num % 10;
+
+	for (int i = 0; i < sen; ++i)
+	{
+		DrawGraph(offset + 100 + i * 20, size.y / 3 + i * 20, _img_1000en, true);
+	}
+	for (int i = 0; i < hyaku; ++i)
+	{
+		DrawRotaGraph(offset + 100 + i * 20, size.y / 3 * 2 - 100 + i * 20, 0.5, 0.0, _img_100en, true);
+	}
+	for (int i = 0; i < juu; ++i)
+	{
+		DrawRotaGraph(offset + 400 + i * 20, size.y / 3 * 2 - 100 + i * 20, 0.5, 0.0, _img_10en, true);
+	}
+	for (int i = 0; i < iti; ++i)
+	{
+		DrawRotaGraph(offset + 700 + i * 20, size.y / 3 * 2 - 100 + i * 20, 0.5, 0.0, _img_1en, true);
+	}
 }
 
 Game2::Game2()
 {
-	_right = 0;
-	_left = 0;
+	_right.num = 0;
+	_right.type = DrawType::Number;
+	_left.num = 0;
+	_left.type = DrawType::Money;
+
 	_questions = 1;
 	_correctNum = 0;
 
 	_SE_question = LoadSoundMem("SE/question1.mp3");
 	_SE_correct = LoadSoundMem("SE/correct1.mp3");
 	_SE_miss = LoadSoundMem("SE/incorrect1.mp3");
+
+	_img_1en = LoadGraph("img/一円.png");
+	_img_5en = LoadGraph("img/五円.png");
+	_img_10en = LoadGraph("img/十円.png");
+	_img_50en = LoadGraph("img/五十円.png");
+	_img_100en = LoadGraph("img/百円.png");
+	_img_1000en = LoadGraph("img/千円.png");
+	_img_5000en = LoadGraph("img/五千円.png");
+	_img_10000en = LoadGraph("img/一万円.png");
 
 	_updater = &Game2::FadeinUpdate;
 	_drawer = &Game2::StartDraw;
@@ -209,6 +296,15 @@ Game2::~Game2()
 	DeleteSoundMem(_SE_question);
 	DeleteSoundMem(_SE_correct);
 	DeleteSoundMem(_SE_miss);
+
+	DeleteGraph(_img_1en);
+	DeleteGraph(_img_5en);
+	DeleteGraph(_img_10en);
+	DeleteGraph(_img_50en);
+	DeleteGraph(_img_100en);
+	DeleteGraph(_img_1000en);
+	DeleteGraph(_img_5000en);
+	DeleteGraph(_img_10000en);
 }
 
 void Game2::Update(const Peripheral & p)
@@ -220,30 +316,44 @@ void Game2::Draw()
 {
 	auto size = Game::Instance().GetScreenSize();
 
-	DxLib::DrawBox(0, 0, size.x / 2, size.y, 0xff0000, true);
-	DxLib::DrawBox(size.x / 2, 0, size.x, size.y, 0x0000ff, true);
-	DxLib::DrawBox(0, 0, size.x, size.y / 4, 0xffffff, true);
+	DxLib::DrawBox(0, 0, size.x, size.y, 0xffffff, true);
+	DxLib::DrawBox(0, size.y / 4, size.x / 2, size.y, 0xff0000, true);
+	DxLib::DrawBox(size.x / 2, size.y / 4, size.x, size.y, 0x0000ff, true);
+	DrawLine(0, size.y / 4, size.x, size.y / 4, 0x000000, 5);
+	DrawLine(size.x / 2, size.y / 4, size.x / 2, size.y, 0x000000, 5);
 
 	int strwidth, strheight;
 	strwidth = strheight = 0;
 
-	SetFontSize(24);
-	strwidth = GetDrawStringWidth("ゲームシーン[2]だよ", strlen("ゲームシーン[2]だよ"));
-	DrawFormatString(size.x / 2 - strwidth / 2, 50, 0x0000000, "ゲームシーン[2]だよ");
+	SetFontSize(100);
+	GetDrawStringSize(&strwidth, &strheight, nullptr, "数字の大きい方をクリック！", strlen("数字の大きい方をクリック！"));
+	DrawFormatString(size.x / 2 - strwidth / 2, size.y / 8 - strheight / 2, 0x000000, "数字の大きい方をクリック！");
 
-	SetFontSize(50);
-	strwidth = GetDrawStringWidth("数字の大きい方をクリック！", strlen("数字の大きい方をクリック！"));
-	DrawFormatString(size.x / 2 - strwidth / 2, 150, 0x000000, "数字の大きい方をクリック！");
+	SetFontSize(400);
 
-	SetFontSize(500);
+	switch (_right.type)
+	{
+	case DrawType::Number:
+		GetDrawFormatStringSize(&strwidth, &strheight, nullptr, "%d", _right.num);
+		DrawFormatString(size.x / 4 * 3 - strwidth / 2 + 4, size.y / 3 * 2 - strheight / 2 + 4, 0x000000, "%d", _right.num);
+		DrawFormatString(size.x / 4 * 3 - strwidth / 2, size.y / 3 * 2 - strheight / 2, 0xffffff, "%d", _right.num);
+		break;
+	case DrawType::Money:
+		DrawMoney(_right.num, size.x / 2);
+		break;
+	}
 
-	GetDrawFormatStringSize(&strwidth, &strheight, nullptr, "%d", _right);
-	DrawFormatString(size.x / 4 * 3 - strwidth / 2 + 4, size.y / 3 * 2 - strheight / 2 + 4, 0x000000, "%d", _right);
-	DrawFormatString(size.x / 4 * 3 - strwidth / 2, size.y / 3 * 2 - strheight / 2, 0xffffff, "%d", _right);
-
-	GetDrawFormatStringSize(&strwidth, &strheight, nullptr, "%d", _left);
-	DrawFormatString(size.x / 4 - strwidth / 2 + 4, size.y / 3 * 2 - strheight / 2 + 4, 0x000000, "%d", _left);
-	DrawFormatString(size.x / 4 - strwidth / 2, size.y / 3 * 2 - strheight / 2, 0xffffff, "%d", _left);
+	switch (_left.type)
+	{
+	case DrawType::Number:
+		GetDrawFormatStringSize(&strwidth, &strheight, nullptr, "%d", _left.num);
+		DrawFormatString(size.x / 4 - strwidth / 2 + 4, size.y / 3 * 2 - strheight / 2 + 4, 0x000000, "%d", _left.num);
+		DrawFormatString(size.x / 4 - strwidth / 2, size.y / 3 * 2 - strheight / 2, 0xffffff, "%d", _left.num);
+		break;
+	case DrawType::Money:
+		DrawMoney(_left.num);
+		break;
+	}
 
 	(this->*_drawer)();
 }
