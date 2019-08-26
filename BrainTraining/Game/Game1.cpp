@@ -16,7 +16,7 @@
 #include "../System/ImageLoader.h"
 #include "../System/SoundLoader.h"
 
-constexpr int qMax = 10;	// –â‘è‚ÌÅ‘å”
+constexpr int qMax = 20;	// –â‘è‚ÌÅ‘å”
 
 
 void Game1::FadeinUpdate(const Peripheral & p)
@@ -148,11 +148,7 @@ void Game1::AnswerDisplayUpdate(const Peripheral & p)
 		}
 		else
 		{
-			std::random_device seed_gen;
-			std::mt19937 engine(seed_gen());
-
-			qStatementNum = engine() % questionStatements.size();
-			qHandNum = engine() % questionHands.size();
+			CreateQuestion();
 			++nowQNum;
 
 			updater = &Game1::QuestionDisplayUpdate;
@@ -199,6 +195,15 @@ void Game1::GameDraw()
 			DxLib::DrawBox(450, 450, 550, 550, 0x00ff00, true);
 		}
 	}
+}
+
+void Game1::CreateQuestion()
+{
+	std::random_device seed_gen;
+	std::mt19937 engine(seed_gen());
+
+	qStatementNum = engine() % questionStatements.size();
+	qHandNum = engine() % questionHands.size();
 }
 
 Result Game1::JudgeResult(int & qNum, Hand & myHand)
@@ -305,6 +310,5 @@ void Game1::Update(const Peripheral & p)
 
 void Game1::Draw()
 {
-	DxLib::DrawString(50, 50, "Œão‚µ‚¶‚á‚ñ‚¯‚ñ‚¾‚æ", 0xffffff);
 	(this->*drawer)();
 }

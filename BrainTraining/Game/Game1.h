@@ -58,6 +58,7 @@ private:
 	void DescriptionDraw();		// ルール説明描画
 	void GameDraw();			// ゲームメイン描画
 
+	void CreateQuestion();		// 問題作成
 	Result JudgeResult(int& qNum, Hand& myHand);	// じゃんけん結果の確認
 
 	int rock, paper, scissors;	// グーちょきぱーの画像ハンドル
