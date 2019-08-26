@@ -9,16 +9,14 @@ enum class JFLAG
 {
 	UP,
 	DOWN,
-	STAYUP,
-	STAYDOWN,
 	MAX
 };
 
 enum class BUTTON
 {
 	RED,
-	STAY,
 	WHITE,
+	STAY,
 	MAX
 };
 
@@ -36,20 +34,19 @@ private:
 	void FirstUpdate(const Peripheral& p);
 	void GameUpdate(const Peripheral& p);
 
-
 	void StartDraw();
 	void GameDraw();
 
-	void MoveJudgeFlag(const int& num);
+	void MoveJudgeFlag(const int& num, const BUTTON& btn);
 	void MovePlFlag(const BUTTON& btn);
 
+	void JuedeFlagUpdater();
 	void ButtonUpdater(const Peripheral& p);
 
 	std::vector<std::string> _texts;
-	// first : ê‘, second : îí
-	std::pair<bool, bool> _judgeFlag;
-	// first : ê‘, second : îí
-	std::pair<bool, bool> _plFlag;
+	
+	std::pair<bool, bool> _judgeFlag;		// first : ê‘, second : îí
+	std::pair<bool, bool> _plFlag;			// first : ê‘, second : îí
 
 	std::string _orderText;
 
