@@ -297,6 +297,8 @@ Game1::Game1()
 
 	result = false;
 	trueNum = 0;
+
+	CreateQuestion();
 }
 
 Game1::~Game1()

@@ -1,6 +1,8 @@
 #include "Game4.h"
 
 #include <DxLib.h>
+#include <random>
+#include <string>
 
 #include "../Peripheral.h"
 #include "../Button.h"
@@ -96,6 +98,7 @@ void Game4::AnswerDisplayUpdate(const Peripheral & p)
 		{
 			CreateQuestion();
 			++nowQNum;
+			displayCount = 60;
 
 			updater = &Game4::QuestionDisplayUpdate;
 		}
@@ -116,22 +119,95 @@ void Game4::DescriptionDraw()
 void Game4::GameDraw()
 {
 	DxLib::DrawFormatString(600, 600, 0xff0000, "ëÊ%dñ‚", nowQNum);
+	DxLib::DrawFormatString(400, 400, 0xff0000, "%s", question.c_str());
 
 	for (unsigned int i = 0; i < buttons.size(); ++i)
 	{
 		buttons[i]->Draw();
 	}
+}
 
+int Game4::RandomNum(int parameter)
+{
+	std::random_device seed_gen;
+	std::mt19937 engine(seed_gen());
+
+	int num = engine() % parameter;
+
+	return num;
+}
+
+std::string Game4::CreateHiraganaNum(int num)
+{
+	std::string s = "";
+
+	// 1åÖÇ©2åÖÇ©
+	if (num / 10 == 0)
+	{
+		s = hiraganaNum[num];
+	}
+	else
+	{
+		s = hiraganaNum[num / 10];
+		s += hiraganaNum[10];
+
+		if (num % 10 != 0)
+		{
+			s += hiraganaNum[num % 10];
+		}
+	}
+
+	return s;
 }
 
 void Game4::CreateQuestion()
 {
+	question = "";
+
+	SelectNum();
+	SelectOperator();
+	SelectNum();
+
+	question += "ÇÕÅH";
+}
+
+void Game4::SelectNum()
+{
+	int num = RandomNum(100);
+	std::string s = CreateHiraganaNum(num);
+
+	question += s;
+}
+
+void Game4::SelectOperator()
+{
+	int op = RandomNum(static_cast<int>(Operator::MAX));
+	question += questionOperators[op];
 }
 
 Game4::Game4()
 {
 	updater = &Game4::FadeinUpdate;
 	drawer = &Game4::TitleDraw;
+
+	questionOperators[static_cast<int>(Operator::PLUS)] = "ÇΩÇ∑";
+	questionOperators[static_cast<int>(Operator::MINUS)] = "Ç–Ç≠";
+	questionOperators[static_cast<int>(Operator::MULTI)] = "Ç©ÇØ";
+
+	hiraganaNum[0] = "Ç∫ÇÎ";
+	hiraganaNum[1] = "Ç¢Çø";
+	hiraganaNum[2] = "Ç…";
+	hiraganaNum[3] = "Ç≥ÇÒ";
+	hiraganaNum[4] = "ÇÊÇÒ";
+	hiraganaNum[5] = "Ç≤";
+	hiraganaNum[6] = "ÇÎÇ≠";
+	hiraganaNum[7] = "Ç»Ç»";
+	hiraganaNum[8] = "ÇÕÇø";
+	hiraganaNum[9] = "Ç´Ç„Ç§";
+	hiraganaNum[10] = "Ç∂Ç„Ç§";
+
+
+	CreateQuestion();
 
 	nowQNum = 1;
 	displayCount = 60;

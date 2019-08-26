@@ -1,9 +1,20 @@
 #pragma once
 #include "../Scene/Scene.h"
 #include <vector>
+#include <map>
 #include <memory>
 
 class Button;
+
+
+// ‰‰Zq
+enum class Operator
+{
+	PLUS,
+	MINUS,
+	MULTI,
+	MAX
+};
 
 ///‚Ğ‚ç‚ª‚ÈŒvZ
 ///HiraganaMath
@@ -28,9 +39,18 @@ private:
 	void DescriptionDraw();		// ƒ‹[ƒ‹à–¾•`‰æ
 	void GameDraw();			// ƒQ[ƒ€ƒƒCƒ“•`‰æ
 
+	int RandomNum(int parameter);
+	std::string CreateHiraganaNum(int num);
+
 	void CreateQuestion();		// –â‘èì¬
+	void SelectNum();
+	void SelectOperator();
+
+	std::map<int, std::string> questionOperators;
+	std::map<int, std::string> hiraganaNum;
 
 	int nowQNum;	// Œ»İ‚Ì–â‘è”Ô†
+	std::string question;	// –â‘è•¶
 
 	int displayCount;	// •\¦ŠÔ
 
