@@ -50,12 +50,14 @@ void Game3::WaitUpdate(const Peripheral & p)
 		{
 			if (_questions >= 2)
 			{
+				_moveFlagCnt = (_questions >= 10 ? 2 : 1);
 				_updater = &Game3::GameUpdate;
 			}
 			else
 			{
 				_updater = &Game3::FirstUpdate;
 			}
+			_orderText = "";
 		}
 	}
 }
@@ -87,11 +89,13 @@ void Game3::FirstUpdate(const Peripheral & p)
 		if (!_judgeFlag.first)
 		{
 			_lastNum = 0;
+			_orderText = _texts[_lastNum] + "!";
 			_judgeFlag.first = true;
 		}
 		else
 		{
 			_lastNum = 1;
+			_orderText = _texts[_lastNum] + "!";
 			_judgeFlag.second = true;
 		}
 	}
@@ -123,35 +127,53 @@ void Game3::GameUpdate(const Peripheral & p)
 
 	if (!_isJudge)
 	{
-		_isJudge = true;
-		_lastNum = GetRandom(0, _texts.size() - 1, _lastNum);
-		auto flag = ChangeJudgeFlag(_lastNum);
-		while (!flag)
+		if (_moveFlagCnt <= 0)
 		{
-			/// 前と同じ乱数の結果が出たとき、もう一度乱数を求めている
 			_lastNum = GetRandom(0, _texts.size() - 1, _lastNum);
-			flag = ChangeJudgeFlag(_lastNum);
+
+			 MoveJudgeFlag(_lastNum);
+			 _lastNum = GetRandom(0, _texts.size() - 1, _lastNum);
+			_orderText = _texts[_lastNum] + "!";
 		}
+		else
+		{
+			for (int i = 0; i < _moveFlagCnt; ++i)
+			{
+				_lastNum = GetRandom(0, _texts.size() - 1, _lastNum);
+
+				MoveJudgeFlag(_lastNum);
+				/// 赤、白の順番で旗を上げるようにしている
+				while (!((_lastNum % 2) == i))
+				{
+					_lastNum = GetRandom(0, _texts.size() - 1, _lastNum);
+					MoveJudgeFlag(_lastNum);
+				}
+				_orderText += (i >= _moveFlagCnt - 1 ? _texts[_lastNum] + "!" : _texts[_lastNum] + "、");
+			}
+		}
+		_isJudge = true;
+		
 	}
 	else
 	{
+		/// 制限時間内ならボタンを押し放題にする
 		ButtonUpdater(p);
 	}
 }
 
-bool Game3::ChangeJudgeFlag(const int & num)
+void Game3::MoveJudgeFlag(const int & num)
 {
 	if (num / 2 == static_cast<int>(JFLAG::UP))
 	{
 		if (num % 2 == 0 && !_judgeFlag.first)
 		{
 			_judgeFlag.first = true;
-			return true;
+;
 		}
 		else if (num % 2 == 1 && !_judgeFlag.second)
 		{
 			_judgeFlag.second = true;
-			return true;
+
 		}
 		else {}
 	}
@@ -160,12 +182,12 @@ bool Game3::ChangeJudgeFlag(const int & num)
 		if (num % 2 == 0 && _judgeFlag.first)
 		{
 			_judgeFlag.first = false;
-			return true;
+
 		}
 		else if (num % 2 == 1 && _judgeFlag.second)
 		{
 			_judgeFlag.second = false;
-			return true;
+
 		}
 		else {}
 	}
@@ -180,7 +202,6 @@ bool Game3::ChangeJudgeFlag(const int & num)
 			_judgeFlag.second = true;
 		}
 		else {}
-		return true;
 	}
 	else if (num / 2 == static_cast<int>(JFLAG::STAYDOWN))
 	{
@@ -193,13 +214,11 @@ bool Game3::ChangeJudgeFlag(const int & num)
 			_judgeFlag.second = false;
 		}
 		else {}
-		return true;
 	}
 	else {}
-	return false;
 }
 
-void Game3::ChangeFlag(const BUTTON & btn)
+void Game3::MovePlFlag(const BUTTON & btn)
 {
 	if (btn == BUTTON::RED)
 	{
@@ -221,7 +240,7 @@ void Game3::ButtonUpdater(const Peripheral& p)
 		auto cnt = btn - _buttons.begin();
 		if ((*btn)->Update(p))
 		{
-			ChangeFlag((BUTTON)cnt);
+			MovePlFlag((BUTTON)cnt);
 			_isJudge = false;
 			/// 旗の判定
 			if (_judgeFlag == _plFlag)
@@ -241,17 +260,17 @@ void Game3::ButtonUpdater(const Peripheral& p)
 	}
 }
 
-Game3::Game3() : _btnSize(Size(300, 150))
+Game3::Game3() : _btnSize(Size(300, 150)), _defTime(180)
 {
 	/// 指示用のテキストを追加している
-	_texts.emplace_back("赤あげて！");
-	_texts.emplace_back("白あげて！");
-	_texts.emplace_back("赤さげて！");
-	_texts.emplace_back("白さげて！");
-	_texts.emplace_back("赤さげないて！");
-	_texts.emplace_back("白さげないて！");
-	_texts.emplace_back("赤あげないて！");
-	_texts.emplace_back("白あげないて！");
+	_texts.emplace_back("赤あげて");
+	_texts.emplace_back("白あげて");
+	_texts.emplace_back("赤さげて");
+	_texts.emplace_back("白さげて");
+	_texts.emplace_back("赤さげないで");
+	_texts.emplace_back("白さげないで");
+	_texts.emplace_back("赤あげないで");
+	_texts.emplace_back("白あげないで");
 
 	_judgeFlag = _plFlag = { false, false };
 
@@ -282,9 +301,10 @@ Game3::Game3() : _btnSize(Size(300, 150))
 
 	_correctSE = LoadSoundMem("SE/correct1.mp3");
 	_missSE	= LoadSoundMem("SE/incorrect1.mp3");
+	_orderText = "";
 
 	_isJudge = false;
-	_questions = _corrects = 0;
+	_questions = _corrects = _moveFlagCnt = 0;
 
 	_updater = &Game3::FadeinUpdate;
 	_drawer = &Game3::StartDraw;
@@ -329,8 +349,8 @@ void Game3::GameDraw()
 	strWidth = strHeight = 0;
 
 	SetFontSize(120);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, _texts[_lastNum].c_str(), strlen(_texts[_lastNum].c_str()));
-	DrawString((size.x / 2 - strWidth / 2), (size.y / 13 * 9 - strHeight / 2), _texts[_lastNum].c_str(), 0x000000);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, _orderText.c_str(), strlen(_orderText.c_str()));
+	DrawString((size.x / 2 - strWidth / 2), (size.y / 13 * 9 - strHeight / 2), _orderText.c_str(), 0x000000);
 
 	if (_plFlag.first && !_plFlag.second)
 	{
