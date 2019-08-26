@@ -164,24 +164,44 @@ void Game4::CreateQuestion()
 {
 	question = "";
 
-	SelectNum();
+	SelectNum(100);
 	SelectOperator();
-	SelectNum();
+	if (op == static_cast<int>(Operator::PLUS))
+	{
+		SelectNum(100);
+	}
+	else if (op == static_cast<int>(Operator::MINUS))
+	{
+		SelectNum(100);
+	}
+	else if (op == static_cast<int>(Operator::MULTI))
+	{
+		SelectNum(10);
+	}
+	
 
 	question += "ÇÕÅH";
 }
 
-void Game4::SelectNum()
+void Game4::SelectNum(int num)
 {
-	int num = RandomNum(100);
-	std::string s = CreateHiraganaNum(num);
+	int n = RandomNum(num);
+	std::string s = CreateHiraganaNum(n);
 
 	question += s;
 }
 
 void Game4::SelectOperator()
 {
-	int op = RandomNum(static_cast<int>(Operator::MAX));
+	if (nowQNum > qMax / 2)
+	{
+		op = RandomNum(static_cast<int>(Operator::MAX));
+	}
+	else
+	{
+		op = RandomNum(static_cast<int>(Operator::MAX) - 1);
+	}
+
 	question += questionOperators[op];
 }
 

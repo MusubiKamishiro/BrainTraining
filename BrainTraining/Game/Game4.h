@@ -39,11 +39,11 @@ private:
 	void DescriptionDraw();		// ƒ‹[ƒ‹à–¾•`‰æ
 	void GameDraw();			// ƒQ[ƒ€ƒƒCƒ“•`‰æ
 
-	int RandomNum(int parameter);
-	std::string CreateHiraganaNum(int num);
+	int RandomNum(int parameter);		// ˆø”‚ğ•ê”‚É‚µ‚½—”‚ÌŒ‹‰Ê‚ğ•Ô‚·
+	std::string CreateHiraganaNum(int num);	// ˆø”‚Ì”š‚ğ‚Ğ‚ç‚ª‚È‚É‚·‚é
 
 	void CreateQuestion();		// –â‘èì¬
-	void SelectNum();
+	void SelectNum(int num);
 	void SelectOperator();
 
 	std::map<int, std::string> questionOperators;
@@ -51,6 +51,8 @@ private:
 
 	int nowQNum;	// Œ»İ‚Ì–â‘è”Ô†
 	std::string question;	// –â‘è•¶
+
+	int op;		// –â‘è‰‰Z‹L†
 
 	int displayCount;	// •\¦ŠÔ
 
