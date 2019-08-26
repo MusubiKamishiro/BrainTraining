@@ -45,7 +45,7 @@ void SceneManager::Draw()
 	for (int i = (scene.size() - 1); i >= 0; --i)
 	{
 		auto pal = scene[i]->GetPal();
-		DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, pal);
+		DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, pal);
 
 		scene[i]->Draw();
 

@@ -50,12 +50,16 @@ void Game3::WaitUpdate(const Peripheral & p)
 		{
 			if (_questions >= 2)
 			{
+				_moveFlagCnt = (_questions >= 10 ? 2 : 1);
 				_updater = &Game3::GameUpdate;
 			}
 			else
 			{
 				_updater = &Game3::FirstUpdate;
 			}
+			_orderText = "";
+			_timeCnt = _defTime;	
+			_isJudge = false;
 		}
 	}
 }
@@ -86,12 +90,12 @@ void Game3::FirstUpdate(const Peripheral & p)
 		_isJudge = true;
 		if (!_judgeFlag.first)
 		{
-			_lastNum = 0;
+			_orderText += "赤" + _texts[1] + "!";
 			_judgeFlag.first = true;
 		}
 		else
 		{
-			_lastNum = 1;
+			_orderText += "白" + _texts[1] + "!";
 			_judgeFlag.second = true;
 		}
 	}
@@ -99,6 +103,27 @@ void Game3::FirstUpdate(const Peripheral & p)
 	{
 		ButtonUpdater(p);
 	}
+
+	if (_timeCnt <= 0)
+	{
+		_isJudge = false;
+		/// 旗の判定
+		if (_judgeFlag == _plFlag)
+		{
+			++_corrects;
+			++_questions;
+			PlaySoundMem(_correctSE, DX_PLAYTYPE_BACK);
+		}
+		else
+		{
+			_plFlag = _judgeFlag;
+			++_questions;
+			PlaySoundMem(_missSE, DX_PLAYTYPE_BACK);
+		}
+		_updater = &Game3::WaitUpdate;
+	}
+
+	--_timeCnt;
 }
 
 void Game3::GameUpdate(const Peripheral & p)
@@ -108,98 +133,68 @@ void Game3::GameUpdate(const Peripheral & p)
 		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
 	}
 
-	// 乱数を出すためのﾗﾑﾀﾞ式
-	auto GetRandom = [](const int& min, const int& max, const int& lastNum)
-	{
-		int num = min + (int)(rand() * (max - min + 1.0) / (1.0 + RAND_MAX));
-
-		/// 前回の値を同じ場合、もう一度乱数を出す
-		while (num == lastNum)
-		{
-			num = min + (int)(rand() * (max - min + 1.0) / (1.0 + RAND_MAX));
-		}
-		return num;
-	};
-
 	if (!_isJudge)
 	{
-		_isJudge = true;
-		_lastNum = GetRandom(0, _texts.size() - 1, _lastNum);
-		auto flag = ChangeJudgeFlag(_lastNum);
-		while (!flag)
-		{
-			/// 前と同じ乱数の結果が出たとき、もう一度乱数を求めている
-			_lastNum = GetRandom(0, _texts.size() - 1, _lastNum);
-			flag = ChangeJudgeFlag(_lastNum);
-		}
+		JuedeFlagUpdater();
 	}
 	else
 	{
+		/// 制限時間内ならボタンを押し放題にする
 		ButtonUpdater(p);
 	}
+
+	if (_timeCnt <= 0)
+	{
+		_isJudge = false;
+		/// 旗の判定
+		if (_judgeFlag == _plFlag)
+		{
+			++_corrects;
+			++_questions;
+			PlaySoundMem(_correctSE, DX_PLAYTYPE_BACK);
+		}
+		else
+		{
+			_plFlag = _judgeFlag;
+			++_questions;
+			PlaySoundMem(_missSE, DX_PLAYTYPE_BACK);
+		}
+		_updater = &Game3::WaitUpdate;
+	}
+
+	--_timeCnt;
 }
 
-bool Game3::ChangeJudgeFlag(const int & num)
+void Game3::MoveJudgeFlag(const int& num, const BUTTON& btn)
 {
 	if (num / 2 == static_cast<int>(JFLAG::UP))
 	{
-		if (num % 2 == 0 && !_judgeFlag.first)
+		if (btn == BUTTON::RED)
 		{
 			_judgeFlag.first = true;
-			return true;
 		}
-		else if (num % 2 == 1 && !_judgeFlag.second)
+		else if (btn == BUTTON::WHITE)
 		{
 			_judgeFlag.second = true;
-			return true;
 		}
 		else {}
 	}
 	else if (num / 2 == static_cast<int>(JFLAG::DOWN))
 	{
-		if (num % 2 == 0 && _judgeFlag.first)
-		{
-			_judgeFlag.first = false;
-			return true;
-		}
-		else if (num % 2 == 1 && _judgeFlag.second)
-		{
-			_judgeFlag.second = false;
-			return true;
-		}
-		else {}
-	}
-	else if (num / 2 == static_cast<int>(JFLAG::STAYUP))
-	{
-		if (num % 2 == 0 && !_judgeFlag.first)
-		{
-			_judgeFlag.first = true;
-		}
-		else if (num % 2 == 1 && !_judgeFlag.second)
-		{
-			_judgeFlag.second = true;
-		}
-		else {}
-		return true;
-	}
-	else if (num / 2 == static_cast<int>(JFLAG::STAYDOWN))
-	{
-		if (num % 2 == 0 && _judgeFlag.first)
+		if (btn == BUTTON::RED)
 		{
 			_judgeFlag.first = false;
 		}
-		else if (num % 2 == 1 && _judgeFlag.second)
+		else if (btn == BUTTON::WHITE)
 		{
 			_judgeFlag.second = false;
 		}
 		else {}
-		return true;
 	}
 	else {}
-	return false;
 }
 
-void Game3::ChangeFlag(const BUTTON & btn)
+void Game3::MovePlFlag(const BUTTON & btn)
 {
 	if (btn == BUTTON::RED)
 	{
@@ -213,6 +208,47 @@ void Game3::ChangeFlag(const BUTTON & btn)
 
 }
 
+void Game3::JuedeFlagUpdater()
+{
+	auto GetRandom = [](const int& min, const int& max, const int& lastNum)
+	{
+		int num = min + (int)(rand() * (max - min + 1.0) / (1.0 + RAND_MAX));
+		/// 前回の値を同じ場合、もう一度乱数を出す
+		while (num == lastNum)
+		{
+			num = min + (int)(rand() * (max - min + 1.0) / (1.0 + RAND_MAX));
+		}
+		return num;
+	};
+
+	if (_moveFlagCnt <= 1)
+	{
+		_lastNum = GetRandom(0, _texts.size() - 1, _lastNum);
+		auto btnNum = rand() % 2;
+		MoveJudgeFlag(_lastNum, (BUTTON)(btnNum));
+		_orderText += (btnNum == 0 ? "赤" : "白");
+		_orderText += _texts[_lastNum] + "!";
+	}
+	else
+	{
+		for (int i = 0; i < _moveFlagCnt; ++i)
+		{
+			_lastNum = GetRandom(0, _texts.size() - 1, _lastNum);
+			MoveJudgeFlag(_lastNum, (BUTTON)(i));
+			_orderText += (i == 0 ? "赤" : "白");
+			if (i == 0)
+			{
+				_orderText += (_judgeFlag.first ? _texts[0] + "、" : _texts[2] + "、");
+			}
+			else
+			{
+				_orderText += (_judgeFlag.second ? _texts[1] + "!" : _texts[3] + "!");
+			}
+		}
+	}
+	_isJudge = true;
+}
+
 void Game3::ButtonUpdater(const Peripheral& p)
 {
 	auto btn = _buttons.begin();
@@ -221,37 +257,18 @@ void Game3::ButtonUpdater(const Peripheral& p)
 		auto cnt = btn - _buttons.begin();
 		if ((*btn)->Update(p))
 		{
-			ChangeFlag((BUTTON)cnt);
-			_isJudge = false;
-			/// 旗の判定
-			if (_judgeFlag == _plFlag)
-			{
-				++_corrects;
-				++_questions;
-				PlaySoundMem(_correctSE, DX_PLAYTYPE_BACK);
-			}
-			else
-			{
-				_plFlag = _judgeFlag;
-				++_questions;
-				PlaySoundMem(_missSE, DX_PLAYTYPE_BACK);
-			}
-			_updater = &Game3::WaitUpdate;
+			MovePlFlag((BUTTON)cnt);
 		}
 	}
 }
 
-Game3::Game3() : _btnSize(Size(300, 150))
+Game3::Game3() : _btnSize(Size(300, 150)), _defTime(180)
 {
 	/// 指示用のテキストを追加している
-	_texts.emplace_back("赤あげて！");
-	_texts.emplace_back("白あげて！");
-	_texts.emplace_back("赤さげて！");
-	_texts.emplace_back("白さげて！");
-	_texts.emplace_back("赤さげないて！");
-	_texts.emplace_back("白さげないて！");
-	_texts.emplace_back("赤あげないて！");
-	_texts.emplace_back("白あげないて！");
+	_texts.emplace_back("さげないで");
+	_texts.emplace_back("あげて");
+	_texts.emplace_back("あげないで");
+	_texts.emplace_back("さげて");
 
 	_judgeFlag = _plFlag = { false, false };
 
@@ -275,16 +292,17 @@ Game3::Game3() : _btnSize(Size(300, 150))
 	auto size = Game::Instance().GetScreenSize();
 	_buttons.emplace_back(new Button(Rect(size.x / 7 + _btnSize.width / 2, size.y / 4 * 3 + _btnSize.height / 2,
 										  _btnSize.width, _btnSize.height)));
-	_buttons.emplace_back(new Button(Rect(size.x / 5 * 2 + _btnSize.width / 2, size.y / 4 * 3 + _btnSize.height / 2, 
-										  _btnSize.width, _btnSize.height)));
 	_buttons.emplace_back(new Button(Rect(size.x / 3 * 2 + _btnSize.width / 2, size.y / 4 * 3 + _btnSize.height / 2,
 										  _btnSize.width, _btnSize.height)));
+	
 
 	_correctSE = LoadSoundMem("SE/correct1.mp3");
 	_missSE	= LoadSoundMem("SE/incorrect1.mp3");
+	_orderText = "";
+	_timeCnt = _defTime;
 
 	_isJudge = false;
-	_questions = _corrects = 0;
+	_questions = _corrects = _moveFlagCnt = 0;
 
 	_updater = &Game3::FadeinUpdate;
 	_drawer = &Game3::StartDraw;
@@ -328,9 +346,16 @@ void Game3::GameDraw()
 	int strWidth, strHeight;
 	strWidth = strHeight = 0;
 
-	SetFontSize(120);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, _texts[_lastNum].c_str(), strlen(_texts[_lastNum].c_str()));
-	DrawString((size.x / 2 - strWidth / 2), (size.y / 13 * 9 - strHeight / 2), _texts[_lastNum].c_str(), 0x000000);
+	SetFontSize(70);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, _orderText.c_str(), strlen(_orderText.c_str()));
+	DrawString((size.x / 2 - strWidth / 2), (size.y / 13 * 9 - strHeight / 2), _orderText.c_str(), 0x000000);
+
+
+	//// debug用
+	DrawString(0, 100, (_judgeFlag.first ? "UP" : "DOWN"), 0xff0000, true);
+	DrawString(0, 200, (_judgeFlag.second ? "UP" : "DOWN"), 0x000000, true);
+
+	DrawFormatString(0, 0, 0x000000, "%d", (_timeCnt / 60) + 1);
 
 	if (_plFlag.first && !_plFlag.second)
 	{
@@ -353,6 +378,8 @@ void Game3::GameDraw()
 	{
 		btn->Draw();
 	}
+	SetFontSize(120);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, _orderText.c_str(), strlen(_orderText.c_str()));
 	DxLib::DrawString((size.x / 6), (size.y / 13 * 9 - strHeight / 2), "赤", 0xff0000);
 	/// 赤い旗のボタン
 	if (!_plFlag.first)
@@ -373,6 +400,4 @@ void Game3::GameDraw()
 	{
 		DxLib::DrawExtendGraph((size.x / 3 * 2), (size.y / 4 * 3), (size.x / 3 * 2 + _btnSize.width), (size.y / 4 * 3 + _btnSize.height), _downImg, true);
 	}
-	/// そのままボタン
-	DxLib::DrawExtendGraph((size.x / 5 * 2), (size.y / 4 * 3), (size.x / 5 * 2 + _btnSize.width), (size.y / 4 * 3 + _btnSize.height), _stayImg, true);
 }

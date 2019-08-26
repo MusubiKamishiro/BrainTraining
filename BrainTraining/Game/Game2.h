@@ -1,12 +1,24 @@
 #pragma once
 #include "../Scene/Scene.h"
 
+enum class DrawType
+{
+	Number,
+	Money,
+};
+
+struct Num
+{
+	int num;
+	DrawType type;
+};
+
 class Game2 :
 	public Scene
 {
 private:
-	int _right;	// 右の値
-	int _left;	// 左の値
+	Num _right;	// 右の値
+	Num _left;	// 左の値
 
 	int _questions;		// 問題番号
 	int _correctNum;	// 正解数
@@ -14,6 +26,15 @@ private:
 	int _SE_question;	// 出題SE
 	int _SE_correct;	// 正解SE
 	int _SE_miss;		// はずれSE
+
+	int _img_1en;
+	int _img_5en;
+	int _img_10en;
+	int _img_50en;
+	int _img_100en;
+	int _img_1000en;
+	int _img_5000en;
+	int _img_10000en;
 
 	void (Game2::*_updater)(const Peripheral& p);
 
@@ -31,6 +52,8 @@ private:
 	void WaitDraw();
 	void QuestionsDraw();
 	void AnswerDraw();
+
+	void DrawMoney(int num, int offset = 0);
 
 public:
 	Game2();
