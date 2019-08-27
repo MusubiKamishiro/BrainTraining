@@ -13,6 +13,7 @@
 
 
 constexpr int qMax = 20;	// 問題の最大数
+constexpr int maxQNun = 100;	// 最大値
 
 void Game4::FadeinUpdate(const Peripheral & p)
 {
@@ -71,8 +72,16 @@ void Game4::QuestionDisplayUpdate(const Peripheral & p)
 	{
 		if (buttons[i]->Update(p))
 		{
-			updater = &Game4::AnswerCheckUpdate;
+			EditMyAnswer(i);
 		}
+	}
+	if (decide->Update(p))
+	{
+		updater = &Game4::AnswerCheckUpdate;
+	}
+	if (del->Update(p))
+	{
+		myAnswer = 0;
 	}
 
 	if (p.IsTrigger(MOUSE_INPUT_RIGHT))
@@ -83,6 +92,29 @@ void Game4::QuestionDisplayUpdate(const Peripheral & p)
 
 void Game4::AnswerCheckUpdate(const Peripheral & p)
 {
+	// 問題の回答を確認
+	if (op == static_cast<int>(Operator::PLUS))
+	{
+		qAnswer = firstNum + secondNum;
+	}
+	else if (op == static_cast<int>(Operator::MINUS))
+	{
+		qAnswer = firstNum - secondNum;
+	}
+	else if (op == static_cast<int>(Operator::MULTI))
+	{
+		qAnswer = firstNum * secondNum;
+	}
+
+	if (qAnswer == myAnswer)
+	{
+		result = true;
+	}
+	else
+	{
+		result = false;
+	}
+
 	updater = &Game4::AnswerDisplayUpdate;
 }
 
@@ -124,7 +156,29 @@ void Game4::GameDraw()
 	for (unsigned int i = 0; i < buttons.size(); ++i)
 	{
 		buttons[i]->Draw();
+		auto rect = buttons[i]->GetButtonRect();
+		DxLib::DrawFormatString(rect.center.x, rect.center.y, 0xff0000, "%d", i);
 	}
+	decide->Draw();
+	del->Draw();
+
+	if (updater == &Game4::AnswerDisplayUpdate)
+	{
+		if (result)
+		{
+			DxLib::DrawCircle(600, 600, 100, 0x00ff00);
+		}
+		else
+		{
+			DxLib::DrawBox(450, 450, 550, 550, 0x00ff00, true);
+		}
+	}
+}
+
+void Game4::EditMyAnswer(unsigned int num)
+{
+	myAnswer *= 10;
+	myAnswer += num;
 }
 
 int Game4::RandomNum(int parameter)
@@ -162,31 +216,40 @@ std::string Game4::CreateHiraganaNum(int num)
 
 void Game4::CreateQuestion()
 {
+	myAnswer = 0;
+
 	question = "";
 
-	SelectNum(100);
+	SelectNum(maxQNun, firstNum);
 	SelectOperator();
 	if (op == static_cast<int>(Operator::PLUS))
 	{
-		SelectNum(100);
+		SelectNum(maxQNun, secondNum);
 	}
 	else if (op == static_cast<int>(Operator::MINUS))
 	{
-		SelectNum(100);
+		SelectNum(firstNum, secondNum);
 	}
 	else if (op == static_cast<int>(Operator::MULTI))
 	{
-		SelectNum(10);
+		SelectNum(maxQNun/10, secondNum);
 	}
 	
-
 	question += "は？";
 }
 
-void Game4::SelectNum(int num)
+void Game4::SelectNum(int num, int& qnum)
 {
-	int n = RandomNum(num);
-	std::string s = CreateHiraganaNum(n);
+	if (num != 0)
+	{
+		qnum = RandomNum(num);
+	}
+	else
+	{
+		qnum = 0;
+	}
+	
+	std::string s = CreateHiraganaNum(qnum);
 
 	question += s;
 }
@@ -226,20 +289,26 @@ Game4::Game4()
 	hiraganaNum[9] = "きゅう";
 	hiraganaNum[10] = "じゅう";
 
-
-	CreateQuestion();
+	firstNum = secondNum = 0;
+	qAnswer = myAnswer = 0;
 
 	nowQNum = 1;
 	displayCount = 60;
+	result = false;
 
-	Vector2 buttonSize = Vector2(100, 100);
+	CreateQuestion();
+
 
 	// テンキー
-	for (int i = 0; i < 10; ++i)
+	Vector2 buttonSize = Vector2(200, 200);
+	buttons.emplace_back(new Button(Rect(1420, 700, buttonSize.x, buttonSize.y)));
+	for (int i = 0; i < 9; ++i)
 	{
-		buttons.emplace_back(new Button(Rect(100 + i % 3 * buttonSize.x, 100 + i / 3 * buttonSize.y, buttonSize.x, buttonSize.y)));
+		buttons.emplace_back(new Button(Rect(1420 + i % 3 * buttonSize.x, 500 - i / 3 * buttonSize.y, buttonSize.x, buttonSize.y)));
 	}
-	
+	// 決定,取り消しボタン
+	decide.reset(new Button(Rect(1620, 950, buttonSize.x * 3, buttonSize.y)));
+	del.reset(new Button(Rect(1720, 700, buttonSize.x * 2, buttonSize.y)));
 }
 
 
@@ -254,5 +323,8 @@ void Game4::Update(const Peripheral & p)
 
 void Game4::Draw()
 {
+	DxLib::DrawFormatString(800, 600, 0xff0000, "回答:%d", qAnswer);
+	DxLib::DrawFormatString(800, 800, 0xff0000, "自分の回答:%d", myAnswer);
+
 	(this->*drawer)();
 }

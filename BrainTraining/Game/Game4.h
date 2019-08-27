@@ -39,11 +39,13 @@ private:
 	void DescriptionDraw();		// ルール説明描画
 	void GameDraw();			// ゲームメイン描画
 
+	void EditMyAnswer(unsigned int num);
+
 	int RandomNum(int parameter);		// 引数を母数にした乱数の結果を返す
 	std::string CreateHiraganaNum(int num);	// 引数の数字をひらがなにする
 
 	void CreateQuestion();		// 問題作成
-	void SelectNum(int num);
+	void SelectNum(int num, int& qnum);	// num...問題の最大数
 	void SelectOperator();
 
 	std::map<int, std::string> questionOperators;
@@ -52,11 +54,16 @@ private:
 	int nowQNum;	// 現在の問題番号
 	std::string question;	// 問題文
 
+	int firstNum, secondNum;	// 問題数値
+	int qAnswer, myAnswer;		// 問題の回答, 自分の回答
+	bool result;
+
 	int op;		// 問題演算記号
 
 	int displayCount;	// 表示時間
 
 	std::vector<std::shared_ptr<Button>> buttons;
+	std::shared_ptr<Button> decide, del;	// 決定,削除
 
 public:
 	Game4();
