@@ -301,6 +301,8 @@ Game3::Game3() : _btnSize(Size(300, 150)), _defTime(180)
 	_orderText = "";
 	_timeCnt = _defTime;
 
+	auto debug = ChangeFont("ほのかアンティーク丸", DX_CHARSET_DEFAULT);
+
 	_isJudge = false;
 	_questions = _corrects = _moveFlagCnt = 0;
 
@@ -332,8 +334,8 @@ void Game3::StartDraw()
 	strWidth = strHeight = 0;
 
 	SetFontSize(250);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, "旗揚げゲーム", strlen("旗揚げゲーム"));
-	DrawString(size.x / 2 - strWidth / 2, size.y / 2 - strHeight / 2, "旗揚げゲーム", 0x000000);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, "旗上げゲーム", strlen("旗上げゲーム"));
+	DrawString(size.x / 2 - strWidth / 2, size.y / 2 - strHeight / 2, "旗上げゲーム", 0x000000);
 
 }
 
@@ -347,13 +349,9 @@ void Game3::GameDraw()
 	strWidth = strHeight = 0;
 
 	SetFontSize(70);
+
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, _orderText.c_str(), strlen(_orderText.c_str()));
 	DrawString((size.x / 2 - strWidth / 2), (size.y / 13 * 9 - strHeight / 2), _orderText.c_str(), 0x000000);
-
-
-	//// debug用
-	DrawString(0, 100, (_judgeFlag.first ? "UP" : "DOWN"), 0xff0000, true);
-	DrawString(0, 200, (_judgeFlag.second ? "UP" : "DOWN"), 0x000000, true);
 
 	DrawFormatString(0, 0, 0x000000, "%d", (_timeCnt / 60) + 1);
 
