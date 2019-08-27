@@ -46,7 +46,7 @@ void Game::Initialize()
 		MessageBox(NULL, "フォント読込み失敗", "", MB_OK);
 	}
 
-	ChangeFont("ほのかアンティーク丸", DX_CHARSET_DEFAULT);
+	// ChangeFont("ほのかアンティーク丸", DX_CHARSET_DEFAULT);
 
 	//AddFontResourceEx("Ronde-B_square.otf", FR_PRIVATE, nullptr);
 	//DxLib::ChangeFont("ロンド B スクエア", DX_CHARSET_DEFAULT);

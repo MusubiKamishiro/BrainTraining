@@ -5,18 +5,17 @@
 
 class Button;
 
-enum class JFLAG
+enum class ORDER
 {
 	UP,
 	DOWN,
 	MAX
 };
 
-enum class BUTTON
+enum class FLAG
 {
 	RED,
 	WHITE,
-	STAY,
 	MAX
 };
 
@@ -37,16 +36,18 @@ private:
 	void StartDraw();
 	void GameDraw();
 
-	void MoveJudgeFlag(const int& num, const BUTTON& btn);
-	void MovePlFlag(const BUTTON& btn);
+	void MoveJudgeFlag(const int& num, const FLAG& btn);
+	void MovePlFlag(const FLAG& btn);
 
-	void JuedeFlagUpdater();
+	void JudgeFlagUpdater();
 	void ButtonUpdater(const Peripheral& p);
 
+	std::vector<std::shared_ptr<Button>> _buttons;
 	std::vector<std::string> _texts;
+	std::vector<int> _flagImgs;			// Šøã‚°·¬×¸À°‚Ì‰æ‘œÊİÄŞÙæ“¾—p
 	
-	std::pair<bool, bool> _judgeFlag;		// first : Ô, second : ”’
-	std::pair<bool, bool> _plFlag;			// first : Ô, second : ”’
+	std::pair<bool, bool> _judgeFlag;	// first : Ô, second : ”’
+	std::pair<bool, bool> _plFlag;		// first : Ô, second : ”’
 
 	std::string _orderText;
 
@@ -57,16 +58,9 @@ private:
 	int _corrects;			// ³‰ğ”
 	int _timeCnt;
 
-
-	// Šø—g‚°¹Ş°Ñ‚Ì‰æ‘œÊİÄŞÙ(vector‚ÅŠÇ—‚·‚é‚æ‚¤‚É‚·‚é)
-	int _upImg, _downImg, _stayImg, _flagImg, _flag2Img, _flag3Img, _flag4Img;
 	int _correctSE, _missSE;
 
-	const Size _btnSize;
 	const int _defTime;
-
-	std::vector<std::shared_ptr<Button>> _buttons;
-
 public:
 	Game3();
 	~Game3();
