@@ -37,6 +37,17 @@ void Game::Initialize()
 	//DxLib::SetWindowIconID(IDI_ICON1);		// アイコン
 	DxLib::SetDrawScreen(DX_SCREEN_BACK);		// 裏画面に描画
 
+	/// ﾌｫﾝﾄの読み込み
+	if (AddFontResourceEx("Font/ほのかアンティーク丸.ttf", FR_PRIVATE, NULL) > 0)
+	{
+	}
+	else
+	{
+		MessageBox(NULL, "フォント読込み失敗", "", MB_OK);
+	}
+
+	ChangeFont("ほのかアンティーク丸", DX_CHARSET_DEFAULT);
+
 	//AddFontResourceEx("Ronde-B_square.otf", FR_PRIVATE, nullptr);
 	//DxLib::ChangeFont("ロンド B スクエア", DX_CHARSET_DEFAULT);
 	DxLib::SetFontSize(fontSize);
@@ -83,6 +94,15 @@ void Game::Run()
 
 			DxLib::ScreenFlip();
 		}
+	}
+
+	/// ﾌｫﾝﾄの削除
+	if (RemoveFontResourceEx("Font/ほのかアンティーク丸.ttf", FR_PRIVATE, NULL)) 
+	{
+	}
+	else
+	{
+		MessageBox(NULL, "フォントは既に削除されています", "", MB_OK);
 	}
 
 	ff.Terminate();

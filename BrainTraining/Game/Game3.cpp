@@ -301,6 +301,8 @@ Game3::Game3() : _btnSize(Size(300, 150)), _defTime(180)
 	_orderText = "";
 	_timeCnt = _defTime;
 
+	auto debug = ChangeFont("‚Ù‚Ì‚©ƒAƒ“ƒeƒB[ƒNŠÛ", DX_CHARSET_DEFAULT);
+
 	_isJudge = false;
 	_questions = _corrects = _moveFlagCnt = 0;
 
@@ -332,8 +334,8 @@ void Game3::StartDraw()
 	strWidth = strHeight = 0;
 
 	SetFontSize(250);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, "Šø—g‚°ƒQ[ƒ€", strlen("Šø—g‚°ƒQ[ƒ€"));
-	DrawString(size.x / 2 - strWidth / 2, size.y / 2 - strHeight / 2, "Šø—g‚°ƒQ[ƒ€", 0x000000);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, "Šøã‚°ƒQ[ƒ€", strlen("Šøã‚°ƒQ[ƒ€"));
+	DrawString(size.x / 2 - strWidth / 2, size.y / 2 - strHeight / 2, "Šøã‚°ƒQ[ƒ€", 0x000000);
 
 }
 
@@ -347,6 +349,7 @@ void Game3::GameDraw()
 	strWidth = strHeight = 0;
 
 	SetFontSize(70);
+
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, _orderText.c_str(), strlen(_orderText.c_str()));
 	DrawString((size.x / 2 - strWidth / 2), (size.y / 13 * 9 - strHeight / 2), _orderText.c_str(), 0x000000);
 
