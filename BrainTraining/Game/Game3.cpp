@@ -350,11 +350,6 @@ void Game3::GameDraw()
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, _orderText.c_str(), strlen(_orderText.c_str()));
 	DrawString((size.x / 2 - strWidth / 2), (size.y / 13 * 9 - strHeight / 2), _orderText.c_str(), 0x000000);
 
-
-	//// debug—p
-	DrawString(0, 100, (_judgeFlag.first ? "UP" : "DOWN"), 0xff0000, true);
-	DrawString(0, 200, (_judgeFlag.second ? "UP" : "DOWN"), 0x000000, true);
-
 	DrawFormatString(0, 0, 0x000000, "%d", (_timeCnt / 60) + 1);
 
 	if (_plFlag.first && !_plFlag.second)
