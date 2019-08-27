@@ -36,7 +36,7 @@ void Game4::FadeoutUpdate(const Peripheral & p)
 {
 	if (pal <= 0)
 	{
-		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>());
+		SceneManager::Instance().ChangeScene(std::make_unique<ResultScene>(qMax, trueNum));
 	}
 	else
 	{
@@ -109,6 +109,7 @@ void Game4::AnswerCheckUpdate(const Peripheral & p)
 	if (qAnswer == myAnswer)
 	{
 		result = true;
+		++trueNum;
 	}
 	else
 	{
@@ -160,7 +161,11 @@ void Game4::GameDraw()
 		DxLib::DrawFormatString(rect.center.x, rect.center.y, 0xff0000, "%d", i);
 	}
 	decide->Draw();
+	auto rect = decide->GetButtonRect();
+	DxLib::DrawFormatString(rect.center.x, rect.center.y, 0xff0000, "%s", "回答する");
 	del->Draw();
+	rect = del->GetButtonRect();
+	DxLib::DrawFormatString(rect.center.x, rect.center.y, 0xff0000, "%s", "取り消し");
 
 	if (updater == &Game4::AnswerDisplayUpdate)
 	{
@@ -202,7 +207,10 @@ std::string Game4::CreateHiraganaNum(int num)
 	}
 	else
 	{
-		s = hiraganaNum[num / 10];
+		if (num / 10 != 1)
+		{
+			s = hiraganaNum[num / 10];
+		}
 		s += hiraganaNum[10];
 
 		if (num % 10 != 0)
@@ -220,8 +228,24 @@ void Game4::CreateQuestion()
 
 	question = "";
 
-	SelectNum(maxQNun, firstNum);
+	// まず、何算になるかを決める
 	SelectOperator();
+
+	// 1つめの数値を決定
+	if (nowQNum < qMax / 4)
+	{
+		SelectNum(maxQNun / 10, firstNum);
+	}
+	else
+	{
+		SelectNum(maxQNun, firstNum);
+	}
+	
+	// 問題文章に演算子の追加
+	question += questionOperators[op];
+	question += "　";
+
+	// 演算子をみて、2つめの数値を決定
 	if (op == static_cast<int>(Operator::PLUS))
 	{
 		SelectNum(maxQNun, secondNum);
@@ -252,6 +276,7 @@ void Game4::SelectNum(int num, int& qnum)
 	std::string s = CreateHiraganaNum(qnum);
 
 	question += s;
+	question += "　";
 }
 
 void Game4::SelectOperator()
@@ -262,10 +287,8 @@ void Game4::SelectOperator()
 	}
 	else
 	{
-		op = RandomNum(static_cast<int>(Operator::MAX) - 1);
+		op = RandomNum(static_cast<int>(Operator::MULTI));
 	}
-
-	question += questionOperators[op];
 }
 
 Game4::Game4()
@@ -291,6 +314,7 @@ Game4::Game4()
 
 	firstNum = secondNum = 0;
 	qAnswer = myAnswer = 0;
+	trueNum = 0;
 
 	nowQNum = 1;
 	displayCount = 60;

@@ -56,6 +56,7 @@ private:
 
 	int firstNum, secondNum;	// –â‘è”’l
 	int qAnswer, myAnswer;		// –â‘è‚Ì‰ñ“š, ©•ª‚Ì‰ñ“š
+	int trueNum;	// ³‰ğ”
 	bool result;
 
 	int op;		// –â‘è‰‰Z‹L†
