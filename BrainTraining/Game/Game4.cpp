@@ -6,11 +6,14 @@
 
 #include "../Peripheral.h"
 #include "../Button.h"
+#include "../Game.h"
 
 #include "../Scene/SceneManager.h"
 #include "../Scene/ResultScene.h"
 #include "../Scene/PauseScene.h"
 
+#include "../System/FileSystem.h"
+#include "../System/SoundLoader.h"
 
 constexpr int qMax = 20;	// 問題の最大数
 constexpr int maxQNun = 100;	// 最大値
@@ -109,11 +112,20 @@ void Game4::AnswerCheckUpdate(const Peripheral & p)
 	if (qAnswer == myAnswer)
 	{
 		result = true;
-		++trueNum;
 	}
 	else
 	{
 		result = false;
+	}
+
+	if (result)
+	{
+		++trueNum;
+		DxLib::PlaySoundMem(trueSE, DX_PLAYTYPE_BACK, true);
+	}
+	else
+	{
+		DxLib::PlaySoundMem(falseSE, DX_PLAYTYPE_BACK, true);
 	}
 
 	updater = &Game4::AnswerDisplayUpdate;
@@ -151,9 +163,13 @@ void Game4::DescriptionDraw()
 
 void Game4::GameDraw()
 {
-	DxLib::DrawFormatString(600, 600, 0xff0000, "第%d問", nowQNum);
-	DxLib::DrawFormatString(400, 400, 0xff0000, "%s", question.c_str());
+	DxLib::SetFontSize(96);
+	DxLib::DrawFormatString(200, 200, 0xff0000, "第%d問", nowQNum);
+	DxLib::DrawFormatString(50, 400, 0xff0000, "%s", question.c_str());
 
+	DxLib::DrawFormatString(500, 800, 0xff0000, "自分の回答:%d", myAnswer);
+
+	// 各種ボタンの描画
 	for (unsigned int i = 0; i < buttons.size(); ++i)
 	{
 		buttons[i]->Draw();
@@ -162,10 +178,10 @@ void Game4::GameDraw()
 	}
 	decide->Draw();
 	auto rect = decide->GetButtonRect();
-	DxLib::DrawFormatString(rect.center.x, rect.center.y, 0xff0000, "%s", "回答する");
+	DxLib::DrawFormatString(rect.center.x - rect.Width() / 4, rect.center.y, 0xff0000, "%s", "回答する");
 	del->Draw();
 	rect = del->GetButtonRect();
-	DxLib::DrawFormatString(rect.center.x, rect.center.y, 0xff0000, "%s", "取り消し");
+	DxLib::DrawFormatString(rect.center.x - rect.Width() / 4, rect.center.y, 0xff0000, "%s", "取り消し");
 
 	if (updater == &Game4::AnswerDisplayUpdate)
 	{
@@ -183,6 +199,12 @@ void Game4::GameDraw()
 void Game4::EditMyAnswer(unsigned int num)
 {
 	myAnswer *= 10;
+	
+	if (myAnswer > maxQNun * maxQNun)
+	{
+		myAnswer = 0;
+	}
+
 	myAnswer += num;
 }
 
@@ -224,8 +246,8 @@ std::string Game4::CreateHiraganaNum(int num)
 
 void Game4::CreateQuestion()
 {
+	// 問題文と自分の回答を初期化
 	myAnswer = 0;
-
 	question = "";
 
 	// まず、何算になるかを決める
@@ -243,7 +265,7 @@ void Game4::CreateQuestion()
 	
 	// 問題文章に演算子の追加
 	question += questionOperators[op];
-	question += "　";
+	question += " ";
 
 	// 演算子をみて、2つめの数値を決定
 	if (op == static_cast<int>(Operator::PLUS))
@@ -276,7 +298,7 @@ void Game4::SelectNum(int num, int& qnum)
 	std::string s = CreateHiraganaNum(qnum);
 
 	question += s;
-	question += "　";
+	question += " ";
 }
 
 void Game4::SelectOperator()
@@ -320,8 +342,11 @@ Game4::Game4()
 	displayCount = 60;
 	result = false;
 
-	CreateQuestion();
-
+	SoundData sData;
+	Game::Instance().GetFileSystem()->Load("SE/correct1.mp3", sData);
+	trueSE = sData.GetHandle();
+	Game::Instance().GetFileSystem()->Load("SE/incorrect1.mp3", sData);
+	falseSE = sData.GetHandle();
 
 	// テンキー
 	Vector2 buttonSize = Vector2(200, 200);
@@ -333,6 +358,8 @@ Game4::Game4()
 	// 決定,取り消しボタン
 	decide.reset(new Button(Rect(1620, 950, buttonSize.x * 3, buttonSize.y)));
 	del.reset(new Button(Rect(1720, 700, buttonSize.x * 2, buttonSize.y)));
+
+	CreateQuestion();
 }
 
 
@@ -348,7 +375,5 @@ void Game4::Update(const Peripheral & p)
 void Game4::Draw()
 {
 	DxLib::DrawFormatString(800, 600, 0xff0000, "回答:%d", qAnswer);
-	DxLib::DrawFormatString(800, 800, 0xff0000, "自分の回答:%d", myAnswer);
-
 	(this->*drawer)();
 }
