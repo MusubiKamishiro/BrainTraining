@@ -208,6 +208,7 @@ void Game6::GameDraw()
 	{
 		btn->Draw();
 	}
+
 	/// ê‘
 	DrawBox((size.x / 6) + (_btnSize.width / 2), (size.y / 4 * 3) - (_btnSize.height / 2),
 			(size.x / 6) - (_btnSize.width / 2), (size.y / 4 * 3) + (_btnSize.height / 2), _colors[0], true);

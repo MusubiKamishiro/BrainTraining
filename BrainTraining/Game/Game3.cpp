@@ -283,13 +283,9 @@ Game3::Game3() : _defTime(180)
 	Game::Instance().GetFileSystem()->Load("img/flag4.png", data);
 	_flagImgs.emplace_back(data.GetHandle());
 
-	int red, white;
-	red = LoadGraph("img/redBG.png");
-	white = LoadGraph("img/whiteBG.png");
-
 	auto size = Game::Instance().GetScreenSize();
-	_buttons.emplace_back(new Button(Rect(size.x / 4,size.y / 2,size.x / 2, size.y), red));
-	_buttons.emplace_back(new Button(Rect(size.x / 4 * 3, size.y / 2, size.x / 2, size.y), white));
+	_buttons.emplace_back(new Button(Rect(size.x / 4,size.y / 2,size.x / 2, size.y)));
+	_buttons.emplace_back(new Button(Rect(size.x / 4 * 3, size.y / 2, size.x / 2, size.y)));
 
 	_correctSE  = LoadSoundMem("SE/correct1.mp3");
 	_missSE		= LoadSoundMem("SE/incorrect1.mp3");
@@ -338,10 +334,8 @@ void Game3::GameDraw()
 	auto size = Game::Instance().GetScreenSize();
 	DxLib::DrawBox(0, 0, size.x, size.y, 0xe0ffe0, true);
 
-	for (auto btn : _buttons)
-	{
-		btn->Draw();
-	}
+	DrawBox(0, 0, size.x / 2, size.y, 0xffcccc, true);
+	DrawBox(size.x / 2, 0, size.x, size.y, 0xffffff, true);
 
 	int strWidth, strHeight;
 	strWidth = strHeight = 0;
