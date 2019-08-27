@@ -41,12 +41,14 @@ private:
 
 	void EditMyAnswer(unsigned int num);
 
-	int RandomNum(int parameter);		// ˆø”‚ğ•ê”‚É‚µ‚½—”‚ÌŒ‹‰Ê‚ğ•Ô‚·
+	int RandomNum(int parameter);			// ˆø”‚ğ•ê”‚É‚µ‚½—”‚ÌŒ‹‰Ê‚ğ•Ô‚·
 	std::string CreateHiraganaNum(int num);	// ˆø”‚Ì”š‚ğ‚Ğ‚ç‚ª‚È‚É‚·‚é
 
 	void CreateQuestion();		// –â‘èì¬
 	void SelectNum(int num, int& qnum);	// num...–â‘è‚ÌÅ‘å”
 	void SelectOperator();
+
+	int trueSE, falseSE;		// ³‰ğ,•s³‰ğ‚Ì‚ÌŒø‰Ê‰¹
 
 	std::map<int, std::string> questionOperators;
 	std::map<int, std::string> hiraganaNum;
