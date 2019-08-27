@@ -41,7 +41,7 @@ void Game6::FadeoutUpdate(const Peripheral & p)
 
 void Game6::WaitUpdate(const Peripheral & p)
 {
-	if (!CheckSoundMem(_correctSE) || !CheckSoundMem(_missSE))
+	if (!CheckSoundMem(_correctSE) && !CheckSoundMem(_missSE))
 	{
 		if (_questions >= 20)
 		{
@@ -59,9 +59,18 @@ void Game6::StartUpdate(const Peripheral & p)
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
 		_updater = &Game6::GameUpdate;
-		_drawer = &Game6::GameDraw;
-
+		_drawer  = &Game6::GameDraw;
 	}
+}
+
+void Game6::ExpUpdate(const Peripheral & p)
+{
+	/// 操作説明
+}
+
+void Game6::CntDownUpdate(const Peripheral & p)
+{
+	/// カウントダウン
 }
 
 void Game6::GameUpdate(const Peripheral & p)
@@ -152,14 +161,16 @@ Game6::Game6() : _btnSize(Size(300,300))
 										  _btnSize.width, _btnSize.height)));
 
 	_correctSE = LoadSoundMem("SE/correct1.mp3");
-	_missSE	= LoadSoundMem("SE/incorrect1.mp3");
+	_missSE	   = LoadSoundMem("SE/incorrect1.mp3");
+
+	ChangeFont("ほのかアンティーク丸", DX_CHARSET_DEFAULT);
 
 	_textNum = _colorNum = _questions = _corrects = 0;
 
 	ChangeColor();
 
 	_updater = &Game6::FadeinUpdate;
-	_drawer = &Game6::StartDraw;
+	_drawer  = &Game6::StartDraw;
 }
 
 Game6::~Game6()
@@ -190,11 +201,19 @@ void Game6::StartDraw()
 	DrawString(size.x / 2 - strWidth / 2, size.y / 2 - strHeight / 2, "文字の色当てゲーム", 0x000000);
 }
 
+void Game6::ExpDraw()
+{
+}
+
+void Game6::CntDownDraw()
+{
+}
+
 void Game6::GameDraw()
 {
 	auto size = Game::Instance().GetScreenSize();
 
-	DxLib::DrawBox(0, 0, size.x, size.y, 0xeeeeee, true);
+	DxLib::DrawBox(0, 0, size.x, size.y, 0xffffff, true);
 
 	int strWidth, strHeight;
 	strWidth = strHeight = 0;
@@ -202,23 +221,16 @@ void Game6::GameDraw()
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, _texts[_textNum].c_str(), strlen(_texts[_textNum].c_str()));
 	DrawString((size.x / 2 - strWidth / 2), (size.y / 3 - strHeight / 2), _texts[_textNum].c_str(), _colors[_colorNum]);
 
-	SetFontSize(120);
-
-	for (auto btn : _buttons)
+	/*for (auto btn : _buttons)
 	{
 		btn->Draw();
-	}
+	}*/
 
-	/// 赤
-	DrawBox((size.x / 6) + (_btnSize.width / 2), (size.y / 4 * 3) - (_btnSize.height / 2),
-			(size.x / 6) - (_btnSize.width / 2), (size.y / 4 * 3) + (_btnSize.height / 2), _colors[0], true);
-	/// 青
-	DrawBox((size.x / 8 * 3) + (_btnSize.width / 2), (size.y / 4 * 3) - (_btnSize.height / 2), 
-			(size.x / 8 * 3) - (_btnSize.width / 2), (size.y / 4 * 3) + (_btnSize.height / 2), _colors[1], true);
-	/// 黄
-	DrawBox((size.x / 7 * 4) + (_btnSize.width / 2), (size.y / 4 * 3) - (_btnSize.height / 2), 
-			(size.x / 7 * 4) - (_btnSize.width / 2), (size.y / 4 * 3) + (_btnSize.height / 2), _colors[2], true);
-	/// 緑
-	DrawBox((size.x / 9 * 7) + (_btnSize.width / 2), (size.y / 4 * 3) - (_btnSize.height / 2), 
-			(size.x / 9 * 7) - (_btnSize.width / 2), (size.y / 4 * 3) + (_btnSize.height / 2), _colors[3], true);
+	SetFontSize(120);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, "あか", strlen("あか"));
+	DrawString((size.x / 6)		- strWidth / 2, (size.y / 4 * 3) - strHeight / 2, "あか", 0x000000);
+	DrawString((size.x / 8 * 3) - strWidth / 2, (size.y / 4 * 3) - strHeight / 2, "あお", 0x000000);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, "きいろ", strlen("きいろ"));
+	DrawString((size.x / 7 * 4) - strWidth / 2, (size.y / 4 * 3) - strHeight / 2, "きいろ", 0x000000);
+	DrawString((size.x / 9 * 7) - strWidth / 2, (size.y / 4 * 3) - strHeight / 2, "みどり", 0x000000);
 }

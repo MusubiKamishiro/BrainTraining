@@ -89,7 +89,7 @@ void Game::Run()
 			scenes.Draw();
 
 #ifdef _DEBUG
-			peripheral.DebugDraw();
+			// peripheral.DebugDraw();
 #endif // _DEBUG
 
 			DxLib::ScreenFlip();

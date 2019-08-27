@@ -16,12 +16,16 @@ private:
 	void FadeoutUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
 	void StartUpdate(const Peripheral& p);
+	void ExpUpdate(const Peripheral& p);
+	void CntDownUpdate(const Peripheral& p);
 	void GameUpdate(const Peripheral& p);
 
 	void ChangeColor();							// êFÇÃïœçX
 	void ButtonUpdater(const Peripheral& p);
 	
 	void StartDraw();
+	void ExpDraw();
+	void CntDownDraw();
 	void GameDraw();
 
 	std::vector<std::string> _texts;
@@ -30,6 +34,7 @@ private:
 	int _textNum, _colorNum;
 	int _questions;
 	int _corrects;			/// ê≥âêî
+	int _timeCnt;
 
 	int _correctSE, _missSE;
 
@@ -38,7 +43,6 @@ private:
 	const Size _btnSize;
 
 	std::vector<std::shared_ptr<Button>> _buttons;
-
 public:
 	Game6();
 	~Game6();

@@ -68,8 +68,8 @@ void Game3::StartUpdate(const Peripheral & p)
 {
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
-		_updater = &Game3::FirstUpdate;
-		_drawer = &Game3::GameDraw;
+		_updater = &Game3::ExpUpdate;
+		_drawer = &Game3::ExpDraw;
 	}
 }
 
@@ -161,8 +161,32 @@ void Game3::GameUpdate(const Peripheral & p)
 		}
 		_updater = &Game3::WaitUpdate;
 	}
-
 	--_timeCnt;
+}
+
+void Game3::ExpUpdate(const Peripheral & p)
+{
+	if (p.IsTrigger(MOUSE_INPUT_LEFT))
+	{
+		++_expCnt;
+		if (_expCnt >= _expImgs.size())
+		{
+			_timeCnt = 240;
+			_updater = &Game3::CntDownUpdate;
+			_drawer  = &Game3::CntDownDraw;
+		}
+	}
+}
+
+void Game3::CntDownUpdate(const Peripheral & p)
+{
+	--_timeCnt;
+	if (_timeCnt <= 0)
+	{
+		_timeCnt = 180;
+		_updater = &Game3::FirstUpdate;
+		_drawer  = &Game3::GameDraw;
+	}
 }
 
 void Game3::MoveJudgeFlag(const int& num, const FLAG& btn)
@@ -205,7 +229,6 @@ void Game3::MovePlFlag(const FLAG & btn)
 		_plFlag.second = !_plFlag.second;
 	}
 	else {}
-
 }
 
 void Game3::JudgeFlagUpdater()
@@ -283,6 +306,14 @@ Game3::Game3() : _defTime(180)
 	Game::Instance().GetFileSystem()->Load("img/flag4.png", data);
 	_flagImgs.emplace_back(data.GetHandle());
 
+	/// 説明用の画像ﾊﾝﾄﾞﾙ取得用
+	Game::Instance().GetFileSystem()->Load("img/game3/説明.png", data);
+	_expImgs.emplace_back(data.GetHandle());
+	Game::Instance().GetFileSystem()->Load("img/game3/説明2.png", data);
+	_expImgs.emplace_back(data.GetHandle());
+	Game::Instance().GetFileSystem()->Load("img/game3/説明3.png", data);
+	_expImgs.emplace_back(data.GetHandle());
+
 	auto size = Game::Instance().GetScreenSize();
 	_buttons.emplace_back(new Button(Rect(size.x / 4,size.y / 2,size.x / 2, size.y)));
 	_buttons.emplace_back(new Button(Rect(size.x / 4 * 3, size.y / 2, size.x / 2, size.y)));
@@ -295,7 +326,7 @@ Game3::Game3() : _defTime(180)
 	ChangeFont("ほのかアンティーク丸", DX_CHARSET_DEFAULT);
 
 	_isJudge   = false;
-	_questions = _corrects = _moveFlagCnt = 0;
+	_questions = _corrects = _moveFlagCnt = _expCnt = 0;
 
 	_updater = &Game3::FadeinUpdate;
 	_drawer  = &Game3::StartDraw;
@@ -329,6 +360,33 @@ void Game3::StartDraw()
 	DrawString(size.x / 2 - strWidth / 2, size.y / 2 - strHeight / 2, "旗上げゲーム", 0x000000);
 }
 
+void Game3::CntDownDraw()
+{
+	auto size = Game::Instance().GetScreenSize();
+	int strWidth, strHeight;
+
+	DrawGraph(0, 0, _expImgs[0], true);
+
+	SetFontSize(150);
+	if (_timeCnt <= 60)
+	{
+		GetDrawStringSize(&strWidth, &strHeight, nullptr, "スタート!", strlen("スタート!"));
+		DrawString(size.x / 2 - strWidth / 2, size.y / 10 - strHeight / 2, "スタート！", 0x000000);
+	}
+	else
+	{
+		GetDrawStringSize(&strWidth, &strHeight, nullptr, "0", strlen("0"));
+		DrawFormatString(size.x / 2 - strWidth / 2, size.y / 10 - strHeight / 2, 0x000000, "%d", (_timeCnt / 60));
+	}
+
+	
+}
+
+void Game3::ExpDraw()
+{
+	DrawGraph(0, 0, _expImgs[_expCnt], true);
+}
+
 void Game3::GameDraw()
 {
 	auto size = Game::Instance().GetScreenSize();
@@ -345,11 +403,12 @@ void Game3::GameDraw()
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, _orderText.c_str(), strlen(_orderText.c_str()));
 	DrawString((size.x / 2 - strWidth / 2), strHeight / 3, _orderText.c_str(), 0x000000);
 
-	/// 制限時間の描画(仮)
-	auto time = (_timeCnt <= 0 ? 0 : (_timeCnt / 60) + 1);
-	DrawFormatString(size.x / 5, size.y / 10, 0x000000, "%d", time);
+	///// 制限時間の描画(仮)
+	//auto time = (_timeCnt <= 0 ? 0 : (_timeCnt / 60) + 1);
+	//DrawFormatString(size.x / 15, size.y / 12, 0x000000, "%d", time);
 	Vector2 imgSize;
 	GetGraphSize(_flagImgs[0], &imgSize.x, &imgSize.y);
+
 	/// 旗を上げるｷｬﾗｸﾀｰの描画
 	if (_plFlag.first && !_plFlag.second)
 	{

@@ -32,8 +32,12 @@ private:
 	void StartUpdate(const Peripheral& p);
 	void FirstUpdate(const Peripheral& p);
 	void GameUpdate(const Peripheral& p);
+	void ExpUpdate(const Peripheral& p);
+	void CntDownUpdate(const Peripheral& p);
 
 	void StartDraw();
+	void CntDownDraw();
+	void ExpDraw();
 	void GameDraw();
 
 	void MoveJudgeFlag(const int& num, const FLAG& btn);
@@ -45,6 +49,7 @@ private:
 	std::vector<std::shared_ptr<Button>> _buttons;
 	std::vector<std::string> _texts;
 	std::vector<int> _flagImgs;			// 旗上げｷｬﾗｸﾀｰの画像ﾊﾝﾄﾞﾙ取得用
+	std::vector<int> _expImgs;			// 説明用画像のﾊﾝﾄﾞﾙ取得用
 	
 	std::pair<bool, bool> _judgeFlag;	// first : 赤, second : 白
 	std::pair<bool, bool> _plFlag;		// first : 赤, second : 白
@@ -57,6 +62,7 @@ private:
 	int _questions;
 	int _corrects;			// 正解数
 	int _timeCnt;
+	int _expCnt;			// 説明用のｶｳﾝﾄ
 
 	int _correctSE, _missSE;
 
