@@ -63,8 +63,9 @@ private:
 	int _corrects;			// ³‰ğ”
 	int _timeCnt;
 	int _expCnt;			// à–¾—p‚Ì¶³İÄ
+	int _blindCnt;			// “_–Å—p‚Ì¶³İÄ
 
-	int _correctSE, _missSE;
+	int _correctSE, _missSE, _cntDownSE, _startSE;
 
 	const int _defTime;
 public:

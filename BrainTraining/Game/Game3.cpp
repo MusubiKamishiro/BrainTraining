@@ -166,12 +166,15 @@ void Game3::GameUpdate(const Peripheral & p)
 
 void Game3::ExpUpdate(const Peripheral & p)
 {
+	++_blindCnt;
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
 		++_expCnt;
 		if (_expCnt >= _expImgs.size())
 		{
+			_blindCnt = 0;
 			_timeCnt = 240;
+			PlaySoundMem(_cntDownSE, DX_PLAYTYPE_BACK);
 			_updater = &Game3::CntDownUpdate;
 			_drawer  = &Game3::CntDownDraw;
 		}
@@ -181,7 +184,18 @@ void Game3::ExpUpdate(const Peripheral & p)
 void Game3::CntDownUpdate(const Peripheral & p)
 {
 	--_timeCnt;
-	if (_timeCnt <= 0)
+	if (!(_timeCnt % 60) && _timeCnt > 0)
+	{
+		if (_timeCnt / 60 == 1)
+		{
+			PlaySoundMem(_startSE, DX_PLAYTYPE_BACK);
+		}
+		else
+		{
+			PlaySoundMem(_cntDownSE, DX_PLAYTYPE_BACK);
+		}
+	}
+	if (_timeCnt <= 0 && !CheckSoundMem(_startSE))
 	{
 		_timeCnt = _defTime - 1;
 		_updater = &Game3::FirstUpdate;
@@ -321,6 +335,9 @@ Game3::Game3() : _defTime(180)
 
 	_correctSE  = LoadSoundMem("SE/correct1.mp3");
 	_missSE		= LoadSoundMem("SE/incorrect1.mp3");
+	_cntDownSE = LoadSoundMem("SE/countDown.mp3");
+	_startSE = LoadSoundMem("SE/start.mp3");
+
 	_orderText  = "";
 	_timeCnt	= _defTime;
 
@@ -395,7 +412,24 @@ void Game3::CntDownDraw()
 
 void Game3::ExpDraw()
 {
+	auto size = Game::Instance().GetScreenSize();
 	DrawGraph(0, 0, _expImgs[_expCnt], true);
+
+	if ((_blindCnt / 25) % 2)
+	{
+		int strWidth, strHeight;
+		SetFontSize(120);
+		if (_expCnt == _expImgs.size() - 1)
+		{
+			GetDrawStringSize(&strWidth, &strHeight, nullptr, "左クリックでスタート!", strlen("左クリックでスタート!"));
+			DrawString(size.x / 2 - strWidth / 2, size.y - strHeight, "左クリックでスタート!", 0x0000ff);
+		}
+		else
+		{
+			GetDrawStringSize(&strWidth, &strHeight, nullptr, "左クリックで次へ進む", strlen("左クリックで次へ進む"));
+			DrawString(size.x / 2 - strWidth / 2, size.y - strHeight, "左クリックで次へ進む", 0x0000ff);
+		}
+	}
 }
 
 void Game3::GameDraw()
