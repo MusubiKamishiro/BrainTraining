@@ -79,13 +79,22 @@ void PauseScene::Update(const Peripheral& p)
 
 void PauseScene::Draw()
 {
-	DxLib::DrawString(500, 500, "É|Å[ÉYíÜÇæÇÊ", 0xffffff);
+	auto size = Game::Instance().GetScreenSize();
+	DrawBox(size.x / 2 - 500, 0, size.x / 2 + 500, size.y, 0x00ffff, true);
+
+	DxLib::SetFontSize(96);
+
+	int strwidth, strheight;
+	strwidth = strheight = 0;
+
 	for (int i = 0; i < buttons.size(); ++i)
 	{
 		std::string s = buttonStatements[i];
 		auto rect = buttons[i]->GetButtonRect();
 
 		buttons[i]->Draw();
-		DxLib::DrawFormatString(rect.Left(), rect.Top(), 0xffffff, "%s", s.c_str());
+
+		GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
+		DrawFormatString(rect.center.x - strwidth / 2, rect.center.y - strheight / 2, 0xffffff, s.c_str());
 	}
 }
