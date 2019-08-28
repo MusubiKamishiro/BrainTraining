@@ -36,8 +36,8 @@ private:
 	void CntDownUpdate(const Peripheral& p);
 
 	void StartDraw();
-	void CntDownDraw();
 	void ExpDraw();
+	void CntDownDraw();
 	void GameDraw();
 
 	void MoveJudgeFlag(const int& num, const FLAG& btn);

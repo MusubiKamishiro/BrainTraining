@@ -58,19 +58,49 @@ void Game6::StartUpdate(const Peripheral & p)
 {
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
-		_updater = &Game6::GameUpdate;
-		_drawer  = &Game6::GameDraw;
+		_updater = &Game6::ExpUpdate;
+		_drawer  = &Game6::ExpDraw;
 	}
 }
 
 void Game6::ExpUpdate(const Peripheral & p)
 {
 	/// 操作説明
+	++_blindCnt;
+	if (p.IsTrigger(MOUSE_INPUT_LEFT))
+	{
+		++_expCnt;
+		if (_expCnt >= _expImgs.size())
+		{
+			_blindCnt = 0;
+			_timeCnt = 240;
+			PlaySoundMem(_cntDownSE, DX_PLAYTYPE_BACK);
+			_updater = &Game6::CntDownUpdate;
+			_drawer = &Game6::CntDownDraw;
+		}
+	}
 }
 
 void Game6::CntDownUpdate(const Peripheral & p)
 {
 	/// カウントダウン
+	--_timeCnt;
+	if (!(_timeCnt % 60) && _timeCnt > 0)
+	{
+		if (_timeCnt / 60 == 1)
+		{
+			PlaySoundMem(_startSE, DX_PLAYTYPE_BACK);
+		}
+		else
+		{
+			PlaySoundMem(_cntDownSE, DX_PLAYTYPE_BACK);
+		}
+	}
+	if (_timeCnt <= 0 && !CheckSoundMem(_startSE))
+	{
+		_updater = &Game6::GameUpdate;
+		_drawer = &Game6::GameDraw;
+	}
 }
 
 void Game6::GameUpdate(const Peripheral & p)
@@ -151,17 +181,29 @@ Game6::Game6() : _btnSize(Size(300,300))
 	_colors.emplace_back(0x37ff37);		/// 緑
 
 	auto size = Game::Instance().GetScreenSize();
-	_buttons.emplace_back(new Button(Rect(size.x / 6, size.y / 4 * 3, 
-										  _btnSize.width, _btnSize.height)));
-	_buttons.emplace_back(new Button(Rect(size.x / 8 * 3, size.y / 4 * 3, 
-										  _btnSize.width, _btnSize.height)));
-	_buttons.emplace_back(new Button(Rect(size.x / 7 * 4, size.y / 4 * 3, 
-										  _btnSize.width, _btnSize.height)));
-	_buttons.emplace_back(new Button(Rect(size.x / 9 * 7, size.y / 4 * 3, 
-										  _btnSize.width, _btnSize.height)));
+
+	ImageData data;
+	Game::Instance().GetFileSystem()->Load("img/game6/説明.png", data);
+	_expImgs.emplace_back(data.GetHandle());
+	Game::Instance().GetFileSystem()->Load("img/game6/説明2.png", data);
+	_expImgs.emplace_back(data.GetHandle());
+	Game::Instance().GetFileSystem()->Load("img/game6/説明3.png", data);
+	_expImgs.emplace_back(data.GetHandle());
+
+	Game::Instance().GetFileSystem()->Load("img/Button/light blue.png", data);
+	_buttons.emplace_back(new Button(Rect(size.x / 6, size.y / 8 * 5,
+										  _btnSize.width, _btnSize.height), data.GetHandle()));
+	_buttons.emplace_back(new Button(Rect(size.x / 8 * 3, size.y / 8 * 5,
+										  _btnSize.width, _btnSize.height), data.GetHandle()));
+	_buttons.emplace_back(new Button(Rect(size.x / 7 * 4, size.y / 8 * 5,
+										  _btnSize.width, _btnSize.height), data.GetHandle()));
+	_buttons.emplace_back(new Button(Rect(size.x / 9 * 7, size.y / 8 * 5,
+										  _btnSize.width, _btnSize.height), data.GetHandle()));
 
 	_correctSE = LoadSoundMem("SE/correct1.mp3");
 	_missSE	   = LoadSoundMem("SE/incorrect1.mp3");
+	_cntDownSE = LoadSoundMem("SE/countDown.mp3");
+	_startSE   = LoadSoundMem("SE/start.mp3");
 
 	ChangeFont("ほのかアンティーク丸", DX_CHARSET_DEFAULT);
 
@@ -198,15 +240,69 @@ void Game6::StartDraw()
 
 	SetFontSize(150);
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, "文字の色当てゲーム", strlen("文字の色当てゲーム"));
-	DrawString(size.x / 2 - strWidth / 2, size.y / 2 - strHeight / 2, "文字の色当てゲーム", 0x000000);
+	DrawString(size.x / 2 - strWidth / 2, size.y / 7 * 3 - strHeight / 2, "文字の色当てゲーム", 0x000000);
+
+	SetFontSize(120);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, "書かれた文字の色を", strlen("書かれた文字の色を"));
+	DrawString(size.x / 2 - strWidth / 2, size.y / 3 * 2 - strHeight / 2, "書かれた文字の色を", 0xcc0000);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, "当てるゲームだよ!", strlen("当てるゲームだよ!"));
+	DrawString(size.x / 2 - strWidth / 2, size.y / 5 * 4 - strHeight / 2, "当てるゲームだよ!", 0xcc0000);
+
 }
 
 void Game6::ExpDraw()
 {
+	auto size = Game::Instance().GetScreenSize();
+	DrawGraph(0, 0, _expImgs[_expCnt], true);
+
+	if ((_blindCnt / 25) % 2)
+	{
+		int strWidth, strHeight;
+		SetFontSize(120);
+		if (_expCnt == _expImgs.size() - 1)
+		{
+			GetDrawStringSize(&strWidth, &strHeight, nullptr, "左クリックでスタート!", strlen("左クリックでスタート!"));
+			DrawString(size.x / 2 - strWidth / 2, size.y - strHeight, "左クリックでスタート!", 0x0000ff);
+		}
+		else
+		{
+			GetDrawStringSize(&strWidth, &strHeight, nullptr, "左クリックで次へ進む", strlen("左クリックで次へ進む"));
+			DrawString(size.x / 2 - strWidth / 2, size.y - strHeight, "左クリックで次へ進む", 0x0000ff);
+		}
+	}
 }
 
 void Game6::CntDownDraw()
 {
+	auto size = Game::Instance().GetScreenSize();
+	int strWidth, strHeight;
+
+	DxLib::DrawBox(0, 0, size.x, size.y, 0xffffff, true);
+
+	SetFontSize(150);
+	if (_timeCnt <= 60)
+	{
+		GetDrawStringSize(&strWidth, &strHeight, nullptr, "スタート!", strlen("スタート!"));
+		DrawString(size.x / 2 - strWidth / 2, size.y / 10 - strHeight / 2, "スタート！", 0x000000);
+	}
+	else
+	{
+		GetDrawStringSize(&strWidth, &strHeight, nullptr, "0", strlen("0"));
+		DrawFormatString(size.x / 2 - strWidth / 2, size.y / 10 - strHeight / 2, 0x000000, "%d", (_timeCnt / 60));
+	}
+
+	for (auto btn : _buttons)
+	{
+		btn->Draw();
+	}
+
+	SetFontSize(120);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, "あか", strlen("あか"));
+	DrawString((size.x / 6) - strWidth / 2, (size.y / 8 * 5) - strHeight / 2, "あか", 0x000000);
+	DrawString((size.x / 8 * 3) - strWidth / 2, (size.y / 8 * 5) - strHeight / 2, "あお", 0x000000);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, "きいろ", strlen("きいろ"));
+	DrawString((size.x / 7 * 4) - strWidth / 2, (size.y / 8 * 5) - strHeight / 2, "きいろ", 0x000000);
+	DrawString((size.x / 9 * 7) - strWidth / 2, (size.y / 8 * 5) - strHeight / 2, "みどり", 0x000000);
 }
 
 void Game6::GameDraw()
@@ -220,17 +316,16 @@ void Game6::GameDraw()
 	SetFontSize(300);
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, _texts[_textNum].c_str(), strlen(_texts[_textNum].c_str()));
 	DrawString((size.x / 2 - strWidth / 2), (size.y / 3 - strHeight / 2), _texts[_textNum].c_str(), _colors[_colorNum]);
-
-	/*for (auto btn : _buttons)
+	for (auto btn : _buttons)
 	{
 		btn->Draw();
-	}*/
+	}
 
 	SetFontSize(120);
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, "あか", strlen("あか"));
-	DrawString((size.x / 6)		- strWidth / 2, (size.y / 4 * 3) - strHeight / 2, "あか", 0x000000);
-	DrawString((size.x / 8 * 3) - strWidth / 2, (size.y / 4 * 3) - strHeight / 2, "あお", 0x000000);
+	DrawString((size.x / 6)		- strWidth / 2, (size.y / 8 * 5) - strHeight / 2, "あか", 0x000000);
+	DrawString((size.x / 8 * 3) - strWidth / 2, (size.y / 8 * 5) - strHeight / 2, "あお", 0x000000);
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, "きいろ", strlen("きいろ"));
-	DrawString((size.x / 7 * 4) - strWidth / 2, (size.y / 4 * 3) - strHeight / 2, "きいろ", 0x000000);
-	DrawString((size.x / 9 * 7) - strWidth / 2, (size.y / 4 * 3) - strHeight / 2, "みどり", 0x000000);
+	DrawString((size.x / 7 * 4) - strWidth / 2, (size.y / 8 * 5) - strHeight / 2, "きいろ", 0x000000);
+	DrawString((size.x / 9 * 7) - strWidth / 2, (size.y / 8 * 5) - strHeight / 2, "みどり", 0x000000);
 }

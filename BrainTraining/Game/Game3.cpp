@@ -335,8 +335,8 @@ Game3::Game3() : _defTime(180)
 
 	_correctSE  = LoadSoundMem("SE/correct1.mp3");
 	_missSE		= LoadSoundMem("SE/incorrect1.mp3");
-	_cntDownSE = LoadSoundMem("SE/countDown.mp3");
-	_startSE = LoadSoundMem("SE/start.mp3");
+	_cntDownSE  = LoadSoundMem("SE/countDown.mp3");
+	_startSE    = LoadSoundMem("SE/start.mp3");
 
 	_orderText  = "";
 	_timeCnt	= _defTime;
@@ -385,6 +385,28 @@ void Game3::StartDraw()
 
 }
 
+void Game3::ExpDraw()
+{
+	auto size = Game::Instance().GetScreenSize();
+	DrawGraph(0, 0, _expImgs[_expCnt], true);
+
+	if ((_blindCnt / 25) % 2)
+	{
+		int strWidth, strHeight;
+		SetFontSize(120);
+		if (_expCnt == _expImgs.size() - 1)
+		{
+			GetDrawStringSize(&strWidth, &strHeight, nullptr, "左クリックでスタート!", strlen("左クリックでスタート!"));
+			DrawString(size.x / 2 - strWidth / 2, size.y - strHeight, "左クリックでスタート!", 0x0000ff);
+		}
+		else
+		{
+			GetDrawStringSize(&strWidth, &strHeight, nullptr, "左クリックで次へ進む", strlen("左クリックで次へ進む"));
+			DrawString(size.x / 2 - strWidth / 2, size.y - strHeight, "左クリックで次へ進む", 0x0000ff);
+		}
+	}
+}
+
 void Game3::CntDownDraw()
 {
 	auto size = Game::Instance().GetScreenSize();
@@ -408,28 +430,6 @@ void Game3::CntDownDraw()
 		GetDrawStringSize(&strWidth, &strHeight, nullptr, "0", strlen("0"));
 		DrawFormatString(size.x / 2 - strWidth / 2, size.y / 10 - strHeight / 2, 0x000000, "%d", (_timeCnt / 60));
 	}	
-}
-
-void Game3::ExpDraw()
-{
-	auto size = Game::Instance().GetScreenSize();
-	DrawGraph(0, 0, _expImgs[_expCnt], true);
-
-	if ((_blindCnt / 25) % 2)
-	{
-		int strWidth, strHeight;
-		SetFontSize(120);
-		if (_expCnt == _expImgs.size() - 1)
-		{
-			GetDrawStringSize(&strWidth, &strHeight, nullptr, "左クリックでスタート!", strlen("左クリックでスタート!"));
-			DrawString(size.x / 2 - strWidth / 2, size.y - strHeight, "左クリックでスタート!", 0x0000ff);
-		}
-		else
-		{
-			GetDrawStringSize(&strWidth, &strHeight, nullptr, "左クリックで次へ進む", strlen("左クリックで次へ進む"));
-			DrawString(size.x / 2 - strWidth / 2, size.y - strHeight, "左クリックで次へ進む", 0x0000ff);
-		}
-	}
 }
 
 void Game3::GameDraw()

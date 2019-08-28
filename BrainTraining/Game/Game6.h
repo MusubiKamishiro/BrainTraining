@@ -30,13 +30,15 @@ private:
 
 	std::vector<std::string> _texts;
 	std::vector<int> _colors;
+	std::vector<int> _expImgs;
 
 	int _textNum, _colorNum;
 	int _questions;
 	int _corrects;			/// ê≥âêî
 	int _timeCnt;
-
-	int _correctSE, _missSE;
+	int _expCnt;
+	int _blindCnt;
+	int _correctSE, _missSE, _cntDownSE, _startSE;
 
 	bool _isColor;
 
