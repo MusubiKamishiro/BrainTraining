@@ -183,7 +183,7 @@ void Game3::CntDownUpdate(const Peripheral & p)
 	--_timeCnt;
 	if (_timeCnt <= 0)
 	{
-		_timeCnt = 180;
+		_timeCnt = _defTime - 1;
 		_updater = &Game3::FirstUpdate;
 		_drawer  = &Game3::GameDraw;
 	}
@@ -256,7 +256,8 @@ void Game3::JudgeFlagUpdater()
 	{
 		for (int i = 0; i < _moveFlagCnt; ++i)
 		{
-			_lastNum = GetRandom(0, _texts.size() - 1, _lastNum);
+			/// ‘O‰ño‚µ‚½’l‚Æ“¯‚¶’l‚ào‚·‚æ‚¤‚É‚µ‚Ä‚¢‚é
+			_lastNum = GetRandom(0, _texts.size() - 1, 5);
 			MoveJudgeFlag(_lastNum, (FLAG)(i));
 			_orderText += (i == 0 ? "Ô" : "”’");
 			if (i == 0)
@@ -355,17 +356,29 @@ void Game3::StartDraw()
 	int strWidth, strHeight;
 	strWidth = strHeight = 0;
 
-	SetFontSize(250);
+	SetFontSize(200);
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, "Šøã‚°ƒQ[ƒ€", strlen("Šøã‚°ƒQ[ƒ€"));
-	DrawString(size.x / 2 - strWidth / 2, size.y / 2 - strHeight / 2, "Šøã‚°ƒQ[ƒ€", 0x000000);
+	DrawString(size.x / 2 - strWidth / 2, size.y / 7 * 3 - strHeight / 2, "Šøã‚°ƒQ[ƒ€", 0x000000);
+
+	SetFontSize(120);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, "o‚³‚ê‚½‚¨‘è‚É‡‚í‚¹‚Ä", strlen("o‚³‚ê‚½‚¨‘è‚É‡‚í‚¹‚Ä"));
+	DrawString(size.x / 2 - strWidth / 2, size.y / 3 * 2 - strHeight / 2, "o‚³‚ê‚½‚¨‘è‚É‡‚í‚¹‚Ä", 0xcc0000);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, "Šø‚ðã‚°‰º‚°‚·‚éƒQ[ƒ€‚¾‚æ!", strlen("Šø‚ðã‚°‰º‚°‚·‚éƒQ[ƒ€‚¾‚æ!"));
+	DrawString(size.x / 2 - strWidth / 2, size.y / 5 * 4 - strHeight / 2, "Šø‚ðã‚°‰º‚°‚·‚éƒQ[ƒ€‚¾‚æ!", 0xcc0000);
+
 }
 
 void Game3::CntDownDraw()
 {
 	auto size = Game::Instance().GetScreenSize();
 	int strWidth, strHeight;
+	Vector2 imgSize;
+	GetGraphSize(_flagImgs[3], &imgSize.x, &imgSize.y);
 
-	DrawGraph(0, 0, _expImgs[0], true);
+	DrawBox(0, 0, size.x / 2, size.y, 0xffcccc, true);
+	DrawBox(size.x / 2, 0, size.x, size.y, 0xffffff, true);
+
+	DrawGraph((size.x / 2 - imgSize.x / 2), size.y / 5, _flagImgs[3], true);
 
 	SetFontSize(150);
 	if (_timeCnt <= 60)
@@ -377,9 +390,7 @@ void Game3::CntDownDraw()
 	{
 		GetDrawStringSize(&strWidth, &strHeight, nullptr, "0", strlen("0"));
 		DrawFormatString(size.x / 2 - strWidth / 2, size.y / 10 - strHeight / 2, 0x000000, "%d", (_timeCnt / 60));
-	}
-
-	
+	}	
 }
 
 void Game3::ExpDraw()
@@ -397,7 +408,7 @@ void Game3::GameDraw()
 
 	int strWidth, strHeight;
 	strWidth = strHeight = 0;
-	SetFontSize(180);
+	SetFontSize(130);
 	
 	/// ŽwŽ¦Ã·½Ä‚Ì•`‰æ
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, _orderText.c_str(), strlen(_orderText.c_str()));
