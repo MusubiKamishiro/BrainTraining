@@ -1,6 +1,9 @@
 #pragma once
 #include "../Scene/Scene.h"
 
+#include <vector>
+#include "../Geometry.h"
+
 enum class DrawType
 {
 	Number,
@@ -9,7 +12,14 @@ enum class DrawType
 
 struct Num
 {
-	int num;
+	int money_1;
+	int money_5;
+	int money_10;
+	int money_50;
+	int money_100;
+	int money_500;
+	int money_1000;
+	int total;
 	DrawType type;
 };
 
@@ -17,8 +27,14 @@ class Game2 :
 	public Scene
 {
 private:
+
+	std::vector<Vector2> _positions;
+
 	Num _right;	// ‰E‚Ì’l
 	Num _left;	// ¶‚Ì’l
+
+	void NumInit(Num &num);
+	void Total(Num &num);
 
 	int _questions;		// –â‘è”Ô†
 	int _correctNum;	// ³‰ğ”
@@ -32,6 +48,7 @@ private:
 	int _img_10en;
 	int _img_50en;
 	int _img_100en;
+	int _img_500en;
 	int _img_1000en;
 	int _img_5000en;
 	int _img_10000en;
@@ -53,7 +70,7 @@ private:
 	void QuestionsDraw();
 	void AnswerDraw();
 
-	void DrawMoney(int num, int offset = 0);
+	void DrawMoney(Num num, int offset = 0);
 
 public:
 	Game2();

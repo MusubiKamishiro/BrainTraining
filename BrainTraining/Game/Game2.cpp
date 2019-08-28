@@ -12,6 +12,30 @@
 
 constexpr int MAX_QUESTIONS = 10;	// ñ‚ëËêî
 
+void Game2::NumInit(Num &num)
+{
+	num.money_1 = 0;
+	num.money_5 = 0;
+	num.money_10 = 0;
+	num.money_50 = 0;
+	num.money_100 = 0;
+	num.money_500 = 0;
+	num.money_1000 = 0;
+	num.total = 0;
+}
+
+void Game2::Total(Num &num)
+{
+	num.total =
+		num.money_1 * 1 +
+		num.money_5 * 5 +
+		num.money_10 * 10 +
+		num.money_50 * 50 +
+		num.money_100 * 100 +
+		num.money_500 * 500 +
+		num.money_1000 * 1000;
+}
+
 void Game2::FadeinUpdate(const Peripheral & p)
 {
 	if (pal > 255)
@@ -62,7 +86,7 @@ void Game2::WaitUpdate(const Peripheral & p)
 			// ç∂ÇÉNÉäÉbÉN
 			if (pos.x < size.x / 2)
 			{
-				if (_left.num > _right.num)
+				if (_left.total > _right.total)
 				{
 					ChangeVolumeSoundMem(200, _SE_correct);
 					PlaySoundMem(_SE_correct, DX_PLAYTYPE_BACK);
@@ -77,7 +101,7 @@ void Game2::WaitUpdate(const Peripheral & p)
 			// âEÇÉNÉäÉbÉN
 			else
 			{
-				if (_right.num > _left.num)
+				if (_right.total > _left.total)
 				{
 					ChangeVolumeSoundMem(200, _SE_correct);
 					PlaySoundMem(_SE_correct, DX_PLAYTYPE_BACK);
@@ -106,52 +130,57 @@ void Game2::QuestionsUpdate(const Peripheral & p)
 	{
 		do
 		{
+			NumInit(_right);
+			NumInit(_left);
 			switch (_questions)
 			{
 			case 1:
 			case 6:
-				_right.num = GetRand(9);
-				_right.type = DrawType::Number;
-				_left.num = GetRand(9);
-				_left.type = DrawType::Number;
+				_right.money_1 = GetRand(9) + 1;
+				_right.type = DrawType::Money;
+				_left.money_1 = GetRand(9) + 1;
+				_left.type = DrawType::Money;
 				break;
 			case 2:
 			case 7:
-				_right.num = GetRand(999);
+				_right.money_10 = GetRand(7) + 2;
 				_right.type = DrawType::Money;
-				_left.num = GetRand(999);
+				_left.money_50 = 1;
 				_left.type = DrawType::Money;
 				break;
 			case 3:
 			case 8:
-				_right.num = GetRand(999);
+				_right.money_5 = GetRand(5) + 10;
 				_right.type = DrawType::Number;
-				_left.num = GetRand(999);
+				_left.money_5 = GetRand(5) + 10;
 				_left.type = DrawType::Money;
 				break;
 			case 4:
 			case 9:
-				_right.num = GetRand(50) + 500;
-				_right.type = DrawType::Money;
-				_left.num = GetRand(50) + 500;
-				_left.type = DrawType::Number;
+				_right.money_1000 = 1;
+				_right.type = DrawType::Number;
+				_left.money_100 = GetRand(5) + 7;
+				_left.type = DrawType::Money;
 				break;
 			case 5:
 			case 10:
-				_right.num = GetRand(100) + 3000;
+				_right.money_500 = GetRand(3) + 1;
 				_right.type = DrawType::Money;
-				_left.num = GetRand(100) + 3000;
+				_left.money_100 = GetRand(10) + 5;
 				_left.type = DrawType::Money;
 				break;
 			default:
-				_right.num = GetRand(10);
+				_right.money_100 = GetRand(10);
 				_right.type = DrawType::Number;
-				_left.num = GetRand(10);
+				_left.money_100 = GetRand(10);
 				_left.type = DrawType::Number;
 				break;
 			}
+
+			Total(_right);
+			Total(_left);
 		} 
-		while (_right.num == _left.num);
+		while (_right.total == _left.total);
 
 		_updater = &Game2::WaitUpdate;
 		_drawer = &Game2::WaitDraw;
@@ -193,7 +222,7 @@ void Game2::StartDraw()
 
 	SetFontSize(100);
 	GetDrawFormatStringSize(&strwidth, &strheight, nullptr, "ëS%dñ‚", MAX_QUESTIONS);
-	DrawFormatString(size.x / 2 - strwidth / 2, size.y / 3 * 2 - strheight / 2, 0x000000, "ëS%dñ‚", MAX_QUESTIONS);
+	DxLib::DrawFormatString(size.x / 2 - strwidth / 2, size.y / 3 * 2 - strheight / 2, 0x000000, "ëS%dñ‚", MAX_QUESTIONS);
 }
 
 void Game2::WaitDraw()
@@ -211,7 +240,7 @@ void Game2::QuestionsDraw()
 
 	SetFontSize(250);
 	GetDrawFormatStringSize(&strwidth, &strheight, nullptr, "ëÊ%dñ‚", _questions);
-	DrawFormatString(size.x / 2 - strwidth / 2, size.y / 2 - strheight / 2, 0x000000, "ëÊ%dñ‚", _questions);
+	DxLib::DrawFormatString(size.x / 2 - strwidth / 2, size.y / 2 - strheight / 2, 0x000000, "ëÊ%dñ‚", _questions);
 }
 
 void Game2::AnswerDraw()
@@ -225,50 +254,72 @@ void Game2::AnswerDraw()
 
 	GetDrawStringSize(&strwidth, &strheight, nullptr, "Å~", strlen("Å~"));
 	DrawString(
-		_left.num < _right.num ? size.x / 4 - strwidth / 2 : size.x / 4 * 3 - strwidth / 2,
+		_left.total < _right.total ? size.x / 4 - strwidth / 2 : size.x / 4 * 3 - strwidth / 2,
 		size.y / 3 * 2 - strheight / 2,
 		"Å~", 0x0000ff, 0xffffff);
 
 	GetDrawStringSize(&strwidth, &strheight, nullptr, "ÅZ", strlen("ÅZ"));
 	DrawString(
-		_left.num > _right.num ? size.x / 4 - strwidth / 2 : size.x / 4 * 3 - strwidth / 2,
+		_left.total > _right.total ? size.x / 4 - strwidth / 2 : size.x / 4 * 3 - strwidth / 2,
 		size.y / 3 * 2 - strheight / 2,
 		"ÅZ", 0xff0000, 0xffffff);
 }
 
-void Game2::DrawMoney(int num, int offset)
+void Game2::DrawMoney(Num num, int offset)
 {
 	auto size = Game::Instance().GetScreenSize();
 
-	auto sen	= num / 1000;
-	auto hyaku	= num % 1000 / 100;
-	auto juu	= num % 100 / 10;
-	auto iti	= num % 10;
+	int idx = 0;
+	float mag = 0.5f;
 
-	for (int i = 0; i < sen; ++i)
+	for (int i = 0; i < num.money_1000; ++i)
 	{
 		DrawGraph(offset + 100 + i * 20, size.y / 3 + i * 20, _img_1000en, true);
 	}
-	for (int i = 0; i < hyaku; ++i)
+	for (int i = 0; i < num.money_500; ++i)
 	{
-		DrawRotaGraph(offset + 100 + i * 20, size.y / 3 * 2 - 100 + i * 20, 0.5, 0.0, _img_100en, true);
+		auto pos = _positions[idx];
+		DrawRotaGraph(offset + pos.x, pos.y, mag, 0.0, _img_500en, true);
+		++idx;
 	}
-	for (int i = 0; i < juu; ++i)
+	for (int i = 0; i < num.money_100; ++i)
 	{
-		DrawRotaGraph(offset + 400 + i * 20, size.y / 3 * 2 - 100 + i * 20, 0.5, 0.0, _img_10en, true);
+		auto pos = _positions[idx];
+		DrawRotaGraph(offset + pos.x, pos.y, mag, 0.0, _img_100en, true);
+		++idx;
 	}
-	for (int i = 0; i < iti; ++i)
+	for (int i = 0; i < num.money_50; ++i)
 	{
-		DrawRotaGraph(offset + 700 + i * 20, size.y / 3 * 2 - 100 + i * 20, 0.5, 0.0, _img_1en, true);
+		auto pos = _positions[idx];
+		DrawRotaGraph(offset + pos.x, pos.y, mag, 0.0, _img_50en, true);
+		++idx;
+	}
+	for (int i = 0; i < num.money_10; ++i)
+	{
+		auto pos = _positions[idx];
+		DrawRotaGraph(offset + pos.x, pos.y, mag, 0.0, _img_10en, true);
+		++idx;
+	}
+	for (int i = 0; i < num.money_5; ++i)
+	{
+		auto pos = _positions[idx];
+		DrawRotaGraph(offset + pos.x, pos.y, mag, 0.0, _img_5en, true);
+		++idx;
+	}
+	for (int i = 0; i < num.money_1; ++i)
+	{
+		auto pos = _positions[idx];
+		DrawRotaGraph(offset + pos.x, pos.y, mag, 0.0, _img_1en, true);
+		++idx;
 	}
 }
 
 Game2::Game2()
 {
-	_right.num = 0;
+	NumInit(_right);
 	_right.type = DrawType::Number;
-	_left.num = 0;
-	_left.type = DrawType::Money;
+	NumInit(_left);
+	_left.type = DrawType::Number;
 
 	_questions = 1;
 	_correctNum = 0;
@@ -282,9 +333,19 @@ Game2::Game2()
 	_img_10en = LoadGraph("img/è\â~.png");
 	_img_50en = LoadGraph("img/å‹è\â~.png");
 	_img_100en = LoadGraph("img/ïSâ~.png");
+	_img_500en = LoadGraph("img/å‹ïSâ~.png");
 	_img_1000en = LoadGraph("img/êÁâ~.png");
-	_img_5000en = LoadGraph("img/å‹êÁâ~.png");
-	_img_10000en = LoadGraph("img/àÍñúâ~.png");
+
+	auto size = Game::Instance().GetScreenSize();
+	float angle = 0;
+	_positions.resize(20);
+	for (int i = 0;i < _positions.size(); ++i)
+	{
+		_positions[i] = Vector2(size.x / 4, size.y / 3 * 2 - 70);
+		_positions[i].x += sin(DX_PI_F / 180.0f * angle) * (80 + 120 * (angle / 360));
+		_positions[i].y += cos(DX_PI_F / 180.0f * angle) * (80 + 120 * (angle / 360));
+		angle += 90 / (1 + angle / 360);
+	}
 
 	_updater = &Game2::FadeinUpdate;
 	_drawer = &Game2::StartDraw;
@@ -327,31 +388,31 @@ void Game2::Draw()
 
 	SetFontSize(100);
 	GetDrawStringSize(&strwidth, &strheight, nullptr, "êîéöÇÃëÂÇ´Ç¢ï˚ÇÉNÉäÉbÉNÅI", strlen("êîéöÇÃëÂÇ´Ç¢ï˚ÇÉNÉäÉbÉNÅI"));
-	DrawFormatString(size.x / 2 - strwidth / 2, size.y / 8 - strheight / 2, 0x000000, "êîéöÇÃëÂÇ´Ç¢ï˚ÇÉNÉäÉbÉNÅI");
+	DxLib::DrawFormatString(size.x / 2 - strwidth / 2, size.y / 8 - strheight / 2, 0x000000, "êîéöÇÃëÂÇ´Ç¢ï˚ÇÉNÉäÉbÉNÅI");
 
 	SetFontSize(400);
 
 	switch (_right.type)
 	{
 	case DrawType::Number:
-		GetDrawFormatStringSize(&strwidth, &strheight, nullptr, "%d", _right.num);
-		DrawFormatString(size.x / 4 * 3 - strwidth / 2 + 4, size.y / 3 * 2 - strheight / 2 + 4, 0x000000, "%d", _right.num);
-		DrawFormatString(size.x / 4 * 3 - strwidth / 2, size.y / 3 * 2 - strheight / 2, 0xffffff, "%d", _right.num);
+		GetDrawFormatStringSize(&strwidth, &strheight, nullptr, "%d", _right.total);
+		DxLib::DrawFormatString(size.x / 4 * 3 - strwidth / 2 + 4, size.y / 3 * 2 - strheight / 2 + 4, 0x000000, "%d", _right.total);
+		DxLib::DrawFormatString(size.x / 4 * 3 - strwidth / 2, size.y / 3 * 2 - strheight / 2, 0xffffff, "%d", _right.total);
 		break;
 	case DrawType::Money:
-		DrawMoney(_right.num, size.x / 2);
+		DrawMoney(_right, size.x / 2);
 		break;
 	}
 
 	switch (_left.type)
 	{
 	case DrawType::Number:
-		GetDrawFormatStringSize(&strwidth, &strheight, nullptr, "%d", _left.num);
-		DrawFormatString(size.x / 4 - strwidth / 2 + 4, size.y / 3 * 2 - strheight / 2 + 4, 0x000000, "%d", _left.num);
-		DrawFormatString(size.x / 4 - strwidth / 2, size.y / 3 * 2 - strheight / 2, 0xffffff, "%d", _left.num);
+		GetDrawFormatStringSize(&strwidth, &strheight, nullptr, "%d", _left.total);
+		DxLib::DrawFormatString(size.x / 4 - strwidth / 2 + 4, size.y / 3 * 2 - strheight / 2 + 4, 0x000000, "%d", _left.total);
+		DxLib::DrawFormatString(size.x / 4 - strwidth / 2, size.y / 3 * 2 - strheight / 2, 0xffffff, "%d", _left.total);
 		break;
 	case DrawType::Money:
-		DrawMoney(_left.num);
+		DrawMoney(_left);
 		break;
 	}
 
