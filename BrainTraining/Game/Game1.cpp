@@ -159,17 +159,29 @@ void Game1::AnswerDisplayUpdate(const Peripheral & p)
 
 void Game1::TitleDraw()
 {
-	DxLib::DrawString(400, 50, "後出しじゃんけんだよ", 0xffffff);
+	auto size = Game::Instance().GetScreenSize();
+
+	int strwidth, strheight;
+	strwidth = strheight = 0;
+
+	SetFontSize(230);
+	std::string s = "後出しじゃんけん";
+	GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
+	DrawString(size.x / 2 - strwidth / 2, size.y / 3 - strheight / 2, s.c_str(), 0x000000);
+
+	SetFontSize(100);
+	GetDrawFormatStringSize(&strwidth, &strheight, nullptr, "全%d問", qMax);
+	DrawFormatString(size.x / 2 - strwidth / 2, size.y / 3 * 2 - strheight / 2, 0x000000, "全%d問", qMax);
 }
 
 void Game1::DescriptionDraw()
 {
-	DxLib::DrawString(400, 50, "ルール説明だよ", 0xffffff);
+	DxLib::DrawString(400, 50, "ルール説明だよ", 0x000000);
 }
 
 void Game1::GameDraw()
 {
-	DxLib::DrawFormatString(600, 600, 0xff0000, "第%d問", nowQNum);
+	DxLib::DrawFormatString(600, 600, 0x000000, "第%d問", nowQNum);
 
 	// グーちょきぱーボタンの描画
 	for (unsigned int i = 0; i < buttons.size(); ++i)
@@ -178,11 +190,15 @@ void Game1::GameDraw()
 	}
 
 	// 問題文章の描画
+	DxLib::SetFontSize(96);
 	std::string s = questionStatements[qStatementNum];
-	DxLib::DrawFormatString(700, 100, 0xffffff, "%s", s.c_str());
+	int strwidth, strheight;
+	GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
+	auto size = Game::Instance().GetScreenSize();
+	DxLib::DrawFormatString(size.x / 2 - strwidth / 2, 100, 0x000000, "%s", s.c_str());
 
 	// 問題の手
-	DxLib::DrawExtendGraph(810, 150, 1110, 450, questionHands[qHandNum], true);
+	DxLib::DrawExtendGraph(size.x / 2 - 150, 200, size.x / 2 + 150, 500, questionHands[qHandNum], true);
 
 	if (updater == &Game1::AnswerDisplayUpdate)
 	{
@@ -312,5 +328,7 @@ void Game1::Update(const Peripheral & p)
 
 void Game1::Draw()
 {
+	auto size = Game::Instance().GetScreenSize();
+	DxLib::DrawBox(0, 0, size.x, size.y, 0xffffff, true);
 	(this->*drawer)();
 }

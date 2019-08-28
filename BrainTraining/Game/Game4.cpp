@@ -153,35 +153,47 @@ void Game4::AnswerDisplayUpdate(const Peripheral & p)
 
 void Game4::TitleDraw()
 {
-	DxLib::DrawString(400, 50, "ひらがな計算だよ", 0xffffff);
+	auto size = Game::Instance().GetScreenSize();
+
+	int strwidth, strheight;
+	strwidth = strheight = 0;
+
+	SetFontSize(250);
+	std::string s = "ひらがな計算";
+	GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
+	DrawString(size.x / 2 - strwidth / 2, size.y / 3 - strheight / 2, s.c_str(), 0x000000);
+
+	SetFontSize(100);
+	GetDrawFormatStringSize(&strwidth, &strheight, nullptr, "全%d問", qMax);
+	DrawFormatString(size.x / 2 - strwidth / 2, size.y / 3 * 2 - strheight / 2, 0x000000, "全%d問", qMax);
 }
 
 void Game4::DescriptionDraw()
 {
-	DxLib::DrawString(400, 50, "ルール説明", 0xffffff);
+	DxLib::DrawString(400, 50, "ルール説明", 0x000000);
 }
 
 void Game4::GameDraw()
 {
 	DxLib::SetFontSize(96);
-	DxLib::DrawFormatString(200, 200, 0xff0000, "第%d問", nowQNum);
-	DxLib::DrawFormatString(50, 400, 0xff0000, "%s", question.c_str());
+	DxLib::DrawFormatString(200, 200, 0x000000, "第%d問", nowQNum);
+	DxLib::DrawFormatString(50, 400, 0x000000, "%s", question.c_str());
 
-	DxLib::DrawFormatString(500, 800, 0xff0000, "自分の回答:%d", myAnswer);
+	DxLib::DrawFormatString(500, 800, 0x000000, "自分の回答:%d", myAnswer);
 
 	// 各種ボタンの描画
 	for (unsigned int i = 0; i < buttons.size(); ++i)
 	{
 		buttons[i]->Draw();
 		auto rect = buttons[i]->GetButtonRect();
-		DxLib::DrawFormatString(rect.center.x, rect.center.y, 0xff0000, "%d", i);
+		DxLib::DrawFormatString(rect.center.x, rect.center.y, 0x000000, "%d", i);
 	}
 	decide->Draw();
 	auto rect = decide->GetButtonRect();
-	DxLib::DrawFormatString(rect.center.x - rect.Width() / 4, rect.center.y, 0xff0000, "%s", "回答する");
+	DxLib::DrawFormatString(rect.center.x - rect.Width() / 4, rect.center.y, 0x000000, "%s", "回答する");
 	del->Draw();
 	rect = del->GetButtonRect();
-	DxLib::DrawFormatString(rect.center.x - rect.Width() / 4, rect.center.y, 0xff0000, "%s", "取り消し");
+	DxLib::DrawFormatString(rect.center.x - rect.Width() / 4, rect.center.y, 0x000000, "%s", "取り消し");
 
 	if (updater == &Game4::AnswerDisplayUpdate)
 	{
@@ -374,6 +386,7 @@ void Game4::Update(const Peripheral & p)
 
 void Game4::Draw()
 {
-	DxLib::DrawFormatString(800, 600, 0xff0000, "回答:%d", qAnswer);
+	auto size = Game::Instance().GetScreenSize();
+	DxLib::DrawBox(0, 0, size.x, size.y, 0xffffff, true);
 	(this->*drawer)();
 }
