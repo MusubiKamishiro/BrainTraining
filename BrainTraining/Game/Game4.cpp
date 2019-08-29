@@ -50,18 +50,30 @@ void Game4::FadeoutUpdate(const Peripheral & p)
 
 void Game4::WaitUpdate(const Peripheral & p)
 {
-	if (waitTime <= 0)
+	if (waitTime <= 0 && !CheckSoundMem(_startSE))
 	{
 		updater = &Game4::QuestionDisplayUpdate;
 	}
 
 	--waitTime;
+	if (!(waitTime % 60) && waitTime > 0)
+	{
+		if (waitTime / 60 == 1)
+		{
+			PlaySoundMem(_startSE, DX_PLAYTYPE_BACK);
+		}
+		else
+		{
+			PlaySoundMem(_cntDownSE, DX_PLAYTYPE_BACK);
+		}
+	}
 }
 
 void Game4::DescriptionUpdate(const Peripheral & p)
 {
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
+		PlaySoundMem(_cntDownSE, DX_PLAYTYPE_BACK);
 		updater = &Game4::WaitUpdate;
 		drawer = &Game4::GameDraw;
 	}
@@ -70,10 +82,15 @@ void Game4::DescriptionUpdate(const Peripheral & p)
 
 void Game4::QuestionDisplayUpdate(const Peripheral & p)
 {
+	if (!CheckSoundMem(_gameBGM))
+	{
+		PlaySoundMem(_gameBGM, DX_PLAYTYPE_BACK);
+	}
 	for (unsigned int i = 0; i < buttons.size(); ++i)
 	{
 		if (buttons[i]->Update(p))
 		{
+			PlaySoundMem(_btnSE, DX_PLAYTYPE_BACK);
 			EditMyAnswer(i);
 		}
 	}
@@ -83,6 +100,7 @@ void Game4::QuestionDisplayUpdate(const Peripheral & p)
 	}
 	if (del->Update(p))
 	{
+		PlaySoundMem(_btnSE, DX_PLAYTYPE_BACK);
 		myAnswer = 0;
 	}
 
@@ -230,7 +248,18 @@ void Game4::GameDraw()
 	{
 		DxLib::SetFontSize(96 * 2);
 		auto size = Game::Instance().GetScreenSize();
-		DxLib::DrawFormatString(size.x / 3 - 96, 270, 0xff0000, "%d", waitTime / 60 + 1);
+		int strWidth, strHeight;
+		if (waitTime <= 60)
+		{
+			SetFontSize(130);
+			GetDrawStringSize(&strWidth, &strHeight, nullptr, "スタート!", strlen("スタート!"));
+			DrawString(size.x / 2 - strWidth / 2, size.y / 10 - strHeight / 2, "スタート！", 0x000000);
+		}
+		else
+		{
+			GetDrawStringSize(&strWidth, &strHeight, nullptr, "0", strlen("0"));
+			DrawFormatString(size.x / 2 - strWidth / 2, size.y / 10 - strHeight / 2, 0x000000, "%d", (waitTime / 60));
+		}
 	}
 
 	int strwidth, strheight;
@@ -262,26 +291,16 @@ void Game4::GameDraw()
 		if (result)
 		{
 			auto size = Game::Instance().GetScreenSize();
-
-			int strwidth, strheight;
-			strwidth = strheight = 0;
-
-			SetFontSize(700);
-			std::string s = "〇";
-			GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
-			DrawString(size.x / 2 - strwidth / 2, size.y / 2 - strheight / 2, s.c_str(), 0xff0000);
+			Vector2 imgSize;
+			GetGraphSize(_correctImg, &imgSize.x, &imgSize.y);
+			DrawGraph(size.x / 2 - imgSize.x / 2, size.y / 3 * 2 - imgSize.y / 2, _correctImg, true);
 		}
 		else
 		{
 			auto size = Game::Instance().GetScreenSize();
-
-			int strwidth, strheight;
-			strwidth = strheight = 0;
-
-			SetFontSize(700);
-			std::string s = "×";
-			GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
-			DrawString(size.x / 2 - strwidth / 2, size.y / 2 - strheight / 2, s.c_str(), 0x0000ff);
+			Vector2 imgSize;
+			GetGraphSize(_missImg, &imgSize.x, &imgSize.y);
+			DrawRotaGraph(size.x - imgSize.x / 2, size.y - imgSize.y / 4, 0.4, 0, _missImg, true);
 		}
 	}
 }
@@ -428,7 +447,7 @@ Game4::Game4()
 	qAnswer = myAnswer = 0;
 	trueNum = 0;
 
-	waitTime = 180;
+	waitTime = 240;
 	count = 0;
 
 	nowQNum = 1;
@@ -440,6 +459,14 @@ Game4::Game4()
 	trueSE = sData.GetHandle();
 	Game::Instance().GetFileSystem()->Load("SE/incorrect1.mp3", sData);
 	falseSE = sData.GetHandle();
+	Game::Instance().GetFileSystem()->Load("SE/countDown.mp3", sData);
+	_cntDownSE = sData.GetHandle();
+	Game::Instance().GetFileSystem()->Load("SE/start.mp3", sData);
+	_startSE = sData.GetHandle();
+	Game::Instance().GetFileSystem()->Load("SE/button.mp3", sData);
+	_btnSE = sData.GetHandle();
+	Game::Instance().GetFileSystem()->Load("BGM/game.mp3", sData);
+	_gameBGM = sData.GetHandle();
 
 	ImageData data;
 	Game::Instance().GetFileSystem()->Load("img/Button/light green.png", data);
@@ -448,6 +475,11 @@ Game4::Game4()
 	buttonImg.emplace_back(data.GetHandle());
 	Game::Instance().GetFileSystem()->Load("img/Button/red.png", data);
 	buttonImg.emplace_back(data.GetHandle());
+
+	Game::Instance().GetFileSystem()->Load("img/Game2/maru.png", data);
+	_correctImg = data.GetHandle();
+	Game::Instance().GetFileSystem()->Load("img/Game2/batu.png", data);
+	_missImg = data.GetHandle();
 
 	// テンキー
 	Vector2 buttonSize = Vector2(200, 200);
@@ -466,6 +498,7 @@ Game4::Game4()
 
 Game4::~Game4()
 {
+	StopSoundMem(_gameBGM);
 }
 
 void Game4::Update(const Peripheral & p)
