@@ -18,6 +18,8 @@ private:
 
 	int _SE_stamp;
 
+	int _resultBGM;
+
 	void (ResultScene::*updater)(const Peripheral& p);
 
 	void FadeinUpdate(const Peripheral& p);

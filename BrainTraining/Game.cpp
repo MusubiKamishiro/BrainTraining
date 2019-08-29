@@ -110,6 +110,7 @@ void Game::Run()
 
 void Game::Terminate()
 {
+	InitSoundMem();
 	DxLib::DxLib_End();
 }
 

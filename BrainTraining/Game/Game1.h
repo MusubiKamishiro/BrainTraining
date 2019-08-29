@@ -62,8 +62,10 @@ private:
 	Result JudgeResult(int& qNum, Hand& myHand);	// じゃんけん結果の確認
 
 	std::vector<int> handImg;	// グーちょきぱーの画像ハンドル
+	int _correctImg, _missImg;
 	int rock, paper, scissors;	// ボタンの画像ハンドル
-	int trueSE, falseSE;		// 正解,不正解の時の効果音
+	int trueSE, falseSE, _cntDownSE, _startSE;		// 正解,不正解の時の効果音
+	int _gameBGM;
 
 	std::map<int, std::string> questionStatements;	// 問題文
 	std::array<int, static_cast<int>(Hand::MAX)> questionHands;	// 問題の手

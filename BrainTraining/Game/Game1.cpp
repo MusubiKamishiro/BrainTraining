@@ -18,7 +18,6 @@
 
 constexpr int qMax = 20;	// 問題の最大数
 
-
 void Game1::FadeinUpdate(const Peripheral & p)
 {
 	if (pal > 255)
@@ -50,18 +49,30 @@ void Game1::FadeoutUpdate(const Peripheral & p)
 
 void Game1::WaitUpdate(const Peripheral & p)
 {
-	if (waitTime <= 0)
+	if (waitTime <= 0 && !CheckSoundMem(_startSE))
 	{
 		updater = &Game1::QuestionDisplayUpdate;
 	}
 
 	--waitTime;
+	if (!(waitTime % 60) && waitTime > 0)
+	{
+		if (waitTime / 60 == 1)
+		{
+			PlaySoundMem(_startSE, DX_PLAYTYPE_BACK);
+		}
+		else
+		{
+			PlaySoundMem(_cntDownSE, DX_PLAYTYPE_BACK);
+		}
+	}
 }
 
 void Game1::DescriptionUpdate(const Peripheral & p)
 {
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
+		PlaySoundMem(_cntDownSE, DX_PLAYTYPE_BACK);
 		updater = &Game1::WaitUpdate;
 		drawer = &Game1::GameDraw;
 	}
@@ -70,6 +81,10 @@ void Game1::DescriptionUpdate(const Peripheral & p)
 
 void Game1::QuestionDisplayUpdate(const Peripheral & p)
 {
+	if (!CheckSoundMem(_gameBGM))
+	{
+		PlaySoundMem(_gameBGM, DX_PLAYTYPE_BACK);
+	}
 	for (unsigned int i = 0; i < buttons.size(); ++i)
 	{
 		if (buttons[i]->Update(p))
@@ -251,7 +266,18 @@ void Game1::GameDraw()
 	{
 		DxLib::SetFontSize(96*2);
 		auto size = Game::Instance().GetScreenSize();
-		DxLib::DrawFormatString(size.x / 2 - 96, 270, 0xff0000, "%d", waitTime / 60 + 1);
+		int strWidth, strHeight;
+		if (waitTime <= 60)
+		{
+			GetDrawStringSize(&strWidth, &strHeight, nullptr, "スタート!", strlen("スタート!"));
+			DrawString(size.x / 2 - strWidth / 2, size.y / 10 - strHeight / 2, "スタート！", 0x000000);
+		}
+		else
+		{
+			GetDrawStringSize(&strWidth, &strHeight, nullptr, "0", strlen("0"));
+			DrawFormatString(size.x / 2 - strWidth / 2, size.y / 10 - strHeight / 2, 0x000000, "%d", (waitTime / 60));
+		}
+
 	}
 
 	if (updater == &Game1::AnswerDisplayUpdate)
@@ -259,26 +285,16 @@ void Game1::GameDraw()
 		if (result)
 		{
 			auto size = Game::Instance().GetScreenSize();
-
-			int strwidth, strheight;
-			strwidth = strheight = 0;
-
-			SetFontSize(700);
-			std::string s = "〇";
-			GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
-			DrawString(size.x / 2 - strwidth / 2, size.y / 2 - strheight / 2, s.c_str(), 0xff0000);
+			Vector2 imgSize;
+			GetGraphSize(_correctImg, &imgSize.x, &imgSize.y);
+			DrawGraph(size.x / 2 - imgSize.x / 2, size.y / 2 - imgSize.y / 2, _correctImg, true);
 		}
 		else
 		{
 			auto size = Game::Instance().GetScreenSize();
-
-			int strwidth, strheight;
-			strwidth = strheight = 0;
-
-			SetFontSize(700);
-			std::string s = "×";
-			GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
-			DrawString(size.x / 2 - strwidth / 2, size.y / 2 - strheight / 2, s.c_str(), 0x0000ff);
+			Vector2 imgSize;
+			GetGraphSize(_missImg, &imgSize.x, &imgSize.y);
+			DrawRotaGraph(size.x - imgSize.x / 2, size.y - imgSize.y / 2, 0.6, 0, _missImg, true);
 		}
 	}
 }
@@ -364,11 +380,22 @@ Game1::Game1()
 	Game::Instance().GetFileSystem()->Load("img/Button/blue.png", data);
 	paper = data.GetHandle();
 
+	Game::Instance().GetFileSystem()->Load("img/Game2/maru.png", data);
+	_correctImg = data.GetHandle();
+	Game::Instance().GetFileSystem()->Load("img/Game2/batu.png", data);
+	_missImg = data.GetHandle();
+
 	SoundData sData;
 	Game::Instance().GetFileSystem()->Load("SE/correct1.mp3", sData);
 	trueSE = sData.GetHandle();
 	Game::Instance().GetFileSystem()->Load("SE/incorrect1.mp3", sData);
 	falseSE = sData.GetHandle();
+	Game::Instance().GetFileSystem()->Load("SE/countDown.mp3", sData);
+	_cntDownSE = sData.GetHandle();
+	Game::Instance().GetFileSystem()->Load("SE/start.mp3", sData);
+	_startSE = sData.GetHandle();
+	Game::Instance().GetFileSystem()->Load("BGM/game.mp3", sData);
+	_gameBGM = sData.GetHandle();
 	
 	buttons.emplace_back(new Button(Rect(305, 830, 400, 400), rock));
 	buttons.emplace_back(new Button(Rect(955, 830, 400, 400), scissors));
@@ -385,7 +412,7 @@ Game1::Game1()
 	questionStatements[3] = "負けないでください";
 	qStatementNum = 0;
 
-	waitTime = 180;
+	waitTime = 240;
 	count = 0;
 
 	displayCount = 30;
@@ -399,6 +426,7 @@ Game1::Game1()
 
 Game1::~Game1()
 {
+	StopSoundMem(_gameBGM);
 }
 
 void Game1::Update(const Peripheral & p)

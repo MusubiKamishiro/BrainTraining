@@ -49,7 +49,9 @@ private:
 	void SelectOperator();
 
 	std::vector<int> buttonImg;
-	int trueSE, falseSE;		// 正解,不正解の時の効果音
+	int _correctImg, _missImg;
+	int trueSE, falseSE, _cntDownSE, _startSE, _btnSE;		// 正解,不正解の時の効果音
+	int _gameBGM;
 
 	int waitTime;	// 問題が始まるまでの待ち時間
 	int count;		// 点滅用カウント
