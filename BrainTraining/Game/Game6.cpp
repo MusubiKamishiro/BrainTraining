@@ -251,8 +251,8 @@ Game6::Game6() : _btnSize(Size(300,300))
 	_buttons.emplace_back(new Button(Rect(size.x / 9 * 7, size.y / 8 * 5,
 										  _btnSize.width, _btnSize.height), data.GetHandle()));
 
-	_correctSE = LoadSoundMem("SE/correct.mp3");
-	_missSE	   = LoadSoundMem("SE/incorrect.mp3");
+	_correctSE = LoadSoundMem("SE/correct1.mp3");
+	_missSE	   = LoadSoundMem("SE/incorrect1.mp3");
 	_cntDownSE = LoadSoundMem("SE/countDown.mp3");
 	_startSE   = LoadSoundMem("SE/start.mp3");
 	_gameBGM   = LoadSoundMem("BGM/game.mp3");

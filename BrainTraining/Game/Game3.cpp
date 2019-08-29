@@ -337,10 +337,11 @@ Game3::Game3() : _defTime(180)
 	_buttons.emplace_back(new Button(Rect(size.x / 4,size.y / 2,size.x / 2, size.y)));
 	_buttons.emplace_back(new Button(Rect(size.x / 4 * 3, size.y / 2, size.x / 2, size.y)));
 
-	_correctSE  = LoadSoundMem("SE/correct.mp3");
-	_missSE		= LoadSoundMem("SE/incorrect.mp3");
+	_correctSE  = LoadSoundMem("SE/correct1.mp3");
+	_missSE		= LoadSoundMem("SE/incorrect1.mp3");
 	_cntDownSE  = LoadSoundMem("SE/countDown.mp3");
 	_startSE    = LoadSoundMem("SE/start.mp3");
+	_gameBGM	= LoadSoundMem("BGM/game.mp3");
 
 	_orderText  = "";
 	_timeCnt	= _defTime;

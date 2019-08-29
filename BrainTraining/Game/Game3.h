@@ -65,6 +65,7 @@ private:
 	int _timeCnt, _expCnt, _blindCnt;			// ¹Þ°Ñ’†‚ÉŽg—p‚·‚é¶³ÝÄ
 
 	int _correctSE, _missSE, _cntDownSE, _startSE;
+	int _gameBGM;
 
 	const int _defTime;
 public:
