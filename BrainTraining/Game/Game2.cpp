@@ -228,7 +228,7 @@ void Game2::WaitUpdate(const Peripheral & p)
 
 void Game2::AnswerUpdate(const Peripheral & p)
 {
-	if (/*p.IsTrigger(MOUSE_INPUT_LEFT) && */!CheckSoundMem(_SE_correct))
+	if (!CheckSoundMem(_SE_correct) && !CheckSoundMem(_SE_miss))
 	{
 		++_questions;
 		if (_questions > MAX_QUESTIONS)
