@@ -13,6 +13,7 @@
 #include "../Scene/PauseScene.h"
 
 #include "../System/FileSystem.h"
+#include "../System/ImageLoader.h"
 #include "../System/SoundLoader.h"
 
 constexpr int qMax = 20;	// 問題の最大数
@@ -143,7 +144,7 @@ void Game4::AnswerDisplayUpdate(const Peripheral & p)
 		{
 			CreateQuestion();
 			++nowQNum;
-			displayCount = 60;
+			displayCount = 30;
 
 			updater = &Game4::QuestionDisplayUpdate;
 		}
@@ -176,34 +177,59 @@ void Game4::DescriptionDraw()
 void Game4::GameDraw()
 {
 	DxLib::SetFontSize(96);
-	DxLib::DrawFormatString(200, 200, 0x000000, "第%d問", nowQNum);
-	DxLib::DrawFormatString(50, 400, 0x000000, "%s", question.c_str());
+	DxLib::DrawFormatString(100, 100, 0x000000, "第%d問", nowQNum);
+	DxLib::DrawFormatString(100, 300, 0x000000, "%s", question.c_str());
 
 	DxLib::DrawFormatString(500, 800, 0x000000, "自分の回答:%d", myAnswer);
 
+	int strwidth, strheight;
+	strwidth = strheight = 0;
 	// 各種ボタンの描画
 	for (unsigned int i = 0; i < buttons.size(); ++i)
 	{
 		buttons[i]->Draw();
 		auto rect = buttons[i]->GetButtonRect();
-		DxLib::DrawFormatString(rect.center.x, rect.center.y, 0x000000, "%d", i);
+		std::string s = std::to_string(i);
+		GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
+		DxLib::DrawFormatString(rect.center.x - strwidth / 2, rect.center.y - strheight / 2, 0x000000, "%s", s.c_str());
 	}
 	decide->Draw();
 	auto rect = decide->GetButtonRect();
-	DxLib::DrawFormatString(rect.center.x - rect.Width() / 4, rect.center.y, 0x000000, "%s", "回答する");
+	std::string s = "回答する";
+	GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
+	DxLib::DrawFormatString(rect.center.x - strwidth / 2, rect.center.y - strheight / 2, 0x000000, "%s", s.c_str());
+
 	del->Draw();
 	rect = del->GetButtonRect();
-	DxLib::DrawFormatString(rect.center.x - rect.Width() / 4, rect.center.y, 0x000000, "%s", "取り消し");
+	s = "取消";
+	GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
+	DxLib::DrawFormatString(rect.center.x - strwidth / 2, rect.center.y - strheight / 2, 0x000000, "%s", s.c_str());
 
 	if (updater == &Game4::AnswerDisplayUpdate)
 	{
 		if (result)
 		{
-			DxLib::DrawCircle(600, 600, 100, 0x00ff00);
+			auto size = Game::Instance().GetScreenSize();
+
+			int strwidth, strheight;
+			strwidth = strheight = 0;
+
+			SetFontSize(700);
+			std::string s = "〇";
+			GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
+			DrawString(size.x / 2 - strwidth / 2, size.y / 2 - strheight / 2, s.c_str(), 0xff0000);
 		}
 		else
 		{
-			DxLib::DrawBox(450, 450, 550, 550, 0x00ff00, true);
+			auto size = Game::Instance().GetScreenSize();
+
+			int strwidth, strheight;
+			strwidth = strheight = 0;
+
+			SetFontSize(700);
+			std::string s = "×";
+			GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
+			DrawString(size.x / 2 - strwidth / 2, size.y / 2 - strheight / 2, s.c_str(), 0x0000ff);
 		}
 	}
 }
@@ -277,7 +303,7 @@ void Game4::CreateQuestion()
 	
 	// 問題文章に演算子の追加
 	question += questionOperators[op];
-	question += " ";
+	question += "\n\n　　";
 
 	// 演算子をみて、2つめの数値を決定
 	if (op == static_cast<int>(Operator::PLUS))
@@ -351,7 +377,7 @@ Game4::Game4()
 	trueNum = 0;
 
 	nowQNum = 1;
-	displayCount = 60;
+	displayCount = 30;
 	result = false;
 
 	SoundData sData;
@@ -360,16 +386,20 @@ Game4::Game4()
 	Game::Instance().GetFileSystem()->Load("SE/incorrect1.mp3", sData);
 	falseSE = sData.GetHandle();
 
+	ImageData data;
+	Game::Instance().GetFileSystem()->Load("img/Button/light green.png", data);
+	buttonImg = data.GetHandle();
+
 	// テンキー
 	Vector2 buttonSize = Vector2(200, 200);
-	buttons.emplace_back(new Button(Rect(1420, 700, buttonSize.x, buttonSize.y)));
+	buttons.emplace_back(new Button(Rect(1400, 720, buttonSize.x, buttonSize.y), buttonImg));
 	for (int i = 0; i < 9; ++i)
 	{
-		buttons.emplace_back(new Button(Rect(1420 + i % 3 * buttonSize.x, 500 - i / 3 * buttonSize.y, buttonSize.x, buttonSize.y)));
+		buttons.emplace_back(new Button(Rect(1400 + i % 3 * buttonSize.x, 520 - i / 3 * buttonSize.y, buttonSize.x, buttonSize.y), buttonImg));
 	}
 	// 決定,取り消しボタン
-	decide.reset(new Button(Rect(1620, 950, buttonSize.x * 3, buttonSize.y)));
-	del.reset(new Button(Rect(1720, 700, buttonSize.x * 2, buttonSize.y)));
+	decide.reset(new Button(Rect(1600, 950, buttonSize.x * 3, buttonSize.y), buttonImg));
+	del.reset(new Button(Rect(1700, 720, buttonSize.x * 2, buttonSize.y), buttonImg));
 
 	CreateQuestion();
 }

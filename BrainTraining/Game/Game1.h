@@ -61,7 +61,8 @@ private:
 	void CreateQuestion();		// 問題作成
 	Result JudgeResult(int& qNum, Hand& myHand);	// じゃんけん結果の確認
 
-	int rock, paper, scissors;	// グーちょきぱーの画像ハンドル
+	std::vector<int> handImg;	// グーちょきぱーの画像ハンドル
+	int rock, paper, scissors;	// ボタンの画像ハンドル
 	int trueSE, falseSE;		// 正解,不正解の時の効果音
 
 	std::map<int, std::string> questionStatements;	// 問題文
