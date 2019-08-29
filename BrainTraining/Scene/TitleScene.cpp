@@ -39,6 +39,7 @@ void TitleScene::WaitUpdate(const Peripheral & p)
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
 		StopSoundMem(_bgm);
+		PlaySoundMem(_se, DX_PLAYTYPE_BACK);
 		pal = 255;
 		updater = &TitleScene::FadeoutUpdate;
 	}
@@ -54,6 +55,7 @@ TitleScene::TitleScene()
 	_img_kokuban = LoadGraph("img/Title/kokuban.png");
 
 	_bgm = LoadSoundMem("BGM/title.mp3");
+	_se = LoadSoundMem("SE/decide.mp3");
 	PlaySoundMem(_bgm, DX_PLAYTYPE_BACK);
 }
 
@@ -63,6 +65,7 @@ TitleScene::~TitleScene()
 	DeleteGraph(_img_flag);
 	DeleteGraph(_img_kokuban);
 	DeleteSoundMem(_bgm);
+	DeleteSoundMem(_se);
 }
 
 void TitleScene::Update(const Peripheral& p)

@@ -76,6 +76,7 @@ void SelectScene::WaitUpdate(const Peripheral & p)
 			if (p.IsTrigger(MOUSE_INPUT_LEFT))
 			{
 				StopSoundMem(_bgm);
+				PlaySoundMem(_se, DX_PLAYTYPE_BACK);
 				_selectButton = i + 1;
 				updater = &SelectScene::FadeoutUpdate;
 				break;
@@ -94,6 +95,7 @@ SelectScene::SelectScene()
 
 	_img_kokuban = LoadGraph("img/Title/kokuban.png");
 	_bgm = LoadSoundMem("BGM/select.mp3");
+	_se = LoadSoundMem("SE/decide.mp3");
 
 	auto size = Game::Instance().GetScreenSize();
 
@@ -121,6 +123,7 @@ SelectScene::~SelectScene()
 		DeleteGraph(m.handle);
 	}
 	DeleteSoundMem(_bgm);
+	DeleteSoundMem(_se);
 }
 
 void SelectScene::Update(const Peripheral& p)

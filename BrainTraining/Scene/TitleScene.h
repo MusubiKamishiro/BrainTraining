@@ -19,6 +19,7 @@ private:
 	int _img_flag;
 	int  _img_kokuban;
 	int _bgm;
+	int _se;
 
 public:
 	TitleScene();
