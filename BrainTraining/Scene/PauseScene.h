@@ -20,6 +20,7 @@ private:
 	std::map<int, std::string> buttonStatements;	// à–¾•¶
 
 	int select;
+	int buttonImg;
 
 public:
 	PauseScene();

@@ -8,6 +8,9 @@
 
 #include "../Button.h"
 
+#include "../System/FileSystem.h"
+#include "../System/ImageLoader.h"
+#include "../System/SoundLoader.h"
 
 void PauseScene::FadeinUpdate(const Peripheral & p)
 {
@@ -22,9 +25,6 @@ void PauseScene::FadeoutUpdate(const Peripheral & p)
 		SceneManager::Instance().PopScene();
 		break;
 	case 1:
-		///
-		break;
-	case 2:
 		if (pal <= 0)
 		{
 			SceneManager::Instance().ChangeScene(std::make_unique<SelectScene>());
@@ -58,13 +58,15 @@ PauseScene::PauseScene()
 
 	auto ssize = Game::Instance().GetScreenSize();
 
-	buttons.emplace_back(new Button(Rect(ssize.x/2, 300, 1000, 200)));
-	buttons.emplace_back(new Button(Rect(ssize.x/2, 600, 1000, 200)));
-	buttons.emplace_back(new Button(Rect(ssize.x/2, 900, 1000, 200)));
+	ImageData data;
+	Game::Instance().GetFileSystem()->Load("img/Button/red.png", data);
+	buttonImg = data.GetHandle();
+
+	buttons.emplace_back(new Button(Rect(ssize.x/2, 400, 1000, 200), buttonImg));
+	buttons.emplace_back(new Button(Rect(ssize.x/2, 800, 1000, 200), buttonImg));
 
 	buttonStatements[0] = "ゲームに戻る";
-	buttonStatements[1] = "ゲームをやり直す";
-	buttonStatements[2] = "ゲームセレクトに戻る";
+	buttonStatements[1] = "ゲームセレクトに戻る";
 }
 
 
