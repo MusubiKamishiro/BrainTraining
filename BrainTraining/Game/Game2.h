@@ -43,6 +43,9 @@ private:
 	int _SE_correct;	// ³‰ğSE
 	int _SE_miss;		// ‚Í‚¸‚êSE
 
+	int _img_balance;
+	int _img_maru;
+	int _img_batu;
 	int _img_1en;
 	int _img_5en;
 	int _img_10en;
@@ -53,6 +56,10 @@ private:
 	int _img_5000en;
 	int _img_10000en;
 
+	void Question();	// –â‘èì¬
+	void Correct();		// ³‰ğ
+	void Incorrect();	// •s³‰ğ
+
 	void (Game2::*_updater)(const Peripheral& p);
 
 	void FadeinUpdate(const Peripheral& p);
@@ -60,15 +67,14 @@ private:
 
 	void StartUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
-	void QuestionsUpdate(const Peripheral& p);
 	void AnswerUpdate(const Peripheral& p);
 
 	void (Game2::*_drawer)();
 
 	void StartDraw();
 	void WaitDraw();
-	void QuestionsDraw();
-	void AnswerDraw();
+	void CorrectDraw();
+	void IncorrectDraw();
 
 	void DrawMoney(Num num, int offset = 0);
 

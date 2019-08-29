@@ -36,6 +36,81 @@ void Game2::Total(Num &num)
 		num.money_1000 * 1000;
 }
 
+void Game2::Question()
+{
+	do
+	{
+		NumInit(_right);
+		NumInit(_left);
+		switch (_questions)
+		{
+		case 1:
+		case 6:
+			_right.money_1 = GetRand(9) + 1;
+			_right.type = DrawType::Money;
+			_left.money_1 = GetRand(9) + 1;
+			_left.type = DrawType::Money;
+			break;
+		case 2:
+		case 7:
+			_right.money_10 = GetRand(7) + 2;
+			_right.type = DrawType::Money;
+			_left.money_50 = 1;
+			_left.type = DrawType::Money;
+			break;
+		case 3:
+		case 8:
+			_right.money_5 = GetRand(5) + 10;
+			_right.type = DrawType::Number;
+			_left.money_5 = GetRand(5) + 10;
+			_left.type = DrawType::Money;
+			break;
+		case 4:
+		case 9:
+			_right.money_1000 = 1;
+			_right.type = DrawType::Number;
+			_left.money_100 = GetRand(5) + 7;
+			_left.type = DrawType::Money;
+			break;
+		case 5:
+		case 10:
+			_right.money_500 = GetRand(3) + 1;
+			_right.type = DrawType::Money;
+			_left.money_100 = GetRand(10) + 5;
+			_left.type = DrawType::Money;
+			break;
+		default:
+			_right.money_100 = GetRand(10);
+			_right.type = DrawType::Number;
+			_left.money_100 = GetRand(10);
+			_left.type = DrawType::Number;
+			break;
+		}
+
+		Total(_right);
+		Total(_left);
+	} while (_right.total == _left.total);
+}
+
+void Game2::Correct()
+{
+	ChangeVolumeSoundMem(200, _SE_correct);
+	PlaySoundMem(_SE_correct, DX_PLAYTYPE_BACK);
+	++_correctNum;
+
+	_updater = &Game2::AnswerUpdate;
+	_drawer = &Game2::CorrectDraw;
+}
+
+void Game2::Incorrect()
+{
+	ChangeVolumeSoundMem(200, _SE_miss);
+	PlaySoundMem(_SE_miss, DX_PLAYTYPE_BACK);
+
+	_updater = &Game2::AnswerUpdate;
+	_drawer = &Game2::IncorrectDraw;
+}
+
 void Game2::FadeinUpdate(const Peripheral & p)
 {
 	if (pal > 255)
@@ -66,11 +141,10 @@ void Game2::StartUpdate(const Peripheral & p)
 {
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
-		ChangeVolumeSoundMem(125, _SE_question);
-		PlaySoundMem(_SE_question, DX_PLAYTYPE_BACK);
+		Question();
 
-		_updater = &Game2::QuestionsUpdate;
-		_drawer = &Game2::QuestionsDraw;
+		_updater = &Game2::WaitUpdate;
+		_drawer = &Game2::WaitDraw;
 	}
 }
 
@@ -88,14 +162,11 @@ void Game2::WaitUpdate(const Peripheral & p)
 			{
 				if (_left.total > _right.total)
 				{
-					ChangeVolumeSoundMem(200, _SE_correct);
-					PlaySoundMem(_SE_correct, DX_PLAYTYPE_BACK);
-					++_correctNum;
+					Correct();
 				}
 				else
 				{
-					ChangeVolumeSoundMem(200, _SE_miss);
-					PlaySoundMem(_SE_miss, DX_PLAYTYPE_BACK);
+					Incorrect();
 				}
 			}
 			// âEÇÉNÉäÉbÉN
@@ -103,87 +174,19 @@ void Game2::WaitUpdate(const Peripheral & p)
 			{
 				if (_right.total > _left.total)
 				{
-					ChangeVolumeSoundMem(200, _SE_correct);
-					PlaySoundMem(_SE_correct, DX_PLAYTYPE_BACK);
-					++_correctNum;
+					Correct();
 				}
 				else
 				{
-					ChangeVolumeSoundMem(200, _SE_miss);
-					PlaySoundMem(_SE_miss, DX_PLAYTYPE_BACK);
+					Incorrect();
 				}
 			}
-			_updater = &Game2::AnswerUpdate;
-			_drawer = &Game2::AnswerDraw;
 		}
 	}
 
 	if (p.IsTrigger(MOUSE_INPUT_RIGHT))
 	{
 		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
-	}
-}
-
-void Game2::QuestionsUpdate(const Peripheral & p)
-{
-	if (!CheckSoundMem(_SE_question))
-	{
-		do
-		{
-			NumInit(_right);
-			NumInit(_left);
-			switch (_questions)
-			{
-			case 1:
-			case 6:
-				_right.money_1 = GetRand(9) + 1;
-				_right.type = DrawType::Money;
-				_left.money_1 = GetRand(9) + 1;
-				_left.type = DrawType::Money;
-				break;
-			case 2:
-			case 7:
-				_right.money_10 = GetRand(7) + 2;
-				_right.type = DrawType::Money;
-				_left.money_50 = 1;
-				_left.type = DrawType::Money;
-				break;
-			case 3:
-			case 8:
-				_right.money_5 = GetRand(5) + 10;
-				_right.type = DrawType::Number;
-				_left.money_5 = GetRand(5) + 10;
-				_left.type = DrawType::Money;
-				break;
-			case 4:
-			case 9:
-				_right.money_1000 = 1;
-				_right.type = DrawType::Number;
-				_left.money_100 = GetRand(5) + 7;
-				_left.type = DrawType::Money;
-				break;
-			case 5:
-			case 10:
-				_right.money_500 = GetRand(3) + 1;
-				_right.type = DrawType::Money;
-				_left.money_100 = GetRand(10) + 5;
-				_left.type = DrawType::Money;
-				break;
-			default:
-				_right.money_100 = GetRand(10);
-				_right.type = DrawType::Number;
-				_left.money_100 = GetRand(10);
-				_left.type = DrawType::Number;
-				break;
-			}
-
-			Total(_right);
-			Total(_left);
-		} 
-		while (_right.total == _left.total);
-
-		_updater = &Game2::WaitUpdate;
-		_drawer = &Game2::WaitDraw;
 	}
 }
 
@@ -198,11 +201,10 @@ void Game2::AnswerUpdate(const Peripheral & p)
 		}
 		else
 		{
-			ChangeVolumeSoundMem(125, _SE_question);
-			PlaySoundMem(_SE_question, DX_PLAYTYPE_BACK);
+			Question();
 
-			_updater = &Game2::QuestionsUpdate;
-			_drawer = &Game2::QuestionsDraw;
+			_updater = &Game2::WaitUpdate;
+			_drawer = &Game2::WaitDraw;
 		}
 	}
 }
@@ -212,6 +214,8 @@ void Game2::StartDraw()
 	auto size = Game::Instance().GetScreenSize();
 
 	DxLib::DrawBox(0, 0, size.x, size.y, 0xffffff, true);
+
+	DrawRotaGraph(size.x / 2, size.y / 2, 1.5, 0.0, _img_balance, true);
 
 	int strwidth, strheight;
 	strwidth = strheight = 0;
@@ -229,40 +233,24 @@ void Game2::WaitDraw()
 {
 }
 
-void Game2::QuestionsDraw()
+void Game2::IncorrectDraw()
 {
 	auto size = Game::Instance().GetScreenSize();
 
-	DxLib::DrawBox(0, 0, size.x, size.y, 0xffffff, true);
-
-	int strwidth, strheight;
-	strwidth = strheight = 0;
-
-	SetFontSize(250);
-	GetDrawFormatStringSize(&strwidth, &strheight, nullptr, "ëÊ%dñ‚", _questions);
-	DxLib::DrawFormatString(size.x / 2 - strwidth / 2, size.y / 2 - strheight / 2, 0x000000, "ëÊ%dñ‚", _questions);
+	DrawRotaGraph(
+		_left.total < _right.total ? size.x / 4 : size.x / 4 * 3,
+		size.y / 3 * 2,
+		0.5, 0.0, _img_batu, true);
 }
 
-void Game2::AnswerDraw()
+void Game2::CorrectDraw()
 {
 	auto size = Game::Instance().GetScreenSize();
 
-	int strwidth, strheight;
-	strwidth = strheight = 0;
-
-	SetFontSize(500);
-
-	GetDrawStringSize(&strwidth, &strheight, nullptr, "Å~", strlen("Å~"));
-	DrawString(
-		_left.total < _right.total ? size.x / 4 - strwidth / 2 : size.x / 4 * 3 - strwidth / 2,
-		size.y / 3 * 2 - strheight / 2,
-		"Å~", 0x0000ff, 0xffffff);
-
-	GetDrawStringSize(&strwidth, &strheight, nullptr, "ÅZ", strlen("ÅZ"));
-	DrawString(
-		_left.total > _right.total ? size.x / 4 - strwidth / 2 : size.x / 4 * 3 - strwidth / 2,
-		size.y / 3 * 2 - strheight / 2,
-		"ÅZ", 0xff0000, 0xffffff);
+	DrawRotaGraph(
+		_left.total > _right.total ? size.x / 4 : size.x / 4 * 3,
+		size.y / 3 * 2,
+		1.0, 0.0, _img_maru, true);
 }
 
 void Game2::DrawMoney(Num num, int offset)
@@ -328,13 +316,16 @@ Game2::Game2()
 	_SE_correct = LoadSoundMem("SE/correct1.mp3");
 	_SE_miss = LoadSoundMem("SE/incorrect1.mp3");
 
-	_img_1en = LoadGraph("img/àÍâ~.png");
-	_img_5en = LoadGraph("img/å‹â~.png");
-	_img_10en = LoadGraph("img/è\â~.png");
-	_img_50en = LoadGraph("img/å‹è\â~.png");
-	_img_100en = LoadGraph("img/ïSâ~.png");
-	_img_500en = LoadGraph("img/å‹ïSâ~.png");
-	_img_1000en = LoadGraph("img/êÁâ~.png");
+	_img_balance = LoadGraph("img/Game2/balance.png");
+	_img_maru = LoadGraph("img/Game2/maru.png");
+	_img_batu = LoadGraph("img/Game2/batu.png");
+	_img_1en = LoadGraph("img/Game2/àÍâ~.png");
+	_img_5en = LoadGraph("img/Game2/å‹â~.png");
+	_img_10en = LoadGraph("img/Game2/è\â~.png");
+	_img_50en = LoadGraph("img/Game2/å‹è\â~.png");
+	_img_100en = LoadGraph("img/Game2/ïSâ~.png");
+	_img_500en = LoadGraph("img/Game2/å‹ïSâ~.png");
+	_img_1000en = LoadGraph("img/Game2/êÁâ~.png");
 
 	auto size = Game::Instance().GetScreenSize();
 	float angle = 0;
@@ -378,10 +369,15 @@ void Game2::Draw()
 	auto size = Game::Instance().GetScreenSize();
 
 	DxLib::DrawBox(0, 0, size.x, size.y, 0xffffff, true);
-	DxLib::DrawBox(0, size.y / 4, size.x / 2, size.y, 0xff0000, true);
-	DxLib::DrawBox(size.x / 2, size.y / 4, size.x, size.y, 0x0000ff, true);
+	DxLib::DrawBox(0, size.y / 4, size.x / 2, size.y, 0xffcccc, true);
+	DxLib::DrawBox(size.x / 2, size.y / 4, size.x, size.y, 0xccccff, true);
+
 	DrawLine(0, size.y / 4, size.x, size.y / 4, 0x000000, 5);
 	DrawLine(size.x / 2, size.y / 4, size.x / 2, size.y, 0x000000, 5);
+
+	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+	DrawRotaGraph(size.x / 2 + 15, size.y / 2, 1.5, 0.0, _img_balance, true);
+	DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 
 	int strwidth, strheight;
 	strwidth = strheight = 0;
