@@ -42,7 +42,6 @@ bool Button::Update(const Peripheral& p)
 
 void Button::Draw()
 {
-	DxLib::DrawBox(rect.Left(), rect.Top(), rect.Right(), rect.Bottom(), 0x0000ff, flag);
 	if (img != -1)
 	{
 		DxLib::DrawExtendGraph(rect.Left(), rect.Top(), rect.Right(), rect.Bottom(), img, true);
