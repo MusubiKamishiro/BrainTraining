@@ -97,8 +97,10 @@ void ResultScene::Draw()
 
 	if (_frame > 30)
 	{
-		SetFontSize(600);
-		DrawFormatString(size.x / 8, size.y / 8, 0xff2222, "%d", _correct);
+		SetFontSize(500);
+		std::string s = std::to_string(_correct);
+		GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
+		DrawFormatString(size.x / 8 - strwidth / 3, size.y / 8, 0xff2222, "%s", s.c_str());
 	}
 	if (_frame > 60)
 	{

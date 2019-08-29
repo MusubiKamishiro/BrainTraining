@@ -64,7 +64,9 @@ private:
 	int _corrects;			// ³‰ğ”
 	int _timeCnt, _expCnt, _blindCnt;			// ¹Ş°Ñ’†‚Ég—p‚·‚é¶³İÄ
 
+	int _correctImg, _missImg;
 	int _correctSE, _missSE, _cntDownSE, _startSE;
+	int _gameBGM;
 
 	const int _defTime;
 public:

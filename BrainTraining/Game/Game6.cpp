@@ -251,8 +251,13 @@ Game6::Game6() : _btnSize(Size(300,300))
 	_buttons.emplace_back(new Button(Rect(size.x / 9 * 7, size.y / 8 * 5,
 										  _btnSize.width, _btnSize.height), data.GetHandle()));
 
-	_correctSE = LoadSoundMem("SE/correct.mp3");
-	_missSE	   = LoadSoundMem("SE/incorrect.mp3");
+	Game::Instance().GetFileSystem()->Load("img/Game2/maru.png", data);
+	_correctImg = data.GetHandle();
+	Game::Instance().GetFileSystem()->Load("img/Game2/batu.png", data);
+	_missImg = data.GetHandle();
+
+	_correctSE = LoadSoundMem("SE/correct1.mp3");
+	_missSE	   = LoadSoundMem("SE/incorrect1.mp3");
 	_cntDownSE = LoadSoundMem("SE/countDown.mp3");
 	_startSE   = LoadSoundMem("SE/start.mp3");
 	_gameBGM   = LoadSoundMem("BGM/game.mp3");
@@ -267,6 +272,7 @@ Game6::Game6() : _btnSize(Size(300,300))
 
 Game6::~Game6()
 {
+	StopSoundMem(_gameBGM);
 }
 
 void Game6::Update(const Peripheral & p)
@@ -370,6 +376,10 @@ void Game6::GameDraw()
 		btn->Draw();
 	}
 
+	SetFontSize(100);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, "ボタンを左クリックすると、色を選択できるよ",
+											   strlen("ボタンを左クリックすると、色を選択できるよ"));
+	DrawString(size.x / 2 - strWidth / 2, size.y - strHeight, "ボタンを左クリックすると、色を選択できるよ", 0x0000aa);
 	
 	SetFontSize(120);
 	/// ﾎﾞﾀﾝの文字座標
@@ -404,5 +414,18 @@ void Game6::GameDraw()
 		default:
 			break;
 		}
+	}
+
+	Vector2 imgSize;
+	if (CheckSoundMem(_correctSE))
+	{
+		GetGraphSize(_correctImg, &imgSize.x, &imgSize.y);
+		DrawGraph(size.x / 2 - imgSize.x / 2, size.y / 2 - imgSize.y / 2, _correctImg, true);
+	}
+
+	if (CheckSoundMem(_missSE))
+	{
+		GetGraphSize(_missImg, &imgSize.x, &imgSize.y);
+		DrawRotaGraph(size.x - imgSize.x / 2, size.y - imgSize.y / 2, 0.6, 0, _missImg, true);
 	}
 }

@@ -50,19 +50,22 @@ void Game1::FadeoutUpdate(const Peripheral & p)
 
 void Game1::WaitUpdate(const Peripheral & p)
 {
-	if (p.IsTrigger(MOUSE_INPUT_RIGHT))
+	if (waitTime <= 0)
 	{
-		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
+		updater = &Game1::QuestionDisplayUpdate;
 	}
+
+	--waitTime;
 }
 
 void Game1::DescriptionUpdate(const Peripheral & p)
 {
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
-		updater = &Game1::QuestionDisplayUpdate;
+		updater = &Game1::WaitUpdate;
 		drawer = &Game1::GameDraw;
 	}
+	++count;
 }
 
 void Game1::QuestionDisplayUpdate(const Peripheral & p)
@@ -176,13 +179,50 @@ void Game1::TitleDraw()
 
 void Game1::DescriptionDraw()
 {
-	DxLib::DrawString(400, 50, "ルール説明だよ", 0x000000);
+	// グーちょきぱーボタンの描画
+	for (unsigned int i = 0; i < buttons.size(); ++i)
+	{
+		buttons[i]->Draw();
+
+		auto rect = buttons[i]->GetButtonRect();
+		DxLib::DrawExtendGraph(rect.center.x - rect.Width() / 3, rect.center.y - rect.Height() / 3,
+			rect.center.x + rect.Width() / 3, rect.center.y + rect.Height() / 3, handImg[i], true);
+	}
+
+	// 問題文章の描画
+	DxLib::SetFontSize(96);
+	std::string s = questionStatements[0];
+	int strwidth, strheight;
+	GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
+	auto size = Game::Instance().GetScreenSize();
+	DxLib::DrawFormatString(size.x / 2 - strwidth / 2, 70, 0x000000, "%s", s.c_str());
+	DxLib::DrawLine(size.x / 2 - strwidth / 2, 70 + strheight, size.x / 2 + strwidth / 2, 70 + strheight, 0xff0000, 10);
+
+	// 問題の手
+	DxLib::DrawExtendGraph(size.x / 2 - 150, 200, size.x / 2 + 150, 500, handImg[0], true);
+	DxLib::DrawLine(size.x / 2 - 150, 200, size.x / 2 - 150, 500, 0xff0000, 10);
+	DxLib::DrawLine(size.x / 2 + 150, 200, size.x / 2 + 150, 500, 0xff0000, 10);
+	DxLib::DrawLine(size.x / 2 + 150, 500, size.x / 2 - 150, 500, 0xff0000, 10);
+	DxLib::DrawLine(size.x / 2 + 150, 200, size.x / 2 - 150, 200, 0xff0000, 10);
+
+	DxLib::DrawString(20, 20, "<例題>", 0x000000);
+
+	DxLib::SetFontSize(80);
+	DxLib::DrawString(20, 220, "相手の手を見て、\n問題文にあう答えの\nボタンをクリック！", 0x000000);
+
+	auto rect = buttons[2]->GetButtonRect();
+	DxLib::DrawString(rect.center.x - rect.Width() / 2, rect.center.y - rect.Height(), "この問題では\nパーが正解\n　↓↓↓", 0x000000);
+
+	if ((count / 40) % 2 == 0)
+	{
+		int strWidth, strHeight;
+		GetDrawStringSize(&strWidth, &strHeight, nullptr, "左クリックでスタート!", strlen("左クリックでスタート!"));
+		DrawString(size.x / 2 - strWidth / 2, size.y - strHeight - 50, "左クリックでスタート!", 0x0000ff);
+	}
 }
 
 void Game1::GameDraw()
 {
-	DxLib::DrawFormatString(600, 600, 0x000000, "第%d問", nowQNum);
-
 	// グーちょきぱーボタンの描画
 	for (unsigned int i = 0; i < buttons.size(); ++i)
 	{
@@ -193,16 +233,26 @@ void Game1::GameDraw()
 						rect.center.x + rect.Width() / 3, rect.center.y + rect.Height() / 3, handImg[i], true);
 	}
 
-	// 問題文章の描画
-	DxLib::SetFontSize(96);
-	std::string s = questionStatements[qStatementNum];
-	int strwidth, strheight;
-	GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
-	auto size = Game::Instance().GetScreenSize();
-	DxLib::DrawFormatString(size.x / 2 - strwidth / 2, 100, 0x000000, "%s", s.c_str());
+	if (updater != &Game1::WaitUpdate)
+	{
+		DxLib::SetFontSize(96);
+		DxLib::DrawFormatString(50, 50, 0x000000, "第%d問", nowQNum);
+		// 問題文章の描画
+		std::string s = questionStatements[qStatementNum];
+		int strwidth, strheight;
+		GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
+		auto size = Game::Instance().GetScreenSize();
+		DxLib::DrawFormatString(size.x / 2 - strwidth / 2, 70, 0x000000, "%s", s.c_str());
 
-	// 問題の手
-	DxLib::DrawExtendGraph(size.x / 2 - 150, 200, size.x / 2 + 150, 500, handImg[qHandNum], true);
+		// 問題の手
+		DxLib::DrawExtendGraph(size.x / 2 - 150, 200, size.x / 2 + 150, 500, handImg[qHandNum], true);
+	}
+	else
+	{
+		DxLib::SetFontSize(96*2);
+		auto size = Game::Instance().GetScreenSize();
+		DxLib::DrawFormatString(size.x / 2 - 96, 270, 0xff0000, "%d", waitTime / 60 + 1);
+	}
 
 	if (updater == &Game1::AnswerDisplayUpdate)
 	{
@@ -334,6 +384,9 @@ Game1::Game1()
 	questionStatements[2] = "勝たないでください";
 	questionStatements[3] = "負けないでください";
 	qStatementNum = 0;
+
+	waitTime = 180;
+	count = 0;
 
 	displayCount = 30;
 	nowQNum = 1;

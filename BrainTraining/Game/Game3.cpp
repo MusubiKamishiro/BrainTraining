@@ -58,7 +58,7 @@ void Game3::WaitUpdate(const Peripheral & p)
 				_updater = &Game3::FirstUpdate;
 			}
 			_orderText = "";
-			_timeCnt = _defTime - 1;	
+			_timeCnt = ((_questions / 5 % 2) == 1 ? _defTime - (_defTime / 3) - 1 : _defTime - 1);	
 			_isJudge = false;
 		}
 	}
@@ -75,6 +75,11 @@ void Game3::StartUpdate(const Peripheral & p)
 
 void Game3::FirstUpdate(const Peripheral & p)
 {
+	if (!CheckSoundMem(_gameBGM))
+	{
+		PlaySoundMem(_gameBGM, DX_PLAYTYPE_BACK);
+	}
+
 	if (p.IsTrigger(MOUSE_INPUT_RIGHT))
 	{
 		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
@@ -128,6 +133,10 @@ void Game3::FirstUpdate(const Peripheral & p)
 
 void Game3::GameUpdate(const Peripheral & p)
 {
+	if (!CheckSoundMem(_gameBGM))
+	{
+		PlaySoundMem(_gameBGM, DX_PLAYTYPE_BACK);
+	}
 	if (p.IsTrigger(MOUSE_INPUT_RIGHT))
 	{
 		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
@@ -333,14 +342,20 @@ Game3::Game3() : _defTime(180)
 	Game::Instance().GetFileSystem()->Load("img/timer.png", data);
 	_timerImg = data.GetHandle();
 
+	Game::Instance().GetFileSystem()->Load("img/Game2/maru.png", data);
+	_correctImg = data.GetHandle();
+	Game::Instance().GetFileSystem()->Load("img/Game2/batu.png", data);
+	_missImg = data.GetHandle();
+
 	auto size = Game::Instance().GetScreenSize();
 	_buttons.emplace_back(new Button(Rect(size.x / 4,size.y / 2,size.x / 2, size.y)));
 	_buttons.emplace_back(new Button(Rect(size.x / 4 * 3, size.y / 2, size.x / 2, size.y)));
 
-	_correctSE  = LoadSoundMem("SE/correct.mp3");
-	_missSE		= LoadSoundMem("SE/incorrect.mp3");
+	_correctSE  = LoadSoundMem("SE/correct1.mp3");
+	_missSE		= LoadSoundMem("SE/incorrect1.mp3");
 	_cntDownSE  = LoadSoundMem("SE/countDown.mp3");
 	_startSE    = LoadSoundMem("SE/start.mp3");
+	_gameBGM	= LoadSoundMem("BGM/game.mp3");
 
 	_orderText  = "";
 	_timeCnt	= _defTime;
@@ -354,6 +369,7 @@ Game3::Game3() : _defTime(180)
 
 Game3::~Game3()
 {
+	StopSoundMem(_gameBGM);
 }
 
 void Game3::Update(const Peripheral & p)
@@ -480,5 +496,17 @@ void Game3::GameDraw()
 	else
 	{
 		DrawGraph((size.x / 2 - imgSize.x / 2), size.y / 5, _flagImgs[3], true);
+	}
+
+	if (CheckSoundMem(_correctSE))
+	{
+		GetGraphSize(_correctImg, &imgSize.x, &imgSize.y);
+		DrawGraph(size.x / 2 - imgSize.x / 2, size.y / 2 - imgSize.y / 2, _correctImg, true);
+	}
+
+	if (CheckSoundMem(_missSE))
+	{
+		GetGraphSize(_missImg, &imgSize.x, &imgSize.y);
+		DrawRotaGraph(size.x - imgSize.x / 2, size.y - imgSize.y / 2, 0.6, 0, _missImg, true);
 	}
 }
