@@ -172,12 +172,12 @@ void Game4::DescriptionDraw()
 	auto size = Game::Instance().GetScreenSize();
 
 	DxLib::SetFontSize(96);
-	DxLib::DrawFormatString(100, 300, 0x000000, "いち たす\n\n　　いち は？");
+	DxLib::DrawFormatString(100, 350, 0x000000, "いち たす\n　　いち は？");
 	DxLib::DrawFormatString(500, 800, 0x000000, "自分の回答:%d", 2);
-	DxLib::DrawLine(100, 295, 100, 600, 0xff0000, 10);
-	DxLib::DrawLine(770, 295, 770, 600, 0xff0000, 10);
+	DxLib::DrawLine(100, 295, 100, 620, 0xff0000, 10);
+	DxLib::DrawLine(770, 295, 770, 620, 0xff0000, 10);
 	DxLib::DrawLine(100, 295, 770, 295, 0xff0000, 10);
-	DxLib::DrawLine(100, 600, 770, 600, 0xff0000, 10);
+	DxLib::DrawLine(100, 620, 770, 620, 0xff0000, 10);
 	
 	
 	int strwidth, strheight;
@@ -206,7 +206,7 @@ void Game4::DescriptionDraw()
 	DxLib::SetFontSize(80);
 	DxLib::DrawString(20, 20, "<例題>", 0x000000);
 
-	DxLib::DrawString(270, 20, "簡単な計算が\nひらがなで表示されるよ\n右のボタンで答えを入力して", 0x000000);
+	DxLib::DrawString(270, 20, "簡単な計算が\nひらがなで表示されるよ\n右のボタンで答えを入力して\n　　　　　　　回答するを\n　　　　　　　クリック！", 0x000000);
 
 	if ((count / 40) % 2 == 0)
 	{
@@ -222,7 +222,7 @@ void Game4::GameDraw()
 	{
 		DxLib::SetFontSize(96);
 		DxLib::DrawFormatString(100, 100, 0x000000, "第%d問", nowQNum);
-		DxLib::DrawFormatString(100, 300, 0x000000, "%s", question.c_str());
+		DxLib::DrawFormatString(100, 350, 0x000000, "%s", question.c_str());
 
 		DxLib::DrawFormatString(500, 800, 0x000000, "自分の回答:%d", myAnswer);
 	}
@@ -355,7 +355,7 @@ void Game4::CreateQuestion()
 	
 	// 問題文章に演算子の追加
 	question += questionOperators[op];
-	question += "\n\n　　";
+	question += "\n　　";
 
 	// 演算子をみて、2つめの数値を決定
 	if (op == static_cast<int>(Operator::PLUS))
