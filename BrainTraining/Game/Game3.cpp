@@ -321,7 +321,7 @@ Game3::Game3() : _defTime(180)
 	Game::Instance().GetFileSystem()->Load("img/flag4.png", data);
 	_flagImgs.emplace_back(data.GetHandle());
 
-	/// 説明用の画像ﾊﾝﾄﾞﾙ取得用
+	/// 説明用の画像ﾊﾝﾄﾞﾙ読み込み
 	Game::Instance().GetFileSystem()->Load("img/game3/説明.png", data);
 	_expImgs.emplace_back(data.GetHandle());
 	Game::Instance().GetFileSystem()->Load("img/game3/説明2.png", data);
@@ -329,19 +329,21 @@ Game3::Game3() : _defTime(180)
 	Game::Instance().GetFileSystem()->Load("img/game3/説明3.png", data);
 	_expImgs.emplace_back(data.GetHandle());
 
+	/// ﾀｲﾏｰの画像ﾊﾝﾄﾞﾙ読み込み
+	Game::Instance().GetFileSystem()->Load("img/timer.png", data);
+	_timerImg = data.GetHandle();
+
 	auto size = Game::Instance().GetScreenSize();
 	_buttons.emplace_back(new Button(Rect(size.x / 4,size.y / 2,size.x / 2, size.y)));
 	_buttons.emplace_back(new Button(Rect(size.x / 4 * 3, size.y / 2, size.x / 2, size.y)));
 
-	_correctSE  = LoadSoundMem("SE/correct1.mp3");
-	_missSE		= LoadSoundMem("SE/incorrect1.mp3");
+	_correctSE  = LoadSoundMem("SE/correct.mp3");
+	_missSE		= LoadSoundMem("SE/incorrect.mp3");
 	_cntDownSE  = LoadSoundMem("SE/countDown.mp3");
 	_startSE    = LoadSoundMem("SE/start.mp3");
 
 	_orderText  = "";
 	_timeCnt	= _defTime;
-
-	ChangeFont("ほのかアンティーク丸", DX_CHARSET_DEFAULT);
 
 	_isJudge   = false;
 	_questions = _corrects = _moveFlagCnt = _expCnt = 0;
@@ -382,7 +384,6 @@ void Game3::StartDraw()
 	DrawString(size.x / 2 - strWidth / 2, size.y / 3 * 2 - strHeight / 2, "出されたお題に合わせて", 0xcc0000);
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, "旗を上げ下げするゲームだよ!", strlen("旗を上げ下げするゲームだよ!"));
 	DrawString(size.x / 2 - strWidth / 2, size.y / 5 * 4 - strHeight / 2, "旗を上げ下げするゲームだよ!", 0xcc0000);
-
 }
 
 void Game3::ExpDraw()
@@ -448,13 +449,22 @@ void Game3::GameDraw()
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, _orderText.c_str(), strlen(_orderText.c_str()));
 	DrawString((size.x / 2 - strWidth / 2), strHeight / 3, _orderText.c_str(), 0x000000);
 
-	///// 制限時間の描画(仮)
-	//auto time = (_timeCnt <= 0 ? 0 : (_timeCnt / 60) + 1);
-	//DrawFormatString(size.x / 15, size.y / 12, 0x000000, "%d", time);
+	/// 制限時間の描画
+	auto time = (_timeCnt <= 0 ? 0 : (_timeCnt / 60) + 1);
+	auto color = (time <= 1 ? 0xff0000 : 0x000000);
 	Vector2 imgSize;
-	GetGraphSize(_flagImgs[0], &imgSize.x, &imgSize.y);
+	GetGraphSize(_timerImg, &imgSize.x, &imgSize.y);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, "0", strlen("0"));
+	DrawFormatString(size.x - strWidth / 2 - imgSize.x / 2, strHeight / 2, color, "%d", time);
 
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, "左クリックで旗を上げる(下げる)よ!", strlen("左クリックで旗を上げる(下げる)よ!"));
+	DrawString(size.x / 2 - strWidth / 2, size.y - strHeight, "左クリックで旗を上げる(下げる)よ!", 0x0000aa);
+	
+	/// ﾀｲﾏｰの描画
+	DrawGraph(size.x - imgSize.x, 0, _timerImg, true);
+	
 	/// 旗を上げるｷｬﾗｸﾀｰの描画
+	GetGraphSize(_flagImgs[0], &imgSize.x, &imgSize.y);
 	if (_plFlag.first && !_plFlag.second)
 	{
 		DrawGraph((size.x / 2 - imgSize.x / 2), size.y / 5, _flagImgs[0], true);
