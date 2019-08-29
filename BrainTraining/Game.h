@@ -20,6 +20,8 @@ private:
 
 	const Vector2 screenSize;
 	unsigned int fontSize;
+
+	bool _end;
 	
 public:
 	// ¼Ý¸ÞÙÄÝ²ÝÀ°Ìª°½
@@ -46,5 +48,7 @@ public:
 	const Vector2& GetScreenSize()const;
 
 	const std::shared_ptr <FileSystem> GetFileSystem()const;
+
+	void END();
 };
 

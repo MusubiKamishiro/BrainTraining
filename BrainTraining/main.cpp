@@ -1,7 +1,8 @@
 #include "Game.h"
+#include <DxLib.h>
 
 
-int main(void)
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	Game& game = Game::Instance();
 	game.Initialize();

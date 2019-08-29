@@ -9,6 +9,7 @@
 Game::Game() : screenSize(1920, 1080)
 {
 	fontSize = 24;
+	_end = false;
 }
 
 void Game::operator=(const Game &)
@@ -33,7 +34,7 @@ void Game::Initialize()
 
 	DxLib::SetMouseDispFlag(true);	// マウスカーソルを表示する
 
-	DxLib::SetMainWindowText("BrainTraining");	// タイトル
+	DxLib::SetMainWindowText("世界一受けたい脳トレ");	// タイトル
 	//DxLib::SetWindowIconID(IDI_ICON1);		// アイコン
 	DxLib::SetDrawScreen(DX_SCREEN_BACK);		// 裏画面に描画
 
@@ -83,6 +84,10 @@ void Game::Run()
 			{
 				break;
 			}
+			if (_end)
+			{
+				break;
+			}
 
 			peripheral.Update();
 			scenes.Update(peripheral);
@@ -122,4 +127,9 @@ const Vector2& Game::GetScreenSize()const
 const std::shared_ptr<FileSystem> Game::GetFileSystem() const
 {
 	return fileSystem;
+}
+
+void Game::END()
+{
+	_end = true;
 }

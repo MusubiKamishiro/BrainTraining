@@ -4,6 +4,7 @@
 #include "../Game.h"
 #include "SceneManager.h"
 #include "SelectScene.h"
+#include "../Button.h"
 
 #include "../System/FileSystem.h"
 #include "../System/ImageLoader.h"
@@ -36,7 +37,11 @@ void TitleScene::FadeoutUpdate(const Peripheral & p)
 
 void TitleScene::WaitUpdate(const Peripheral & p)
 {
-	if (p.IsTrigger(MOUSE_INPUT_LEFT))
+	if (button->Update(p))
+	{
+		Game::Instance().END();
+	}
+	else if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
 		StopSoundMem(_bgm);
 		PlaySoundMem(_se, DX_PLAYTYPE_BACK);
@@ -56,6 +61,9 @@ TitleScene::TitleScene()
 	_se = LoadSoundMem("SE/decide.mp3");
 	_blindCnt = 0;
 	PlaySoundMem(_bgm, DX_PLAYTYPE_BACK);
+
+	_button = LoadGraph("img/Button/red.png");
+	button.reset(new Button(Rect(350, 900, 500, 200), _button));
 }
 
 
@@ -100,4 +108,8 @@ void TitleScene::Draw()
 		GetDrawStringSize(&strwidth, &strheight, nullptr, "画面をクリックしてね!", strlen("画面をクリックしてね!"));
 		DrawString(size.x / 2 - strwidth / 2, strheight / 3, "画面をクリックしてね!", 0xdddd00);
 	}
+	button->Draw();
+	SetFontSize(80);
+	GetDrawStringSize(&strwidth, &strheight, nullptr, "ゲームを終了", strlen("ゲームを終了"));
+	DrawString(350 - strwidth / 2, 900 - strheight / 2, "ゲームを終了", 0xffffff);
 }

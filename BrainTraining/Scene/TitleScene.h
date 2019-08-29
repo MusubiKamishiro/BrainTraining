@@ -1,7 +1,9 @@
 #pragma once
 #include "Scene.h"
+#include <memory>
 #include "../Geometry.h"
 
+class Button;
 
 class TitleScene : public Scene
 {
@@ -19,6 +21,9 @@ private:
 	int _bgm;
 	int _se;
 	int _blindCnt;
+	int _button;
+
+	std::shared_ptr<Button> button;
 
 public:
 	TitleScene();
