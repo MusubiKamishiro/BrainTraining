@@ -48,6 +48,7 @@ private:
 	void SelectNum(int num, int& qnum);	// num...–â‘è‚ÌÅ‘å”
 	void SelectOperator();
 
+	int buttonImg;
 	int trueSE, falseSE;		// ³‰ğ,•s³‰ğ‚Ì‚ÌŒø‰Ê‰¹
 
 	std::map<int, std::string> questionOperators;

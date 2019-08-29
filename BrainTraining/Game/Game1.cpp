@@ -71,7 +71,7 @@ void Game1::QuestionDisplayUpdate(const Peripheral & p)
 	{
 		if (buttons[i]->Update(p))
 		{
-			displayCount = 60;
+			displayCount = 30;
 			answerMyHand = static_cast<Hand>(i);
 			updater = &Game1::AnswerCheckUpdate;
 		}
@@ -187,6 +187,10 @@ void Game1::GameDraw()
 	for (unsigned int i = 0; i < buttons.size(); ++i)
 	{
 		buttons[i]->Draw();
+
+		auto rect = buttons[i]->GetButtonRect();
+		DxLib::DrawExtendGraph(rect.center.x - rect.Width() / 3, rect.center.y - rect.Height() / 3,
+						rect.center.x + rect.Width() / 3, rect.center.y + rect.Height() / 3, handImg[i], true);
 	}
 
 	// –â‘è•¶Í‚Ì•`‰æ
@@ -198,17 +202,33 @@ void Game1::GameDraw()
 	DxLib::DrawFormatString(size.x / 2 - strwidth / 2, 100, 0x000000, "%s", s.c_str());
 
 	// –â‘è‚ÌŽè
-	DxLib::DrawExtendGraph(size.x / 2 - 150, 200, size.x / 2 + 150, 500, questionHands[qHandNum], true);
+	DxLib::DrawExtendGraph(size.x / 2 - 150, 200, size.x / 2 + 150, 500, handImg[qHandNum], true);
 
 	if (updater == &Game1::AnswerDisplayUpdate)
 	{
 		if (result)
 		{
-			DxLib::DrawCircle(600, 600, 100, 0x00ff00);
+			auto size = Game::Instance().GetScreenSize();
+
+			int strwidth, strheight;
+			strwidth = strheight = 0;
+
+			SetFontSize(700);
+			std::string s = "Z";
+			GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
+			DrawString(size.x / 2 - strwidth / 2, size.y / 2 - strheight / 2, s.c_str(), 0xff0000);
 		}
 		else
 		{
-			DxLib::DrawBox(450, 450, 550, 550, 0x00ff00, true);
+			auto size = Game::Instance().GetScreenSize();
+
+			int strwidth, strheight;
+			strwidth = strheight = 0;
+
+			SetFontSize(700);
+			std::string s = "~";
+			GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
+			DrawString(size.x / 2 - strwidth / 2, size.y / 2 - strheight / 2, s.c_str(), 0x0000ff);
 		}
 	}
 }
@@ -281,10 +301,17 @@ Game1::Game1()
 
 	ImageData data;
 	Game::Instance().GetFileSystem()->Load("img/rock.png", data);
-	rock = data.GetHandle();
+	handImg.emplace_back(data.GetHandle());
 	Game::Instance().GetFileSystem()->Load("img/scissors.png", data);
-	scissors = data.GetHandle();
+	handImg.emplace_back(data.GetHandle());
 	Game::Instance().GetFileSystem()->Load("img/paper.png", data);
+	handImg.emplace_back(data.GetHandle());
+
+	Game::Instance().GetFileSystem()->Load("img/Button/red.png", data);
+	rock = data.GetHandle();
+	Game::Instance().GetFileSystem()->Load("img/Button/yellow.png", data);
+	scissors = data.GetHandle();
+	Game::Instance().GetFileSystem()->Load("img/Button/blue.png", data);
 	paper = data.GetHandle();
 
 	SoundData sData;
@@ -293,9 +320,9 @@ Game1::Game1()
 	Game::Instance().GetFileSystem()->Load("SE/incorrect1.mp3", sData);
 	falseSE = sData.GetHandle();
 	
-	buttons.emplace_back(new Button(Rect(455, 850, 300, 300), rock));
-	buttons.emplace_back(new Button(Rect(955, 850, 300, 300), scissors));
-	buttons.emplace_back(new Button(Rect(1455, 850, 300, 300), paper));
+	buttons.emplace_back(new Button(Rect(305, 830, 400, 400), rock));
+	buttons.emplace_back(new Button(Rect(955, 830, 400, 400), scissors));
+	buttons.emplace_back(new Button(Rect(1605, 830, 400, 400), paper));
 
 	questionHands[static_cast<int>(Hand::ROCK)] = rock;
 	questionHands[static_cast<int>(Hand::SCISSORS)] = scissors;
@@ -308,7 +335,7 @@ Game1::Game1()
 	questionStatements[3] = "•‰‚¯‚È‚¢‚Å‚­‚¾‚³‚¢";
 	qStatementNum = 0;
 
-	displayCount = 60;
+	displayCount = 30;
 	nowQNum = 1;
 
 	result = false;
