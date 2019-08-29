@@ -49,6 +49,7 @@ void Game6::WaitUpdate(const Peripheral & p)
 		}
 		else
 		{
+			SetColor();
 			_updater = &Game6::GameUpdate;
 		}
 	}
@@ -120,6 +121,42 @@ void Game6::GameUpdate(const Peripheral & p)
 	}
 }
 
+void Game6::SetColor()
+{
+	_colorType.clear();
+	for (int i = 0; i < _colors.size(); ++i)
+	{
+		if (_colorType.size() == 0)
+		{
+			_colorType.emplace_back((COLOR)(rand() % 4));
+		}
+		else
+		{
+			auto cnt = _colorType.size();
+			while (_colorType.size() <= cnt)
+			{
+				auto randNum = rand() % 4;
+				auto flag = true;
+				for (auto type : _colorType)
+				{
+					/// 登録されている色と違う色の場合、trueを返す
+					flag = (randNum != static_cast<int>(type));
+
+					if (!flag)
+					{
+						break;
+					}
+				}
+
+				if (flag)
+				{
+					_colorType.emplace_back((COLOR)(randNum));
+				}
+			}
+		}
+	}
+}
+
 void Game6::ChangeColor()
 {
 	// 乱数を出すためのﾗﾑﾀﾞ式
@@ -143,12 +180,13 @@ void Game6::ButtonUpdater(const Peripheral& p)
 	auto btn = _buttons.begin();
 	for (; btn != _buttons.end(); ++btn)
 	{
-		auto cnt = btn - _buttons.begin();
 		if ((*btn)->Update(p))
 		{
+			auto cnt = btn - _buttons.begin();
+			auto colorID = static_cast<int>(_colorType[cnt]);
 			_isColor = false;
 			/// 色の判定
-			if (_colorNum == cnt)
+			if (_colorNum == colorID)
 			{
 				/// 正解
 				++_corrects;
@@ -180,6 +218,11 @@ Game6::Game6() : _btnSize(Size(300,300))
 	_colors.emplace_back(0xffda1f);		/// 黄
 	_colors.emplace_back(0x37ff37);		/// 緑
 
+	_colorType.emplace_back(COLOR::RED);
+	_colorType.emplace_back(COLOR::BLUE);
+	_colorType.emplace_back(COLOR::YELLOW);
+	_colorType.emplace_back(COLOR::GREEN);
+
 	auto size = Game::Instance().GetScreenSize();
 
 	ImageData data;
@@ -200,8 +243,8 @@ Game6::Game6() : _btnSize(Size(300,300))
 	_buttons.emplace_back(new Button(Rect(size.x / 9 * 7, size.y / 8 * 5,
 										  _btnSize.width, _btnSize.height), data.GetHandle()));
 
-	_correctSE = LoadSoundMem("SE/correct1.mp3");
-	_missSE	   = LoadSoundMem("SE/incorrect1.mp3");
+	_correctSE = LoadSoundMem("SE/correct.mp3");
+	_missSE	   = LoadSoundMem("SE/incorrect.mp3");
 	_cntDownSE = LoadSoundMem("SE/countDown.mp3");
 	_startSE   = LoadSoundMem("SE/start.mp3");
 
@@ -321,11 +364,39 @@ void Game6::GameDraw()
 		btn->Draw();
 	}
 
+	
 	SetFontSize(120);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, "あか", strlen("あか"));
-	DrawString((size.x / 6)		- strWidth / 2, (size.y / 8 * 5) - strHeight / 2, "あか", 0x000000);
-	DrawString((size.x / 8 * 3) - strWidth / 2, (size.y / 8 * 5) - strHeight / 2, "あお", 0x000000);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, "きいろ", strlen("きいろ"));
-	DrawString((size.x / 7 * 4) - strWidth / 2, (size.y / 8 * 5) - strHeight / 2, "きいろ", 0x000000);
-	DrawString((size.x / 9 * 7) - strWidth / 2, (size.y / 8 * 5) - strHeight / 2, "みどり", 0x000000);
+	/// ﾎﾞﾀﾝの文字座標
+	std::vector<Vector2> pos;
+	pos.emplace_back(Vector2((size.x / 6), (size.y / 8 * 5)));
+	pos.emplace_back(Vector2((size.x / 8 * 3), (size.y / 8 * 5)));
+	pos.emplace_back(Vector2((size.x / 7 * 4), (size.y / 8 * 5)));
+	pos.emplace_back(Vector2((size.x / 9 * 7), (size.y / 8 * 5)));
+
+	auto color = _colorType.begin();
+	for (; color != _colorType.end(); ++color)
+	{
+		auto cnt = color - _colorType.begin();
+		switch ((*color))
+		{
+		case COLOR::RED :
+			GetDrawStringSize(&strWidth, &strHeight, nullptr, "あか", strlen("あか"));
+			DrawString(pos[cnt].x - strWidth / 2, pos[cnt].y - strHeight / 2, "あか", 0x000000);
+			break;
+			
+		case COLOR::BLUE:
+			GetDrawStringSize(&strWidth, &strHeight, nullptr, "あお", strlen("あお"));
+			DrawString(pos[cnt].x - strWidth / 2, pos[cnt].y - strHeight / 2, "あお", 0x000000);
+			break;
+		case COLOR::YELLOW :
+			GetDrawStringSize(&strWidth, &strHeight, nullptr, "きいろ", strlen("きいろ"));
+			DrawString(pos[cnt].x - strWidth / 2, pos[cnt].y - strHeight / 2, "きいろ", 0x000000);
+			break;
+		case COLOR::GREEN :
+			GetDrawStringSize(&strWidth, &strHeight, nullptr, "みどり", strlen("みどり"));
+			DrawString(pos[cnt].x - strWidth / 2, pos[cnt].y - strHeight / 2, "みどり", 0x000000);
+		default:
+			break;
+		}
+	}
 }

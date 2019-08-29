@@ -5,6 +5,15 @@
 
 class Button;
 
+enum class COLOR
+{
+	RED,
+	BLUE,
+	YELLOW,
+	GREEN,
+	MAX
+};
+
 class Game6 :
 	public Scene
 {
@@ -20,6 +29,7 @@ private:
 	void CntDownUpdate(const Peripheral& p);
 	void GameUpdate(const Peripheral& p);
 
+	void SetColor();
 	void ChangeColor();							// êFÇÃïœçX
 	void ButtonUpdater(const Peripheral& p);
 	
@@ -29,6 +39,7 @@ private:
 	void GameDraw();
 
 	std::vector<std::string> _texts;
+	std::vector<COLOR> _colorType;
 	std::vector<int> _colors;
 	std::vector<int> _expImgs;
 

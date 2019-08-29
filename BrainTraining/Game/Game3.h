@@ -50,6 +50,7 @@ private:
 	std::vector<std::string> _texts;
 	std::vector<int> _flagImgs;			// 旗上げｷｬﾗｸﾀｰの画像ﾊﾝﾄﾞﾙ取得用
 	std::vector<int> _expImgs;			// 説明用画像のﾊﾝﾄﾞﾙ取得用
+	int _timerImg;
 	
 	std::pair<bool, bool> _judgeFlag;	// first : 赤, second : 白
 	std::pair<bool, bool> _plFlag;		// first : 赤, second : 白
@@ -61,9 +62,7 @@ private:
 	int _lastNum;			// 最後に求めた乱数の値
 	int _questions;
 	int _corrects;			// 正解数
-	int _timeCnt;
-	int _expCnt;			// 説明用のｶｳﾝﾄ
-	int _blindCnt;			// 点滅用のｶｳﾝﾄ
+	int _timeCnt, _expCnt, _blindCnt;			// ｹﾞｰﾑ中に使用するｶｳﾝﾄ
 
 	int _correctSE, _missSE, _cntDownSE, _startSE;
 

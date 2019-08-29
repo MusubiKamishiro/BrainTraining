@@ -321,7 +321,7 @@ Game3::Game3() : _defTime(180)
 	Game::Instance().GetFileSystem()->Load("img/flag4.png", data);
 	_flagImgs.emplace_back(data.GetHandle());
 
-	/// à–¾—p‚Ì‰æ‘œÊİÄŞÙæ“¾—p
+	/// à–¾—p‚Ì‰æ‘œÊİÄŞÙ“Ç‚İ‚İ
 	Game::Instance().GetFileSystem()->Load("img/game3/à–¾.png", data);
 	_expImgs.emplace_back(data.GetHandle());
 	Game::Instance().GetFileSystem()->Load("img/game3/à–¾2.png", data);
@@ -329,12 +329,16 @@ Game3::Game3() : _defTime(180)
 	Game::Instance().GetFileSystem()->Load("img/game3/à–¾3.png", data);
 	_expImgs.emplace_back(data.GetHandle());
 
+	/// À²Ï°‚Ì‰æ‘œÊİÄŞÙ“Ç‚İ‚İ
+	Game::Instance().GetFileSystem()->Load("img/timer.png", data);
+	_timerImg = data.GetHandle();
+
 	auto size = Game::Instance().GetScreenSize();
 	_buttons.emplace_back(new Button(Rect(size.x / 4,size.y / 2,size.x / 2, size.y)));
 	_buttons.emplace_back(new Button(Rect(size.x / 4 * 3, size.y / 2, size.x / 2, size.y)));
 
-	_correctSE  = LoadSoundMem("SE/correct1.mp3");
-	_missSE		= LoadSoundMem("SE/incorrect1.mp3");
+	_correctSE  = LoadSoundMem("SE/correct.mp3");
+	_missSE		= LoadSoundMem("SE/incorrect.mp3");
 	_cntDownSE  = LoadSoundMem("SE/countDown.mp3");
 	_startSE    = LoadSoundMem("SE/start.mp3");
 
@@ -382,7 +386,6 @@ void Game3::StartDraw()
 	DrawString(size.x / 2 - strWidth / 2, size.y / 3 * 2 - strHeight / 2, "o‚³‚ê‚½‚¨‘è‚É‡‚í‚¹‚Ä", 0xcc0000);
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, "Šø‚ğã‚°‰º‚°‚·‚éƒQ[ƒ€‚¾‚æ!", strlen("Šø‚ğã‚°‰º‚°‚·‚éƒQ[ƒ€‚¾‚æ!"));
 	DrawString(size.x / 2 - strWidth / 2, size.y / 5 * 4 - strHeight / 2, "Šø‚ğã‚°‰º‚°‚·‚éƒQ[ƒ€‚¾‚æ!", 0xcc0000);
-
 }
 
 void Game3::ExpDraw()
@@ -448,10 +451,16 @@ void Game3::GameDraw()
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, _orderText.c_str(), strlen(_orderText.c_str()));
 	DrawString((size.x / 2 - strWidth / 2), strHeight / 3, _orderText.c_str(), 0x000000);
 
-	///// §ŒÀŠÔ‚Ì•`‰æ(‰¼)
-	//auto time = (_timeCnt <= 0 ? 0 : (_timeCnt / 60) + 1);
-	//DrawFormatString(size.x / 15, size.y / 12, 0x000000, "%d", time);
+	/// §ŒÀŠÔ‚Ì•`‰æ(‰¼)
+	auto time = (_timeCnt <= 0 ? 0 : (_timeCnt / 60) + 1);
+	auto color = (time <= 1 ? 0xff0000 : 0x000000);
 	Vector2 imgSize;
+	GetGraphSize(_timerImg, &imgSize.x, &imgSize.y);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, "0", strlen("0"));
+	DrawFormatString(size.x - strWidth / 2 - imgSize.x / 2, strHeight / 2, color, "%d", time);
+	
+	DrawGraph(size.x - imgSize.x, 0, _timerImg, true);
+	
 	GetGraphSize(_flagImgs[0], &imgSize.x, &imgSize.y);
 
 	/// Šø‚ğã‚°‚é·¬×¸À°‚Ì•`‰æ
