@@ -37,7 +37,10 @@ void ResultScene::WaitUpdate(const Peripheral & p)
 	if (_frame == 30 || _frame == 60)
 	{
 		PlaySoundMem(_SE_stamp, DX_PLAYTYPE_BACK);
-		PlaySoundMem(_resultBGM, DX_PLAYTYPE_BACK);
+		if (!CheckSoundMem(_resultBGM))
+		{
+			PlaySoundMem(_resultBGM, DX_PLAYTYPE_BACK);
+		}
 	}
 	if (p.IsTrigger(MOUSE_INPUT_LEFT) && _frame > 60)
 	{
@@ -75,6 +78,9 @@ ResultScene::~ResultScene()
 	DeleteGraph(_img_rankB);
 	DeleteGraph(_img_rankC);
 	DeleteGraph(_img_rankD);
+
+	DeleteSoundMem(_SE_stamp);
+	DeleteSoundMem(_resultBGM);
 }
 
 void ResultScene::Update(const Peripheral& p)

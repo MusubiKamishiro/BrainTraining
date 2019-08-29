@@ -426,7 +426,11 @@ Game1::Game1()
 
 Game1::~Game1()
 {
-	StopSoundMem(_gameBGM);
+	DeleteSoundMem(trueSE);
+	DeleteSoundMem(falseSE);
+	DeleteSoundMem(_cntDownSE);
+	DeleteSoundMem(_startSE);
+	DeleteSoundMem(_gameBGM);
 }
 
 void Game1::Update(const Peripheral & p)

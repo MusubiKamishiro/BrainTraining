@@ -42,6 +42,7 @@ private:
 	int _SE_start, _SE_count;
 	int _SE_correct;	// ³‰ğSE
 	int _SE_miss;		// ‚Í‚¸‚êSE
+	int _BGM_game;
 
 	int _img_balance;
 	int _img_maru;

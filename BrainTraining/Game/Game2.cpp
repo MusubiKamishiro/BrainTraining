@@ -186,6 +186,10 @@ void Game2::CountDownUpdate(const Peripheral & p)
 
 void Game2::WaitUpdate(const Peripheral & p)
 {
+	if (!CheckSoundMem(_BGM_game))
+	{
+		PlaySoundMem(_BGM_game, DX_PLAYTYPE_BACK);
+	}
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
 		auto size = Game::Instance().GetScreenSize();
@@ -413,6 +417,7 @@ Game2::Game2()
 	_SE_count = LoadSoundMem("SE/countDown.mp3");
 	_SE_correct = LoadSoundMem("SE/correct1.mp3");
 	_SE_miss = LoadSoundMem("SE/incorrect.mp3");
+	_BGM_game = LoadSoundMem("BGM/game.mp3");
 
 	_img_balance = LoadGraph("img/Game2/balance.png");
 	_img_maru = LoadGraph("img/Game2/maru.png");
@@ -446,6 +451,9 @@ Game2::~Game2()
 {
 	DeleteSoundMem(_SE_correct);
 	DeleteSoundMem(_SE_miss);
+	DeleteSoundMem(_SE_count);
+	DeleteSoundMem(_SE_start);
+	DeleteSoundMem(_BGM_game);
 
 	DeleteGraph(_img_1en);
 	DeleteGraph(_img_5en);

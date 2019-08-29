@@ -272,7 +272,11 @@ Game6::Game6() : _btnSize(Size(300,300))
 
 Game6::~Game6()
 {
-	StopSoundMem(_gameBGM);
+	DeleteSoundMem(_correctSE);
+	DeleteSoundMem(_missSE);
+	DeleteSoundMem(_cntDownSE);
+	DeleteSoundMem(_startSE);
+	DeleteSoundMem(_gameBGM);
 }
 
 void Game6::Update(const Peripheral & p)
@@ -296,7 +300,11 @@ void Game6::StartDraw()
 
 	SetFontSize(150);
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, "文字の色当てゲーム", strlen("文字の色当てゲーム"));
-	DrawString(size.x / 2 - strWidth / 2, size.y / 7 * 3 - strHeight / 2, "文字の色当てゲーム", 0x000000);
+	DrawString(size.x / 2 - strWidth / 2, size.y / 7 * 3 - strHeight, "文字の色当てゲーム", 0x000000);
+
+	SetFontSize(100);
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, "全20問", strlen("全20問"));
+	DrawString(size.x / 2 - strWidth / 2, size.y / 2 - strHeight / 2, "全20問", 0x000000);
 
 	SetFontSize(120);
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, "書かれた文字の色を", strlen("書かれた文字の色を"));

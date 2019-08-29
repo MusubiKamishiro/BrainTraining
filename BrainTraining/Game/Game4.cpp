@@ -498,7 +498,12 @@ Game4::Game4()
 
 Game4::~Game4()
 {
-	StopSoundMem(_gameBGM);
+	DeleteSoundMem(trueSE);
+	DeleteSoundMem(falseSE);
+	DeleteSoundMem(_cntDownSE);
+	DeleteSoundMem(_startSE);
+	DeleteSoundMem(_btnSE);
+	DeleteSoundMem(_gameBGM);
 }
 
 void Game4::Update(const Peripheral & p)

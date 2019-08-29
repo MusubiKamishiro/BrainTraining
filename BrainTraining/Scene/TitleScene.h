@@ -12,14 +12,13 @@ private:
 	void FadeoutUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
 
-	Vector2 ssize;
-
 	bool flag;
 
 	int _img_flag;
 	int  _img_kokuban;
 	int _bgm;
 	int _se;
+	int _blindCnt;
 
 public:
 	TitleScene();

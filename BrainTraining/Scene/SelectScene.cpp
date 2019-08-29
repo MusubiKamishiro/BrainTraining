@@ -142,4 +142,9 @@ void SelectScene::Draw()
 	{
 		DrawRotaGraph(m.pos.x, m.pos.y, m.on ? 0.32 : 0.3, 0.0, m.handle, true);
 	}
+
+	int strwidth, strheight;
+	SetFontSize(100);
+	GetDrawStringSize(&strwidth, &strheight, nullptr, "遊びたいゲームをクリックしてね!", strlen("遊びたいゲームをクリックしてね!"));
+	DrawString(size.x / 2 - strwidth / 2, strheight / 3, "遊びたいゲームをクリックしてね!", 0xdddd00);
 }

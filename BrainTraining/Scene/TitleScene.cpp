@@ -49,13 +49,12 @@ TitleScene::TitleScene()
 {
 	updater = &TitleScene::FadeinUpdate;
 
-	ssize = Game::Instance().GetScreenSize();
-
 	_img_flag = LoadGraph("img/Title/flag3.png");
 	_img_kokuban = LoadGraph("img/Title/kokuban.png");
 
 	_bgm = LoadSoundMem("BGM/title.mp3");
 	_se = LoadSoundMem("SE/decide.mp3");
+	_blindCnt = 0;
 	PlaySoundMem(_bgm, DX_PLAYTYPE_BACK);
 }
 
@@ -70,6 +69,7 @@ TitleScene::~TitleScene()
 
 void TitleScene::Update(const Peripheral& p)
 {
+	++_blindCnt;
 	(this->*updater)(p);
 }
 
@@ -93,4 +93,11 @@ void TitleScene::Draw()
 	DxLib::DrawFormatString(size.x / 5, size.y / 2, 0xffffff, "受けたい");
 	DxLib::DrawFormatString(size.x / 5 + strwidth + 5, size.y / 2 + 5, 0x000000, "脳トレ");
 	DxLib::DrawFormatString(size.x / 5 + strwidth, size.y / 2, 0xff2222, "脳トレ");
+
+	if (!((_blindCnt / 40) % 2))
+	{
+		SetFontSize(120);
+		GetDrawStringSize(&strwidth, &strheight, nullptr, "画面をクリックしてね!", strlen("画面をクリックしてね!"));
+		DrawString(size.x / 2 - strwidth / 2, strheight / 3, "画面をクリックしてね!", 0xdddd00);
+	}
 }
