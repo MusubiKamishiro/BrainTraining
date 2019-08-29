@@ -34,6 +34,10 @@ void ResultScene::FadeoutUpdate(const Peripheral & p)
 
 void ResultScene::WaitUpdate(const Peripheral & p)
 {
+	if (_frame == 30 || _frame == 60)
+	{
+		PlaySoundMem(_SE_stamp, DX_PLAYTYPE_BACK);
+	}
 	if (p.IsTrigger(MOUSE_INPUT_LEFT) && _frame > 60)
 	{
 		pal = 255;
@@ -54,6 +58,8 @@ ResultScene::ResultScene(int questions, int correct)
 	_img_rankB = LoadGraph("img/Result/rank_b.png");
 	_img_rankC = LoadGraph("img/Result/rank_c.png");
 	_img_rankD = LoadGraph("img/Result/rank_d.png");
+
+	_SE_stamp = LoadSoundMem("SE/stamp.mp3");
 
 	updater = &ResultScene::FadeinUpdate;
 }
@@ -89,12 +95,12 @@ void ResultScene::Draw()
 	SetFontSize(300);
 	DrawFormatString(size.x / 3, size.y / 2, 0xff2222, "%d", _questions);
 
-	if (_frame > 25)
+	if (_frame > 30)
 	{
 		SetFontSize(600);
 		DrawFormatString(size.x / 8, size.y / 8, 0xff2222, "%d", _correct);
 	}
-	if (_frame > 35)
+	if (_frame > 60)
 	{
 		float rate = (float)_correct / _questions;
 

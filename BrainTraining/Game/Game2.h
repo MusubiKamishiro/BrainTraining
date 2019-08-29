@@ -27,7 +27,6 @@ class Game2 :
 	public Scene
 {
 private:
-
 	std::vector<Vector2> _positions;
 
 	Num _right;	// ‰E‚Ì’l
@@ -38,14 +37,16 @@ private:
 
 	int _questions;		// –â‘è”Ô†
 	int _correctNum;	// ³‰ğ”
+	int _count;
 
-	int _SE_question;	// o‘èSE
+	int _SE_start, _SE_count;
 	int _SE_correct;	// ³‰ğSE
 	int _SE_miss;		// ‚Í‚¸‚êSE
 
 	int _img_balance;
 	int _img_maru;
 	int _img_batu;
+
 	int _img_1en;
 	int _img_5en;
 	int _img_10en;
@@ -53,8 +54,6 @@ private:
 	int _img_100en;
 	int _img_500en;
 	int _img_1000en;
-	int _img_5000en;
-	int _img_10000en;
 
 	void Question();	// –â‘èì¬
 	void Correct();		// ³‰ğ
@@ -66,16 +65,19 @@ private:
 	void FadeoutUpdate(const Peripheral& p);
 
 	void StartUpdate(const Peripheral& p);
+	void CountDownUpdate(const Peripheral& p);
 	void WaitUpdate(const Peripheral& p);
 	void AnswerUpdate(const Peripheral& p);
 
 	void (Game2::*_drawer)();
 
 	void StartDraw();
+	void CountDownDraw();
 	void WaitDraw();
 	void CorrectDraw();
 	void IncorrectDraw();
 
+	void DrawQuestion();
 	void DrawMoney(Num num, int offset = 0);
 
 public:

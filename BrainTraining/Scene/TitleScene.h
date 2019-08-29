@@ -17,6 +17,11 @@ private:
 	bool flag;
 	int img;
 
+	int _img_balance;
+	int _img_math;
+	int _img_flag;
+	int  _img_kokuban;
+
 public:
 	TitleScene();
 	~TitleScene();
