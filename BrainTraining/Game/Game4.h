@@ -48,8 +48,11 @@ private:
 	void SelectNum(int num, int& qnum);	// num...問題の最大数
 	void SelectOperator();
 
-	int buttonImg;
+	std::vector<int> buttonImg;
 	int trueSE, falseSE;		// 正解,不正解の時の効果音
+
+	int waitTime;	// 問題が始まるまでの待ち時間
+	int count;		// 点滅用カウント
 
 	std::map<int, std::string> questionOperators;
 	std::map<int, std::string> hiraganaNum;

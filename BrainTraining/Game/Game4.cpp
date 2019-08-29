@@ -50,24 +50,22 @@ void Game4::FadeoutUpdate(const Peripheral & p)
 
 void Game4::WaitUpdate(const Peripheral & p)
 {
-	if (p.IsTrigger(MOUSE_INPUT_LEFT))
+	if (waitTime <= 0)
 	{
-		pal = 255;
-		updater = &Game4::FadeoutUpdate;
+		updater = &Game4::QuestionDisplayUpdate;
 	}
-	if (p.IsTrigger(MOUSE_INPUT_RIGHT))
-	{
-		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
-	}
+
+	--waitTime;
 }
 
 void Game4::DescriptionUpdate(const Peripheral & p)
 {
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
-		updater = &Game4::QuestionDisplayUpdate;
+		updater = &Game4::WaitUpdate;
 		drawer = &Game4::GameDraw;
 	}
+	++count;
 }
 
 void Game4::QuestionDisplayUpdate(const Peripheral & p)
@@ -171,19 +169,73 @@ void Game4::TitleDraw()
 
 void Game4::DescriptionDraw()
 {
-	DxLib::DrawString(400, 50, "ルール説明", 0x000000);
+	auto size = Game::Instance().GetScreenSize();
+
+	DxLib::SetFontSize(96);
+	DxLib::DrawFormatString(100, 300, 0x000000, "いち たす\n\n　　いち は？");
+	DxLib::DrawFormatString(500, 800, 0x000000, "自分の回答:%d", 2);
+	DxLib::DrawLine(100, 295, 100, 600, 0xff0000, 10);
+	DxLib::DrawLine(770, 295, 770, 600, 0xff0000, 10);
+	DxLib::DrawLine(100, 295, 770, 295, 0xff0000, 10);
+	DxLib::DrawLine(100, 600, 770, 600, 0xff0000, 10);
+	
+	
+	int strwidth, strheight;
+	strwidth = strheight = 0;
+	// 各種ボタンの描画
+	for (unsigned int i = 0; i < buttons.size(); ++i)
+	{
+		buttons[i]->Draw();
+		auto rect = buttons[i]->GetButtonRect();
+		std::string s = std::to_string(i);
+		GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
+		DxLib::DrawFormatString(rect.center.x - strwidth / 2, rect.center.y - strheight / 2, 0x000000, "%s", s.c_str());
+	}
+	decide->Draw();
+	auto rect = decide->GetButtonRect();
+	std::string s = "回答する";
+	GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
+	DxLib::DrawFormatString(rect.center.x - strwidth / 2, rect.center.y - strheight / 2, 0x000000, "%s", s.c_str());
+	del->Draw();
+	rect = del->GetButtonRect();
+	s = "取消";
+	GetDrawStringSize(&strwidth, &strheight, nullptr, s.c_str(), strlen(s.c_str()));
+	DxLib::DrawFormatString(rect.center.x - strwidth / 2, rect.center.y - strheight / 2, 0x000000, "%s", s.c_str());
+
+
+	DxLib::SetFontSize(80);
+	DxLib::DrawString(20, 20, "<例題>", 0x000000);
+
+	DxLib::DrawString(270, 20, "簡単な計算が\nひらがなで表示されるよ\n右のボタンで答えを入力して", 0x000000);
+
+	if ((count / 40) % 2 == 0)
+	{
+		int strWidth, strHeight;
+		GetDrawStringSize(&strWidth, &strHeight, nullptr, "左クリックでスタート!", strlen("左クリックでスタート!"));
+		DrawString(size.x / 2 - strWidth / 2 - 100, size.y - strHeight - 50, "左クリックでスタート!", 0x0000ff);
+	}
 }
 
 void Game4::GameDraw()
 {
-	DxLib::SetFontSize(96);
-	DxLib::DrawFormatString(100, 100, 0x000000, "第%d問", nowQNum);
-	DxLib::DrawFormatString(100, 300, 0x000000, "%s", question.c_str());
+	if (updater != &Game4::WaitUpdate)
+	{
+		DxLib::SetFontSize(96);
+		DxLib::DrawFormatString(100, 100, 0x000000, "第%d問", nowQNum);
+		DxLib::DrawFormatString(100, 300, 0x000000, "%s", question.c_str());
 
-	DxLib::DrawFormatString(500, 800, 0x000000, "自分の回答:%d", myAnswer);
+		DxLib::DrawFormatString(500, 800, 0x000000, "自分の回答:%d", myAnswer);
+	}
+	else
+	{
+		DxLib::SetFontSize(96 * 2);
+		auto size = Game::Instance().GetScreenSize();
+		DxLib::DrawFormatString(size.x / 3 - 96, 270, 0xff0000, "%d", waitTime / 60 + 1);
+	}
 
 	int strwidth, strheight;
 	strwidth = strheight = 0;
+	DxLib::SetFontSize(96);
 	// 各種ボタンの描画
 	for (unsigned int i = 0; i < buttons.size(); ++i)
 	{
@@ -376,6 +428,9 @@ Game4::Game4()
 	qAnswer = myAnswer = 0;
 	trueNum = 0;
 
+	waitTime = 180;
+	count = 0;
+
 	nowQNum = 1;
 	displayCount = 30;
 	result = false;
@@ -388,18 +443,22 @@ Game4::Game4()
 
 	ImageData data;
 	Game::Instance().GetFileSystem()->Load("img/Button/light green.png", data);
-	buttonImg = data.GetHandle();
+	buttonImg.emplace_back(data.GetHandle());
+	Game::Instance().GetFileSystem()->Load("img/Button/blue.png", data);
+	buttonImg.emplace_back(data.GetHandle());
+	Game::Instance().GetFileSystem()->Load("img/Button/red.png", data);
+	buttonImg.emplace_back(data.GetHandle());
 
 	// テンキー
 	Vector2 buttonSize = Vector2(200, 200);
-	buttons.emplace_back(new Button(Rect(1400, 720, buttonSize.x, buttonSize.y), buttonImg));
+	buttons.emplace_back(new Button(Rect(1400, 720, buttonSize.x, buttonSize.y), buttonImg[0]));
 	for (int i = 0; i < 9; ++i)
 	{
-		buttons.emplace_back(new Button(Rect(1400 + i % 3 * buttonSize.x, 520 - i / 3 * buttonSize.y, buttonSize.x, buttonSize.y), buttonImg));
+		buttons.emplace_back(new Button(Rect(1400 + i % 3 * buttonSize.x, 520 - i / 3 * buttonSize.y, buttonSize.x, buttonSize.y), buttonImg[0]));
 	}
 	// 決定,取り消しボタン
-	decide.reset(new Button(Rect(1600, 950, buttonSize.x * 3, buttonSize.y), buttonImg));
-	del.reset(new Button(Rect(1700, 720, buttonSize.x * 2, buttonSize.y), buttonImg));
+	decide.reset(new Button(Rect(1600, 950, buttonSize.x * 3, buttonSize.y), buttonImg[2]));
+	del.reset(new Button(Rect(1700, 720, buttonSize.x * 2, buttonSize.y), buttonImg[1]));
 
 	CreateQuestion();
 }

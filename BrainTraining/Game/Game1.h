@@ -68,6 +68,9 @@ private:
 	std::map<int, std::string> questionStatements;	// 問題文
 	std::array<int, static_cast<int>(Hand::MAX)> questionHands;	// 問題の手
 	
+	int waitTime;	// 問題が始まるまでの待ち時間
+	int count;		// 点滅用カウント
+
 	int nowQNum;	// 現在の問題番号
 
 	int qStatementNum;	// 問題文章
