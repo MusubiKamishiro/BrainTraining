@@ -345,8 +345,6 @@ Game3::Game3() : _defTime(180)
 	_orderText  = "";
 	_timeCnt	= _defTime;
 
-	ChangeFont("ほのかアンティーク丸", DX_CHARSET_DEFAULT);
-
 	_isJudge   = false;
 	_questions = _corrects = _moveFlagCnt = _expCnt = 0;
 
@@ -451,19 +449,22 @@ void Game3::GameDraw()
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, _orderText.c_str(), strlen(_orderText.c_str()));
 	DrawString((size.x / 2 - strWidth / 2), strHeight / 3, _orderText.c_str(), 0x000000);
 
-	/// 制限時間の描画(仮)
+	/// 制限時間の描画
 	auto time = (_timeCnt <= 0 ? 0 : (_timeCnt / 60) + 1);
 	auto color = (time <= 1 ? 0xff0000 : 0x000000);
 	Vector2 imgSize;
 	GetGraphSize(_timerImg, &imgSize.x, &imgSize.y);
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, "0", strlen("0"));
 	DrawFormatString(size.x - strWidth / 2 - imgSize.x / 2, strHeight / 2, color, "%d", time);
+
+	GetDrawStringSize(&strWidth, &strHeight, nullptr, "左クリックで旗を上げる(下げる)よ!", strlen("左クリックで旗を上げる(下げる)よ!"));
+	DrawString(size.x / 2 - strWidth / 2, size.y - strHeight, "左クリックで旗を上げる(下げる)よ!", 0x0000aa);
 	
+	/// ﾀｲﾏｰの描画
 	DrawGraph(size.x - imgSize.x, 0, _timerImg, true);
 	
-	GetGraphSize(_flagImgs[0], &imgSize.x, &imgSize.y);
-
 	/// 旗を上げるｷｬﾗｸﾀｰの描画
+	GetGraphSize(_flagImgs[0], &imgSize.x, &imgSize.y);
 	if (_plFlag.first && !_plFlag.second)
 	{
 		DrawGraph((size.x / 2 - imgSize.x / 2), size.y / 5, _flagImgs[0], true);

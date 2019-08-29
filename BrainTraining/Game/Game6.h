@@ -50,6 +50,7 @@ private:
 	int _expCnt;
 	int _blindCnt;
 	int _correctSE, _missSE, _cntDownSE, _startSE;
+	int _gameBGM;
 
 	bool _isColor;
 

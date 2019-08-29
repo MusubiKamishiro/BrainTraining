@@ -49,7 +49,10 @@ void Game6::WaitUpdate(const Peripheral & p)
 		}
 		else
 		{
-			SetColor();
+			if (_questions >= 6)
+			{
+				SetColor();
+			}
 			_updater = &Game6::GameUpdate;
 		}
 	}
@@ -106,6 +109,10 @@ void Game6::CntDownUpdate(const Peripheral & p)
 
 void Game6::GameUpdate(const Peripheral & p)
 {
+	if (!CheckSoundMem(_gameBGM))
+	{
+		PlaySoundMem(_gameBGM, DX_PLAYTYPE_BACK);
+	}
 	if (p.IsTrigger(MOUSE_INPUT_RIGHT))
 	{
 		SceneManager::Instance().PushScene(std::make_unique<PauseScene>());
@@ -218,6 +225,7 @@ Game6::Game6() : _btnSize(Size(300,300))
 	_colors.emplace_back(0xffda1f);		/// 黄
 	_colors.emplace_back(0x37ff37);		/// 緑
 
+	/// 色の種別追加
 	_colorType.emplace_back(COLOR::RED);
 	_colorType.emplace_back(COLOR::BLUE);
 	_colorType.emplace_back(COLOR::YELLOW);
@@ -247,8 +255,7 @@ Game6::Game6() : _btnSize(Size(300,300))
 	_missSE	   = LoadSoundMem("SE/incorrect.mp3");
 	_cntDownSE = LoadSoundMem("SE/countDown.mp3");
 	_startSE   = LoadSoundMem("SE/start.mp3");
-
-	ChangeFont("ほのかアンティーク丸", DX_CHARSET_DEFAULT);
+	_gameBGM   = LoadSoundMem("BGM/game.mp3");
 
 	_textNum = _colorNum = _questions = _corrects = 0;
 
@@ -290,7 +297,6 @@ void Game6::StartDraw()
 	DrawString(size.x / 2 - strWidth / 2, size.y / 3 * 2 - strHeight / 2, "書かれた文字の色を", 0xcc0000);
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, "当てるゲームだよ!", strlen("当てるゲームだよ!"));
 	DrawString(size.x / 2 - strWidth / 2, size.y / 5 * 4 - strHeight / 2, "当てるゲームだよ!", 0xcc0000);
-
 }
 
 void Game6::ExpDraw()
