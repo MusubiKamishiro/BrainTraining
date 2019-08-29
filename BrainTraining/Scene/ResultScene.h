@@ -16,6 +16,8 @@ private:
 	int _img_rankC;
 	int _img_rankD;
 
+	int _SE_stamp;
+
 	void (ResultScene::*updater)(const Peripheral& p);
 
 	void FadeinUpdate(const Peripheral& p);

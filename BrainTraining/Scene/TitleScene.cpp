@@ -52,11 +52,20 @@ TitleScene::TitleScene()
 	ImageData data;
 	Game::Instance().GetFileSystem()->Load("img/img.png", data);
 	img = data.GetHandle();
+
+	_img_balance = LoadGraph("img/Title/balance.png");
+	_img_flag = LoadGraph("img/Title/flag3.png");
+	_img_math = LoadGraph("img/Title/math.png");
+	_img_kokuban = LoadGraph("img/Title/kokuban.png");
 }
 
 
 TitleScene::~TitleScene()
 {
+	DeleteGraph(_img_balance);
+	DeleteGraph(_img_flag);
+	DeleteGraph(_img_math);
+	DeleteGraph(_img_kokuban);
 }
 
 void TitleScene::Update(const Peripheral& p)
@@ -66,8 +75,18 @@ void TitleScene::Update(const Peripheral& p)
 
 void TitleScene::Draw()
 {
-	DxLib::DrawBox(0, 0, 100, 100, 0xff0000, true);
-	DxLib::DrawString(450, 450, "タイトルシーンだよ", 0xffffff);
+	auto size = Game::Instance().GetScreenSize();
 
-	DxLib::DrawGraph(600, 0, img, true);
+	DrawBox(0, 0, size.x, size.y, 0xffffff, true);
+	DrawRotaGraph(size.x / 2, size.y / 2, 1.3, 0.0, _img_kokuban, true);
+	DrawRotaGraph(size.x / 4, size.y / 2, 1.0, DX_PI_F / 180.0f * -30.0f, _img_balance, true);
+	DrawRotaGraph(size.x / 4 * 3, size.y / 2, 1.0, DX_PI_F / 180.0f * 30.0f, _img_flag, true);
+	DrawRotaGraph(size.x / 2, size.y / 2, 0.7, DX_PI_F / 180.0f * 0.0f, _img_math, true);
+
+	int strwidth, strheight;
+	strwidth = strheight = 0;
+
+	SetFontSize(400);
+	GetDrawStringSize(&strwidth, &strheight, nullptr, "脳トレ", strlen("脳トレ"));
+	DxLib::DrawFormatString(size.x / 2 - strwidth / 2, size.y / 3 - strheight / 2, 0xffffff, "脳トレ");
 }
