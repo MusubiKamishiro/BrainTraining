@@ -15,12 +15,10 @@ private:
 	Vector2 ssize;
 
 	bool flag;
-	int img;
 
-	int _img_balance;
-	int _img_math;
 	int _img_flag;
 	int  _img_kokuban;
+	int _bgm;
 
 public:
 	TitleScene();
