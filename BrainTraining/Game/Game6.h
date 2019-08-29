@@ -43,6 +43,7 @@ private:
 	std::vector<int> _colors;
 	std::vector<int> _expImgs;
 
+	int _correctImg, _missImg;
 	int _textNum, _colorNum;
 	int _questions;
 	int _corrects;			/// ³‰ğ”
