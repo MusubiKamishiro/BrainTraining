@@ -37,6 +37,7 @@ void ResultScene::WaitUpdate(const Peripheral & p)
 	if (_frame == 30 || _frame == 60)
 	{
 		PlaySoundMem(_SE_stamp, DX_PLAYTYPE_BACK);
+		PlaySoundMem(_resultBGM, DX_PLAYTYPE_BACK);
 	}
 	if (p.IsTrigger(MOUSE_INPUT_LEFT) && _frame > 60)
 	{
@@ -60,6 +61,7 @@ ResultScene::ResultScene(int questions, int correct)
 	_img_rankD = LoadGraph("img/Result/rank_d.png");
 
 	_SE_stamp = LoadSoundMem("SE/stamp.mp3");
+	_resultBGM = LoadSoundMem("BGM/result.mp3");
 
 	updater = &ResultScene::FadeinUpdate;
 }
