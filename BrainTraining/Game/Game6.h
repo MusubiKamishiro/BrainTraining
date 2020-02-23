@@ -30,7 +30,7 @@ private:
 	void GameUpdate(const Peripheral& p);
 
 	void SetColor();
-	void ChangeColor();							// F‚Ì•ÏX
+	void ChangeColor();							// •¶‚Ì•ÏX
 	void ButtonUpdater(const Peripheral& p);
 	
 	void StartDraw();
@@ -66,4 +66,3 @@ public:
 	void Draw();
 
 };
-

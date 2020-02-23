@@ -166,20 +166,20 @@ void Game6::SetColor()
 
 void Game6::ChangeColor()
 {
-	// 乱数を出すためのﾗﾑﾀﾞ式
-	auto GetRandom = [](const int& min, const int& max)
-	{
-		int num = min + (int)(rand() * (max - min + 1.0) / (1.0 + RAND_MAX));
-		return num;
-	};
 
-	_textNum = GetRandom(0, _texts.size() - 1);
-	_colorNum = GetRandom(0, _colors.size() - 1);
+
+	/// 文字と色の設定を行っている
+	_textNum  = rand() % _texts.size() - 1;
+	_colorNum = rand() % _colors.size() - 1;
+
+	/// 文字と色が同じ場合、色の変更をする
 	while (_textNum == _colorNum)
 	{
-		_colorNum = GetRandom(0, _colors.size() - 1);
+		_colorNum = rand() % _colors.size() - 1;
 	}
 	_isColor = true;
+
+
 }
 
 void Game6::ButtonUpdater(const Peripheral& p)
