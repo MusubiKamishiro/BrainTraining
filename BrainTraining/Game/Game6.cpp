@@ -2,6 +2,7 @@
 
 #include <DxLib.h>
 #include <time.h>
+#include <stdlib.h>
 
 #include "../Game.h"
 #include "../Peripheral.h"
@@ -51,7 +52,7 @@ void Game6::WaitUpdate(const Peripheral & p)
 		{
 			if (_questions >= 6)
 			{
-				SetColor();
+				ChangeButton();
 			}
 			_updater = &Game6::GameUpdate;
 		}
@@ -120,6 +121,7 @@ void Game6::GameUpdate(const Peripheral & p)
 
 	if (!_isColor)
 	{
+		/// 文字の色が変更されていないときに入る処理
 		ChangeColor();
 	}
 	else
@@ -128,25 +130,33 @@ void Game6::GameUpdate(const Peripheral & p)
 	}
 }
 
-void Game6::SetColor()
+void Game6::ChangeButton()
 {
-	_colorType.clear();
+	/// ボタンの初期化
+	_btnType.clear();
+
+	bool flag = true;
+	int randNum = 0;
+
 	for (int i = 0; i < _colors.size(); ++i)
 	{
-		if (_colorType.size() == 0)
+		/// 最初のボタンを登録している
+		if (_btnType.size() == 0)
 		{
-			_colorType.emplace_back((COLOR)(rand() % 4));
+			_btnType.emplace_back((COLOR)(rand() % 4));
 		}
 		else
 		{
-			auto cnt = _colorType.size();
-			while (_colorType.size() <= cnt)
+			auto cnt = _btnType.size();
+
+			/// ボタンの追加がされるまで、ループさせる
+			while (_btnType.size() <= cnt)
 			{
-				auto randNum = rand() % 4;
-				auto flag = true;
-				for (auto type : _colorType)
+				randNum = rand() % 4;
+				flag = true;
+				for (auto type : _btnType)
 				{
-					/// 登録されている色と違う色の場合、trueを返す
+					/// 登録されているボタンか判定を行う
 					flag = (randNum != static_cast<int>(type));
 
 					if (!flag)
@@ -155,9 +165,10 @@ void Game6::SetColor()
 					}
 				}
 
+				/// ボタンの登録
 				if (flag)
 				{
-					_colorType.emplace_back((COLOR)(randNum));
+					_btnType.emplace_back((COLOR)(randNum));
 				}
 			}
 		}
@@ -166,20 +177,16 @@ void Game6::SetColor()
 
 void Game6::ChangeColor()
 {
-
-
 	/// 文字と色の設定を行っている
-	_textNum  = rand() % _texts.size() - 1;
-	_colorNum = rand() % _colors.size() - 1;
+	_textNum  = rand() % (_texts.size() - 1);
+	_colorNum = rand() % (_colors.size() - 1);
 
 	/// 文字と色が同じ場合、色の変更をする
 	while (_textNum == _colorNum)
 	{
-		_colorNum = rand() % _colors.size() - 1;
+		_colorNum = rand() % (_colors.size() - 1);
 	}
 	_isColor = true;
-
-
 }
 
 void Game6::ButtonUpdater(const Peripheral& p)
@@ -187,13 +194,17 @@ void Game6::ButtonUpdater(const Peripheral& p)
 	auto btn = _buttons.begin();
 	for (; btn != _buttons.end(); ++btn)
 	{
+		/// ボタンを押した時に入る
 		if ((*btn)->Update(p))
 		{
+			/// 押したボタンの位置を取得している
 			auto cnt = btn - _buttons.begin();
-			auto colorID = static_cast<int>(_colorType[cnt]);
-			_isColor = false;
+
+			/// 色の取得
+			auto color = static_cast<int>(_btnType[cnt]);
+
 			/// 色の判定
-			if (_colorNum == colorID)
+			if (_colorNum == color)
 			{
 				/// 正解
 				++_corrects;
@@ -206,6 +217,7 @@ void Game6::ButtonUpdater(const Peripheral& p)
 				++_questions;
 				PlaySoundMem(_missSE, DX_PLAYTYPE_BACK);
 			}
+			_isColor = false;
 			_updater = &Game6::WaitUpdate;
 		}
 	}
@@ -214,55 +226,61 @@ void Game6::ButtonUpdater(const Peripheral& p)
 Game6::Game6() : _btnSize(Size(300,300))
 {
 	/// ﾃｷｽﾄの追加
-	_texts.emplace_back("あか");
-	_texts.emplace_back("あお");
-	_texts.emplace_back("きいろ");
-	_texts.emplace_back("みどり");
+	_texts[0] = "あか";
+	_texts[1] = "あお";
+	_texts[2] = "きいろ";
+	_texts[3] = "みどり";
 
 	/// 色の追加
-	_colors.emplace_back(0xff4d4d);		/// 赤
-	_colors.emplace_back(0x305bff);		/// 青
-	_colors.emplace_back(0xffda1f);		/// 黄
-	_colors.emplace_back(0x37ff37);		/// 緑
+	_colors[0] = 0xff4d4d;		/// 赤
+	_colors[1] = 0x305bff;		/// 青
+	_colors[2] = 0xffda1f;		/// 黄
+	_colors[3] = 0x37ff37;		/// 緑
 
 	/// 色の種別追加
-	_colorType.emplace_back(COLOR::RED);
-	_colorType.emplace_back(COLOR::BLUE);
-	_colorType.emplace_back(COLOR::YELLOW);
-	_colorType.emplace_back(COLOR::GREEN);
+	_btnType.reserve(static_cast<int>(COLOR::MAX));
+	_btnType.emplace_back(COLOR::RED);
+	_btnType.emplace_back(COLOR::BLUE);
+	_btnType.emplace_back(COLOR::YELLOW);
+	_btnType.emplace_back(COLOR::GREEN);
 
-	auto size = Game::Instance().GetScreenSize();
-
+	/// 説明用画像の初期化
 	ImageData data;
 	Game::Instance().GetFileSystem()->Load("img/game6/説明.png", data);
-	_expImgs.emplace_back(data.GetHandle());
+	_expImgs[0] = data.GetHandle();
 	Game::Instance().GetFileSystem()->Load("img/game6/説明2.png", data);
-	_expImgs.emplace_back(data.GetHandle());
+	_expImgs[1] = data.GetHandle();
 	Game::Instance().GetFileSystem()->Load("img/game6/説明3.png", data);
-	_expImgs.emplace_back(data.GetHandle());
+	_expImgs[2] = data.GetHandle();
 
+	/// ボタンの初期化
 	Game::Instance().GetFileSystem()->Load("img/Button/light blue.png", data);
-	_buttons.emplace_back(new Button(Rect(size.x / 6, size.y / 8 * 5,
-										  _btnSize.width, _btnSize.height), data.GetHandle()));
-	_buttons.emplace_back(new Button(Rect(size.x / 8 * 3, size.y / 8 * 5,
-										  _btnSize.width, _btnSize.height), data.GetHandle()));
-	_buttons.emplace_back(new Button(Rect(size.x / 7 * 4, size.y / 8 * 5,
-										  _btnSize.width, _btnSize.height), data.GetHandle()));
-	_buttons.emplace_back(new Button(Rect(size.x / 9 * 7, size.y / 8 * 5,
-										  _btnSize.width, _btnSize.height), data.GetHandle()));
 
+	auto size = Game::Instance().GetScreenSize();
+	_buttons[0] = std::make_shared<Button>(Rect(size.x / 6, size.y / 8 * 5,
+											    _btnSize.width, _btnSize.height), data.GetHandle());
+	_buttons[1] = std::make_shared<Button>(Rect(size.x / 8 * 3, size.y / 8 * 5,
+												_btnSize.width, _btnSize.height), data.GetHandle());
+	_buttons[2] = std::make_shared<Button>(Rect(size.x / 7 * 4, size.y / 8 * 5,
+											    _btnSize.width, _btnSize.height), data.GetHandle());
+	_buttons[3] = std::make_shared<Button>(Rect(size.x / 9 * 7, size.y / 8 * 5,
+											    _btnSize.width, _btnSize.height), data.GetHandle());
+
+	/// 正解、不正解画像の初期化
 	Game::Instance().GetFileSystem()->Load("img/Game2/maru.png", data);
 	_correctImg = data.GetHandle();
 	Game::Instance().GetFileSystem()->Load("img/Game2/batu.png", data);
 	_missImg = data.GetHandle();
 
+	/// 効果音の設定
 	_correctSE = LoadSoundMem("SE/correct1.mp3");
 	_missSE	   = LoadSoundMem("SE/incorrect1.mp3");
 	_cntDownSE = LoadSoundMem("SE/countDown.mp3");
 	_startSE   = LoadSoundMem("SE/start.mp3");
 	_gameBGM   = LoadSoundMem("BGM/game.mp3");
 
-	_textNum = _colorNum = _questions = _corrects = 0;
+	/// ゲーム中に使用するカウントの初期化
+	_textNum = _colorNum = _questions = _corrects = _expCnt = 0;
 
 	ChangeColor();
 
@@ -286,6 +304,10 @@ void Game6::Update(const Peripheral & p)
 
 void Game6::Draw()
 {
+	/// 背景の描画
+	DxLib::DrawBox(0, 0, Game::Instance().GetScreenSize().x, Game::Instance().GetScreenSize().y, 0xffffff, true);
+
+	/// ゲームの状態ごとに描画を変更している
 	(this->*_drawer)();
 }
 
@@ -293,24 +315,19 @@ void Game6::StartDraw()
 {
 	auto size = Game::Instance().GetScreenSize();
 
-	DxLib::DrawBox(0, 0, size.x, size.y, 0xffffff, true);
-
-	int strWidth, strHeight;
-	strWidth = strHeight = 0;
-
 	SetFontSize(150);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, "文字の色当てゲーム", strlen("文字の色当てゲーム"));
-	DrawString(size.x / 2 - strWidth / 2, size.y / 7 * 3 - strHeight, "文字の色当てゲーム", 0x000000);
+	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, "文字の色当てゲーム", strlen("文字の色当てゲーム"));
+	DrawString(size.x / 2 - _strSize.x / 2, size.y / 7 * 3 - _strSize.y, "文字の色当てゲーム", 0x000000);
 
 	SetFontSize(100);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, "全20問", strlen("全20問"));
-	DrawString(size.x / 2 - strWidth / 2, size.y / 2 - strHeight / 2, "全20問", 0x000000);
+	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, "全20問", strlen("全20問"));
+	DrawString(size.x / 2 - _strSize.x / 2, size.y / 2 - _strSize.y / 2, "全20問", 0x000000);
 
 	SetFontSize(120);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, "書かれた文字の色を", strlen("書かれた文字の色を"));
-	DrawString(size.x / 2 - strWidth / 2, size.y / 3 * 2 - strHeight / 2, "書かれた文字の色を", 0xcc0000);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, "当てるゲームだよ!", strlen("当てるゲームだよ!"));
-	DrawString(size.x / 2 - strWidth / 2, size.y / 5 * 4 - strHeight / 2, "当てるゲームだよ!", 0xcc0000);
+	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, "書かれた文字の色を", strlen("書かれた文字の色を"));
+	DrawString(size.x / 2 - _strSize.x / 2, size.y / 3 * 2 - _strSize.y / 2, "書かれた文字の色を", 0xcc0000);
+	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, "当てるゲームだよ!", strlen("当てるゲームだよ!"));
+	DrawString(size.x / 2 - _strSize.x / 2, size.y / 5 * 4 - _strSize.y / 2, "当てるゲームだよ!", 0xcc0000);
 }
 
 void Game6::ExpDraw()
@@ -320,17 +337,16 @@ void Game6::ExpDraw()
 
 	if ((_blindCnt / 25) % 2)
 	{
-		int strWidth, strHeight;
 		SetFontSize(120);
 		if (_expCnt == _expImgs.size() - 1)
 		{
-			GetDrawStringSize(&strWidth, &strHeight, nullptr, "左クリックでスタート!", strlen("左クリックでスタート!"));
-			DrawString(size.x / 2 - strWidth / 2, size.y - strHeight, "左クリックでスタート!", 0x0000ff);
+			GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, "左クリックでスタート!", strlen("左クリックでスタート!"));
+			DrawString(size.x / 2 - _strSize.x / 2, size.y - _strSize.y, "左クリックでスタート!", 0x0000ff);
 		}
 		else
 		{
-			GetDrawStringSize(&strWidth, &strHeight, nullptr, "左クリックで次へ進む", strlen("左クリックで次へ進む"));
-			DrawString(size.x / 2 - strWidth / 2, size.y - strHeight, "左クリックで次へ進む", 0x0000ff);
+			GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, "左クリックで次へ進む", strlen("左クリックで次へ進む"));
+			DrawString(size.x / 2 - _strSize.x / 2, size.y - _strSize.y, "左クリックで次へ進む", 0x0000ff);
 		}
 	}
 }
@@ -338,40 +354,40 @@ void Game6::ExpDraw()
 void Game6::CntDownDraw()
 {
 	auto size = Game::Instance().GetScreenSize();
-	int strWidth, strHeight;
-
-	DxLib::DrawBox(0, 0, size.x, size.y, 0xffffff, true);
-
+	/// カウントダウン時の描画
 	SetFontSize(150);
 	if (_timeCnt <= 60)
 	{
-		GetDrawStringSize(&strWidth, &strHeight, nullptr, "スタート!", strlen("スタート!"));
-		DrawString(size.x / 2 - strWidth / 2, size.y / 10 - strHeight / 2, "スタート！", 0x000000);
+		GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, "スタート!", strlen("スタート!"));
+		DrawString(size.x / 2 - _strSize.x / 2, size.y / 10 - _strSize.y / 2, "スタート！", 0x000000);
 	}
 	else
 	{
-		GetDrawStringSize(&strWidth, &strHeight, nullptr, "0", strlen("0"));
-		DrawFormatString(size.x / 2 - strWidth / 2, size.y / 10 - strHeight / 2, 0x000000, "%d", (_timeCnt / 60));
+		GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, "0", strlen("0"));
+		DrawFormatString(size.x / 2 - _strSize.x / 2, size.y / 10 - _strSize.y / 2, 0x000000, "%d", (_timeCnt / 60));
 	}
 
+	/// ボタンの描画
 	for (auto btn : _buttons)
 	{
 		btn->Draw();
 	}
 
+	/// ボタンの文字描画
 	SetFontSize(120);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, "あか", strlen("あか"));
-	DrawString((size.x / 6) - strWidth / 2, (size.y / 8 * 5) - strHeight / 2, "あか", 0x000000);
-	DrawString((size.x / 8 * 3) - strWidth / 2, (size.y / 8 * 5) - strHeight / 2, "あお", 0x000000);
-	GetDrawStringSize(&strWidth, &strHeight, nullptr, "きいろ", strlen("きいろ"));
-	DrawString((size.x / 7 * 4) - strWidth / 2, (size.y / 8 * 5) - strHeight / 2, "きいろ", 0x000000);
-	DrawString((size.x / 9 * 7) - strWidth / 2, (size.y / 8 * 5) - strHeight / 2, "みどり", 0x000000);
+	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, "あか", strlen("あか"));
+	DrawString((size.x / 6) - _strSize.x / 2, (size.y / 8 * 5) - _strSize.y / 2, "あか", 0x000000);
+	DrawString((size.x / 8 * 3) - _strSize.x / 2, (size.y / 8 * 5) - _strSize.y / 2, "あお", 0x000000);
+	GetDrawStringSize(&_strSize.x, &_strSize.y, nullptr, "きいろ", strlen("きいろ"));
+	DrawString((size.x / 7 * 4) - _strSize.x / 2, (size.y / 8 * 5) - _strSize.y / 2, "きいろ", 0x000000);
+	DrawString((size.x / 9 * 7) - _strSize.x / 2, (size.y / 8 * 5) - _strSize.y / 2, "みどり", 0x000000);
 }
 
 void Game6::GameDraw()
 {
 	auto size = Game::Instance().GetScreenSize();
 
+	/// 背景の描画
 	DxLib::DrawBox(0, 0, size.x, size.y, 0xffffff, true);
 
 	int strWidth, strHeight;
@@ -390,24 +406,24 @@ void Game6::GameDraw()
 	DrawString(size.x / 2 - strWidth / 2, size.y - strHeight, "ボタンを左クリックすると、色を選択できるよ", 0x0000aa);
 	
 	SetFontSize(120);
-	/// ﾎﾞﾀﾝの文字座標
-	std::vector<Vector2> pos;
-	pos.emplace_back(Vector2((size.x / 6), (size.y / 8 * 5)));
-	pos.emplace_back(Vector2((size.x / 8 * 3), (size.y / 8 * 5)));
-	pos.emplace_back(Vector2((size.x / 7 * 4), (size.y / 8 * 5)));
-	pos.emplace_back(Vector2((size.x / 9 * 7), (size.y / 8 * 5)));
 
-	auto color = _colorType.begin();
-	for (; color != _colorType.end(); ++color)
+	/// ﾎﾞﾀﾝの文字座標
+	Vector2 pos[4];
+	pos[0] = Vector2((size.x / 6),	   (size.y / 8 * 5));
+	pos[1] = Vector2((size.x / 8 * 3), (size.y / 8 * 5));
+	pos[2] = Vector2((size.x / 7 * 4), (size.y / 8 * 5));
+	pos[3] = Vector2((size.x / 9 * 7), (size.y / 8 * 5));
+
+	auto color = _btnType.begin();
+	for (; color != _btnType.end(); ++color)
 	{
-		auto cnt = color - _colorType.begin();
+		auto cnt = color - _btnType.begin();
 		switch ((*color))
 		{
 		case COLOR::RED :
 			GetDrawStringSize(&strWidth, &strHeight, nullptr, "あか", strlen("あか"));
 			DrawString(pos[cnt].x - strWidth / 2, pos[cnt].y - strHeight / 2, "あか", 0x000000);
 			break;
-			
 		case COLOR::BLUE:
 			GetDrawStringSize(&strWidth, &strHeight, nullptr, "あお", strlen("あお"));
 			DrawString(pos[cnt].x - strWidth / 2, pos[cnt].y - strHeight / 2, "あお", 0x000000);

@@ -1,5 +1,7 @@
 #pragma once
+
 #include <vector>
+#include <array>
 #include "../Geometry.h"
 #include "../Scene/Scene.h"
 
@@ -13,6 +15,8 @@ enum class COLOR
 	GREEN,
 	MAX
 };
+
+#define COLOR_SIZE (static_cast<int>(COLOR::MAX))
 
 class Game6 :
 	public Scene
@@ -29,7 +33,7 @@ private:
 	void CntDownUpdate(const Peripheral& p);
 	void GameUpdate(const Peripheral& p);
 
-	void SetColor();
+	void ChangeButton();
 	void ChangeColor();							// ï∂ÇÃïœçX
 	void ButtonUpdater(const Peripheral& p);
 	
@@ -38,10 +42,13 @@ private:
 	void CntDownDraw();
 	void GameDraw();
 
-	std::vector<std::string> _texts;
-	std::vector<COLOR> _colorType;
-	std::vector<int> _colors;
-	std::vector<int> _expImgs;
+	std::array<std::shared_ptr<Button>, COLOR_SIZE> _buttons;
+	std::array<std::string, COLOR_SIZE> _texts;
+	std::vector<COLOR> _btnType;
+	std::array<int, COLOR_SIZE> _colors;
+	std::array<int, 3> _expImgs;
+
+	Vector2 _strSize;			
 
 	int _correctImg, _missImg;
 	int _textNum, _colorNum;
@@ -57,7 +64,6 @@ private:
 
 	const Size _btnSize;
 
-	std::vector<std::shared_ptr<Button>> _buttons;
 public:
 	Game6();
 	~Game6();
