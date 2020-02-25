@@ -142,11 +142,9 @@ void Game6::WaitUpdate(const Peripheral & p)
 void Game6::ChangeButton()
 {
 	/// ボタンの初期化
-	_btnType.clear();
-
 	bool flag = true;
 	int randNum = 0;
-
+	_btnType.clear();
 	for (int i = 0; i < _colors.size(); ++i)
 	{
 		/// 最初のボタンの登録
@@ -157,7 +155,6 @@ void Game6::ChangeButton()
 		else
 		{
 			auto cnt = _btnType.size();
-
 			/// ボタンの追加をするまで、ループさせる
 			while (_btnType.size() <= cnt)
 			{
@@ -182,6 +179,7 @@ void Game6::ChangeButton()
 			}
 		}
 	}
+
 }
 
 void Game6::ChangeColor()
