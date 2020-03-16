@@ -69,7 +69,7 @@ void Game3::StartUpdate(const Peripheral & p)
 	if (p.IsTrigger(MOUSE_INPUT_LEFT))
 	{
 		_updater = &Game3::ExpUpdate;
-		_drawer = &Game3::ExpDraw;
+		_drawer  = &Game3::ExpDraw;
 	}
 }
 
@@ -390,6 +390,7 @@ void Game3::StartDraw()
 {
 	auto size = Game::Instance().GetScreenSize();
 
+	/// ゲーム開始前の描画
 	DxLib::DrawBox(0, 0, size.x, size.y, 0xffffff, true);
 
 	int strWidth, strHeight;
@@ -413,6 +414,8 @@ void Game3::StartDraw()
 void Game3::ExpDraw()
 {
 	auto size = Game::Instance().GetScreenSize();
+
+	/// 説明用の描画
 	DrawGraph(0, 0, _expImgs[_expCnt], true);
 
 	if ((_blindCnt / 25) % 2)
@@ -439,6 +442,7 @@ void Game3::CntDownDraw()
 	Vector2 imgSize;
 	GetGraphSize(_flagImgs[3], &imgSize.x, &imgSize.y);
 
+	/// カウントダウンの描画
 	DrawBox(0, 0, size.x / 2, size.y, 0xffcccc, true);
 	DrawBox(size.x / 2, 0, size.x, size.y, 0xffffff, true);
 
@@ -459,6 +463,7 @@ void Game3::CntDownDraw()
 
 void Game3::GameDraw()
 {
+	/// ゲーム中の描画
 	auto size = Game::Instance().GetScreenSize();
 	DxLib::DrawBox(0, 0, size.x, size.y, 0xe0ffe0, true);
 
@@ -469,7 +474,7 @@ void Game3::GameDraw()
 	strWidth = strHeight = 0;
 	SetFontSize(130);
 	
-	/// 指示ﾃｷｽﾄの描画
+	/// 指示テキストの描画
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, _orderText.c_str(), strlen(_orderText.c_str()));
 	DrawString((size.x / 2 - strWidth / 2), strHeight / 3, _orderText.c_str(), 0x000000);
 
@@ -484,10 +489,10 @@ void Game3::GameDraw()
 	GetDrawStringSize(&strWidth, &strHeight, nullptr, "左クリックで旗を上げる(下げる)よ!", strlen("左クリックで旗を上げる(下げる)よ!"));
 	DrawString(size.x / 2 - strWidth / 2, size.y - strHeight, "左クリックで旗を上げる(下げる)よ!", 0x0000aa);
 	
-	/// ﾀｲﾏｰの描画
+	/// タイマーの描画
 	DrawGraph(size.x - imgSize.x, 0, _timerImg, true);
 	
-	/// 旗を上げるｷｬﾗｸﾀｰの描画
+	/// 旗を上げるキャラクターの描画
 	GetGraphSize(_flagImgs[0], &imgSize.x, &imgSize.y);
 	if (_plFlag.first && !_plFlag.second)
 	{

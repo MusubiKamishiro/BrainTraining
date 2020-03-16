@@ -62,7 +62,7 @@ private:
 	int _lastNum;			// 最後に求めた乱数の値
 	int _questions;
 	int _corrects;			// 正解数
-	int _timeCnt, _expCnt, _blindCnt;			// ｹﾞｰﾑ中に使用するｶｳﾝﾄ
+	int _timeCnt, _expCnt, _blindCnt;			/// ｹﾞｰﾑ中に使用するｶｳﾝﾄ
 
 	int _correctImg, _missImg;
 	int _correctSE, _missSE, _cntDownSE, _startSE;
